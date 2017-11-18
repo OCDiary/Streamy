@@ -1,0 +1,16 @@
+[
+{
+  "modid": "twitchy",
+  "name": "Twitchy",
+  "description": "Are you a modpack maker? Do you also stream on Twitch.tv? Do you wish more people could find your channel easily if they enjoy your modpack? If you answered yes to the above questions do not worry... WE HAVE THE ANSWER!!!",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["OCDiary", "Bright_Spark"],
+  "credits": "The Forge and FML guys, for making forge. Bright_Spark for his help and assistance!",
+  "logoFile": "assets/twitchy/logo.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]
