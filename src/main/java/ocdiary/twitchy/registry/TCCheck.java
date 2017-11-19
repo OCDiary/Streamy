@@ -1,38 +1,31 @@
 package ocdiary.twitchy.registry;
 
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import ocdiary.twitchy.Twitchy;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTException;
-import net.minecraft.nbt.NBTTagCompound;
-
 
 import java.net.URL;
 import java.util.Scanner;
 
-
 public class TCCheck implements Runnable {
-    private String channel, streamLink;
-    private int timeBetweenChecks;
-    public boolean running = true;
+    private String streamLink;
 
-    public TCCheck(String channel, int timeBetweenChecks)
+    public TCCheck(String channel)
     {
-        this.channel = channel;
         streamLink = "https://api.twitch.tv/kraken/streams/" + channel + "?client_id=n3w3pptkwczocn9gw2r8pbjfe76xzr";
-        this.timeBetweenChecks = timeBetweenChecks;
     }
 
-    private void checkStream()
+    @Override
+    public void run()
     {
         String json = "";
         try {
             Scanner sc = new Scanner(new URL(streamLink).openStream());
-            while (sc.hasNextLine())
-                json += sc.nextLine();
+            StringBuilder sb = new StringBuilder();
+            while(sc.hasNextLine())
+                sb.append(sc.nextLine());
+            json = sb.toString();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -59,31 +52,4 @@ public class TCCheck implements Runnable {
     {
         return element == null ? defaultValue : element.getAsInt();
     }
-
-
-    @Override
-    public void run()
-    {
-        running = true;
-        System.out.println("Checking stream: " + channel + " every " + timeBetweenChecks + " seconds");
-        while(running)
-        {
-            checkStream();
-            try
-            {
-                Thread.sleep(timeBetweenChecks * 1000);
-            }
-            catch(InterruptedException e)
-            {
-                System.out.println("Stream Checker Interrupted, Stopping Thread.");
-                running = false;
-            }
-        }
-    }
-
-    private String addQuotes(String text)
-    {
-        return "\"" + text + "\"";
-    }
 }
-
