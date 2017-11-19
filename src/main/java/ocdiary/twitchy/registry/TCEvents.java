@@ -28,10 +28,4 @@ public class TCEvents {
         executorService.shutdown();
     }
 
-    /*@SubscribeEvent
-    public void playerTick(TickEvent.PlayerTickEvent event)
-    {
-        //if(event.phase == TickEvent.Phase.END && event.player.worldObj.getWorldTime() % 20 == 0)
-            //System.out.println(twitchy.isLive);
-    }*/
 }

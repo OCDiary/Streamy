@@ -1,10 +1,5 @@
 package ocdiary.twitchy;
 
-import ocdiary.twitchy.proxies.common;
-import ocdiary.twitchy.registry.TCConfig;
-import ocdiary.twitchy.registry.TCDrawScreen;
-import ocdiary.twitchy.registry.TCEvents;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -12,6 +7,8 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import ocdiary.twitchy.proxies.common;
+import ocdiary.twitchy.registry.TCConfig;
 
 @Mod(modid = Twitchy.MODID, name = Twitchy.NAME, version = Twitchy.VERSION, acceptedMinecraftVersions = Twitchy.AVERSION)
 public class Twitchy {

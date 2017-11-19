@@ -1,10 +1,10 @@
 package ocdiary.twitchy.registry;
 
-import net.minecraftforge.fml.common.Mod;
-import ocdiary.twitchy.Twitchy;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import ocdiary.twitchy.Twitchy;
 
 import java.io.File;
 
