@@ -35,11 +35,11 @@ public class TCDrawScreen {
     private static String CHANNEL = Twitchy.twitchChannelId;
     private static int tsize = Twitchy.tIconSize;
 
-    private static int textU;
-    private static int textV;
+    private static int textU = 0;
+    private static int textV = 0;
 
-    private static int textLU;
-    private static int textLV;
+    private static int textLU = 24;
+    private static int textLV = 0;
 
 
     private static void drawTwitch()
@@ -84,6 +84,17 @@ public class TCDrawScreen {
         GuiUtils.drawTexturedModalRect(twitchRect.x, twitchRect.y, textLU, textLV, twitchRect.width, twitchRect.height, 0);
     }
 
+    private static void drawIcon()
+    {
+        if(!Twitchy.persistantIcon && !Twitchy.isLive) return;
+        GlStateManager.color(1f, 1f, 1f, 1f);
+        GlStateManager.enableBlend();
+        mc.getTextureManager().bindTexture(twitch);
+        GuiUtils.drawTexturedModalRect(twitchRect.x, twitchRect.y, textU, textV, twitchRect.width, twitchRect.height, 0);
+        if(Twitchy.isLive)
+            GuiUtils.drawTexturedModalRect(twitchRect.x, twitchRect.y, textLU, textLV, twitchRect.width, twitchRect.height, 0);
+    }
+
     private static void drawTooltip(GuiScreen gui, int mouseX, int mouseY)
     {
         List<String> tooltip = new ArrayList<String>();
@@ -92,16 +103,12 @@ public class TCDrawScreen {
                 tooltip.add("Stream Title:" + " " + "\u00A79" + Twitchy.streamTitle);
                 tooltip.add("Current Game:" + " " + "\u00A72" + Twitchy.streamGame);
                 tooltip.add("Current Viewers:" + " " + "\u00A74" + Twitchy.streamViewers);
-
-
             }else
                 tooltip.add("Click to watch " + "\u00A76" + CHANNEL + " " + "\u00A7flive on Twitch!");
-
             if (!GuiScreen.isShiftKeyDown())
                 tooltip.add(TextFormatting.AQUA + I18n.format("press.for.info.name", "SHIFT"));
         }else
             tooltip.add("\u00A76" + CHANNEL +"'s" + "\u00A7f offline. Click to go to their channel.");
-
 
         GuiUtils.drawHoveringText(tooltip, mouseX, mouseY + 20, gui.width, gui.height, -1, mc.fontRenderer);
     }
@@ -111,17 +118,9 @@ public class TCDrawScreen {
     {
         if(mc.player != null && Twitchy.persistantIcon) {
             RenderHelper.disableStandardItemLighting();
-            if (Twitchy.isLive)
-                drawLive();
-                if (twitchRect.contains(event.getMouseX(), event.getMouseY()))
-                    drawTooltip(event.getGui(), event.getMouseX(), event.getMouseY());
-                drawTwitch();
-                RenderHelper.enableStandardItemLighting();
-            }else if(mc.player != null && !Twitchy.persistantIcon && Twitchy.isLive) {
-                drawLive();
-            if (twitchRect.contains(event.getMouseX(), event.getMouseY()))
+            drawIcon();
+            if(twitchRect.contains(event.getMouseX(), event.getMouseY()))
                 drawTooltip(event.getGui(), event.getMouseX(), event.getMouseY());
-            drawTwitch();
             RenderHelper.enableStandardItemLighting();
         }
     }
@@ -129,14 +128,8 @@ public class TCDrawScreen {
     @SubscribeEvent
     public static void drawOverlay(RenderGameOverlayEvent.Post event)
     {
-        if(event.getType() == RenderGameOverlayEvent.ElementType.ALL && mc.currentScreen == null && Twitchy.persistantIcon) {
-            if (Twitchy.isLive)
-                drawLive();
-            drawTwitch();
-        }else if(event.getType() == RenderGameOverlayEvent.ElementType.ALL && mc.currentScreen == null && !Twitchy.persistantIcon && Twitchy.isLive){
-            drawLive();
-            drawTwitch();
-        }
+        if(event.getType() == RenderGameOverlayEvent.ElementType.ALL && mc.currentScreen == null)
+            drawIcon();
     }
 
     @SubscribeEvent
@@ -149,13 +142,12 @@ public class TCDrawScreen {
             int mouseX = Mouse.getX() * sr.getScaledWidth() / mc.displayWidth;
             int mouseY = srHeight - Mouse.getY() * srHeight / mc.displayHeight - 1;
 
-            if (twitchRect.contains(mouseX, mouseY)) {
-                openMCForumsThread();
-            }
+            if (twitchRect.contains(mouseX, mouseY))
+                openTwitchStream();
         }
     }
 
-    public static String openMCForumsThread() {
+    public static String openTwitchStream() {
         if (Desktop.isDesktopSupported()) {
             try {
                 Desktop.getDesktop()
