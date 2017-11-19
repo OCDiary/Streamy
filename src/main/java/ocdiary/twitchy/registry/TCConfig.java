@@ -1,6 +1,6 @@
 package ocdiary.twitchy.registry;
 
-
+import net.minecraftforge.fml.common.Mod;
 import ocdiary.twitchy.Twitchy;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -8,17 +8,14 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.File;
 
-
-
+@Mod.EventBusSubscriber
 public class TCConfig {
     private static Configuration config;
-
 
     public static void init(File file){
         config = new Configuration(file);
         syncConfig();
     }
-
 
     private static void syncConfig(){
 
@@ -32,11 +29,9 @@ public class TCConfig {
         //refs.posY = config.getInt("posY", ICON,  refs.posY, 1,500, "Twitch icon 'y' position: ");
         Twitchy.tIconSize = config.getInt("tIconSize", ICON, Twitchy.tIconSize, 1, 3,"Change the twitch icon size; 1 = small, 2 = medium, 3 = big:");
 
-
         if(config.hasChanged())
         config.save();
     }
-
 
     @SubscribeEvent
     public static void onConfigurationChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event)

@@ -24,7 +24,6 @@ public class Twitchy {
     public static final String CPROX = "ocdiary.twitchy.proxies.client";
     public static final String SPROX = "ocdiary.twitchy.proxies.common";
 
-
     public static String twitchChannelId = "ocdiary";
     public static boolean persistantIcon = true;
     public static int posX = 1;
@@ -43,10 +42,8 @@ public class Twitchy {
     @SidedProxy(clientSide = Twitchy.CPROX, serverSide = Twitchy.SPROX)
     private static common proxy;
 
-
     @EventHandler
     public void preInit(FMLPreInitializationEvent e){
-
         TCConfig.init(e.getSuggestedConfigurationFile());
 
         proxy.preInit(e);
@@ -54,16 +51,11 @@ public class Twitchy {
 
     @EventHandler
     public void init(FMLInitializationEvent e){
-        MinecraftForge.EVENT_BUS.register(instance);
-
         proxy.init(e);
     }
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent e){
-
-        MinecraftForge.EVENT_BUS.register(new TCDrawScreen());
-        MinecraftForge.EVENT_BUS.register(new TCEvents());
         proxy.postInit(e);
     }
 }

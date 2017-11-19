@@ -1,5 +1,7 @@
 package ocdiary.twitchy.registry;
 
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.relauncher.Side;
 import ocdiary.twitchy.Twitchy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -23,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-//@Mod.EventBusSubscriber(Side.CLIENT)
+@Mod.EventBusSubscriber(Side.CLIENT)
 public class TCDrawScreen {
 
     private static final ResourceLocation twitch = new ResourceLocation(Twitchy.MODID, "textures/gui/twitch.png");
@@ -105,7 +107,7 @@ public class TCDrawScreen {
     }
 
     @SubscribeEvent
-    public void drawScreen(GuiScreenEvent.DrawScreenEvent.Post event)
+    public static void drawScreen(GuiScreenEvent.DrawScreenEvent.Post event)
     {
         if(mc.player != null && Twitchy.persistantIcon) {
             RenderHelper.disableStandardItemLighting();
@@ -125,7 +127,7 @@ public class TCDrawScreen {
     }
 
     @SubscribeEvent
-    public void drawOverlay(RenderGameOverlayEvent.Post event)
+    public static void drawOverlay(RenderGameOverlayEvent.Post event)
     {
         if(event.getType() == RenderGameOverlayEvent.ElementType.ALL && mc.currentScreen == null && Twitchy.persistantIcon) {
             if (Twitchy.isLive)
@@ -138,7 +140,7 @@ public class TCDrawScreen {
     }
 
     @SubscribeEvent
-    public void mouseClick(GuiScreenEvent.MouseInputEvent.Pre event)
+    public static void mouseClick(GuiScreenEvent.MouseInputEvent.Pre event)
     {
         if(mc.player != null && Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
             //Get mouse position
