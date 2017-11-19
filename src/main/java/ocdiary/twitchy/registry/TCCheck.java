@@ -18,7 +18,6 @@ public class TCCheck implements Runnable {
     private String channel, streamLink;
     private int timeBetweenChecks;
     public boolean running = true;
-    private String json;
 
     public TCCheck(String channel, int timeBetweenChecks)
     {
@@ -29,6 +28,17 @@ public class TCCheck implements Runnable {
 
     private void checkStream()
     {
+        String json = "";
+        try {
+            Scanner sc = new Scanner(new URL(streamLink).openStream());
+            while (sc.hasNextLine())
+                json += sc.nextLine();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(json);
+
         JsonObject jsonData = new JsonParser().parse(json).getAsJsonObject();
         JsonObject stream = jsonData.get("stream").getAsJsonObject();
         Twitchy.isLive = stream != null;
@@ -40,7 +50,6 @@ public class TCCheck implements Runnable {
         }
     }
 
-
     private static String getJsonString(JsonElement element, String defaultValue)
     {
         return element == null ? defaultValue : element.getAsString();
@@ -50,9 +59,8 @@ public class TCCheck implements Runnable {
     {
         return element == null ? defaultValue : element.getAsInt();
     }
-    
-    
-    
+
+
     @Override
     public void run()
     {
@@ -78,3 +86,4 @@ public class TCCheck implements Runnable {
         return "\"" + text + "\"";
     }
 }
+
