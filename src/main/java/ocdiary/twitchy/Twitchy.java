@@ -3,30 +3,24 @@ package ocdiary.twitchy;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import ocdiary.twitchy.proxies.CommonProxy;
-import ocdiary.twitchy.registry.TCConfig;
+import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Twitchy.MODID, name = Twitchy.NAME, version = Twitchy.VERSION, acceptedMinecraftVersions = Twitchy.AVERSION)
 public class Twitchy {
 
     public static final String MODID = "twitchy";
     public static final String NAME = "Twitchy";
-    public static final String VERSION = "1.12.2_2";
+    public static final String VERSION = "@VERSION@"; //This is replaced in the build.gradle
     public static final String AVERSION = "[1.12, 1.12.2]";
 
-    public static final String CPROX = "ocdiary.twitchy.proxies.ClientProxy";
-    public static final String SPROX = "ocdiary.twitchy.proxies.CommonProxy";
+    public static Logger LOGGER;
 
     public static String twitchChannelId = "ocdiary";
     public static boolean persistantIcon = true;
     public static int posX = 1;
     public static int posY = 1;
     public static int interval = 30;
-    public static String iconSize = "big";
     public static int tIconSize = 3;
 
     public static boolean isLive = false;
@@ -36,23 +30,9 @@ public class Twitchy {
     @Instance
     private static Twitchy instance;
 
-    @SidedProxy(clientSide = Twitchy.CPROX, serverSide = Twitchy.SPROX)
-    private static CommonProxy proxy;
-
     @EventHandler
-    public void preInit(FMLPreInitializationEvent e){
+    public void preInit(FMLPreInitializationEvent e) {
+        LOGGER = e.getModLog();
         TCConfig.init(e.getSuggestedConfigurationFile());
-
-        proxy.preInit(e);
-    }
-
-    @EventHandler
-    public void init(FMLInitializationEvent e){
-        proxy.init(e);
-    }
-
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent e){
-        proxy.postInit(e);
     }
 }
