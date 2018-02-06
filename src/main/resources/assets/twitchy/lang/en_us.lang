@@ -1,5 +1,11 @@
-#Commands
+#PARSE_ESCAPES
 
-#Misc
-press.for.info.name=Press %s for more information
+twitchy.tooltip.title=Stream Title:
+twitchy.tooltip.game=Current Game:
+twitchy.tooltip.viewers=Current Viewers:
+twitchy.tooltip.watch.1=Click to watch
+twitchy.tooltip.watch.2=live on Twitch!
+twitchy.tooltip.offline='s offline. Click to go to their channel.
+twitchy.tooltip.info=Press %s for more information
 
+twitchy.config.title=Twitchy Configs

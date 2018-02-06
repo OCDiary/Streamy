@@ -8,23 +8,25 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = Twitchy.MODID)
 public class TCEvents {
-    private static ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-    public static int DELAY = Twitchy.interval;
-    public static String CHANNEL = Twitchy.twitchChannelId;
+    private static ScheduledExecutorService executorService;
 
-    @SubscribeEvent
-    public static void onLogin(FMLNetworkEvent.ClientConnectedToServerEvent event)
-    {
-        executorService.scheduleAtFixedRate(new TCCheck(CHANNEL), 5, DELAY, TimeUnit.SECONDS);
-        System.out.println("The thread is now running");
+    public static void startStreamChecker() {
+        if(executorService != null) executorService.shutdown();
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(new TCCheck(), 1, TCConfig.channel.interval, TimeUnit.SECONDS);
+        Twitchy.LOGGER.info("Twitch stream status checker is now running");
     }
 
     @SubscribeEvent
-    public static void onLogout(FMLNetworkEvent.ClientDisconnectionFromServerEvent event)
-    {
-        executorService.shutdown();
+    public static void onLogin(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+        startStreamChecker();
     }
 
+    @SubscribeEvent
+    public static void onLogout(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+        if(executorService != null)
+            executorService.shutdown();
+    }
 }
