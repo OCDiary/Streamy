@@ -94,7 +94,7 @@ public class TCDrawScreen {
 
         GuiUtils.drawHoveringText(tooltip, mouseX, mouseY + 20, gui.width, gui.height, -1, mc.fontRenderer);
 
-        if(GuiScreen.isShiftKeyDown()) {
+        if(Twitchy.isLive && GuiScreen.isShiftKeyDown()) {
             //TODO: Render medium stream preview
             int previewY = mouseY + 15 + mc.fontRenderer.FONT_HEIGHT * 3;
             Gui.drawRect(mouseX + 8, previewY, mouseX + 320, previewY + 180, 0x88000000);
