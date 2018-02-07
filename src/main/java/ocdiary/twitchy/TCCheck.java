@@ -13,8 +13,7 @@ public class TCCheck implements Runnable {
     @Override
     public void run()
     {
-        Twitchy.LOGGER.info("Getting stream info...");
-        String json = "";
+        String json;
         try {
             String url = "https://api.twitch.tv/kraken/streams/" + TCConfig.channel.twitchChannelId + "?client_id=" + clientId;
             Scanner sc = new Scanner(new URL(url).openStream());
@@ -23,10 +22,11 @@ public class TCCheck implements Runnable {
                 sb.append(sc.nextLine());
             json = sb.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            Twitchy.LOGGER.error("Failed getting stream info", e);
+            return;
         }
 
-        Twitchy.LOGGER.info(json);
+        //Twitchy.LOGGER.info(json);
 
         JsonObject jsonData = new JsonParser().parse(json).getAsJsonObject();
         JsonElement streamElement = jsonData.get("stream");

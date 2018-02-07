@@ -1,6 +1,7 @@
 package ocdiary.twitchy;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -92,6 +93,12 @@ public class TCDrawScreen {
             tooltip.add(TextFormatting.GOLD + TCConfig.channel.twitchChannelId + TextFormatting.RESET + I18n.format("twitchy.tooltip.offline"));
 
         GuiUtils.drawHoveringText(tooltip, mouseX, mouseY + 20, gui.width, gui.height, -1, mc.fontRenderer);
+
+        if(GuiScreen.isShiftKeyDown()) {
+            //TODO: Render medium stream preview
+            int previewY = mouseY + 15 + mc.fontRenderer.FONT_HEIGHT * 3;
+            Gui.drawRect(mouseX + 8, previewY, mouseX + 320, previewY + 180, 0x88000000);
+        }
     }
 
     @SubscribeEvent
