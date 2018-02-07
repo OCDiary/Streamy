@@ -7,7 +7,7 @@ import com.google.gson.JsonParser;
 import java.net.URL;
 import java.util.Scanner;
 
-public class TCCheck implements Runnable {
+public class StreamCheck implements Runnable {
     private static final String clientId = "n3w3pptkwczocn9gw2r8pbjfe76xzr";
 
     @Override
@@ -43,6 +43,8 @@ public class TCCheck implements Runnable {
             Twitchy.streamGame = getJsonString(stream.get("game"), "");
             Twitchy.streamViewers = getJsonInt(stream.get("viewers"), 0);
             Twitchy.streamTitle = getJsonString(stream.get("channel").getAsJsonObject().get("status"), "");
+            Twitchy.streamPreview = getJsonString(stream.get("preview").getAsJsonObject().get("medium"), "");
+            TCDrawScreen.updatePreview(Twitchy.streamPreview);
         }
     }
 

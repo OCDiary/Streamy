@@ -15,7 +15,7 @@ public class TCEvents {
     public static void startStreamChecker() {
         if(executorService != null) executorService.shutdown();
         executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(new TCCheck(), 1, TCConfig.channel.interval, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(new StreamCheck(), 1, TCConfig.channel.interval, TimeUnit.SECONDS);
         Twitchy.LOGGER.info("Twitch stream status checker is now running");
     }
 

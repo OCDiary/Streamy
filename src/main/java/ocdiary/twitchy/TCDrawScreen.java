@@ -5,7 +5,10 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.ImageBufferDownload;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.ThreadDownloadImageData;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -29,15 +32,23 @@ import java.util.List;
 public class TCDrawScreen {
 
     private static final ResourceLocation iconRL = new ResourceLocation(Twitchy.MODID, "textures/gui/twitch.png");
+    private static final ResourceLocation noPreviewRL = new ResourceLocation(Twitchy.MODID, "textures/gui/noPreview.png");
+    public static List<ResourceLocation> previews = new ArrayList<>();
     private static Minecraft mc = Minecraft.getMinecraft();
 
     private static Rectangle twitchRect = new Rectangle(TCConfig.icon.posX, TCConfig.icon.posY, 23, 23);
 
     private static int textU = 0;
     private static int textV = 0;
-
     private static int textLU = 24;
     private static int textLV = 0;
+
+    private static String lastPreview = "";
+
+    public static void updatePreview(String previewUrl)
+    {
+        previews.remove(getRLFromURL(previewUrl));
+    }
 
     public static void updateIconSize()
     {
@@ -96,8 +107,16 @@ public class TCDrawScreen {
 
         if(Twitchy.isLive && GuiScreen.isShiftKeyDown()) {
             //TODO: Render medium stream preview
+            String url = Twitchy.streamPreview; //"https://cdn.discordapp.com/attachments/286147745817952257/410606411039637505/TEST.png";
+            ResourceLocation previewRL = getRLFromURL(url);
+            if(!Twitchy.streamPreview.equals(lastPreview)) {
+                if(!previews.contains(previewRL)) loadPreview(url, previewRL);
+            }
+            mc.getTextureManager().bindTexture(previewRL);
             int previewY = mouseY + 15 + mc.fontRenderer.FONT_HEIGHT * 3;
-            Gui.drawRect(mouseX + 8, previewY, mouseX + 320, previewY + 180, 0x88000000);
+            Gui.drawScaledCustomSizeModalRect(mouseX + 8, previewY, 0, 0, 320, 180, 320, 180, 320, 180);
+            //GuiUtils.drawTexturedModalRect(mouseX + 8, previewY, 0, 0, 320, 180, 0);
+            //Gui.drawRect(mouseX + 8, previewY, mouseX + 320, previewY + 180, 0x88000000);
         }
     }
 
@@ -148,5 +167,18 @@ public class TCDrawScreen {
         } else {
             Twitchy.LOGGER.error("Can't open browser - Desktop is not supported");
         }
+    }
+
+    private static ResourceLocation getRLFromURL(String url) {
+        int slashIndex = url.lastIndexOf("/");
+        String imageName = url.substring(slashIndex);
+        return new ResourceLocation(Twitchy.MODID, imageName);
+    }
+
+    private static void loadPreview(String url, ResourceLocation imageRL) {
+        ThreadDownloadImageData imageData = new ThreadDownloadImageData(null, url, noPreviewRL, new ImageBufferDownload());
+        TextureManager texturemanager = Minecraft.getMinecraft().getTextureManager();
+        texturemanager.loadTexture(imageRL, imageData);
+        previews.add(imageRL);
     }
 }

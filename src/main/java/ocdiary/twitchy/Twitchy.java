@@ -17,7 +17,7 @@ public class Twitchy {
     public static Logger LOGGER;
 
     public static boolean isLive = false;
-    public static String streamGame, streamTitle;
+    public static String streamGame, streamTitle, streamPreview;
     public static int streamViewers;
 
     @Instance
