@@ -18,6 +18,7 @@ public class Twitchy {
     public static boolean isLive = false;
     public static String streamGame, streamTitle, streamPreview;
     public static int streamViewers;
+    public static int previewWidth, previewHeight;
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {

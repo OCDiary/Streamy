@@ -5,6 +5,8 @@ import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import ocdiary.twitchy.util.EnumIconSize;
+import ocdiary.twitchy.util.EnumPreviewSize;
 
 @Config(modid = Twitchy.MODID)
 @Config.LangKey(Twitchy.MODID + ".config.title")
@@ -14,6 +16,15 @@ public class TCConfig {
 
     @Config.Comment("In-game icon configs")
     public static final Icon ICON = new Icon();
+
+    @Config.Comment("the quality of the previewUrl image")
+    public static EnumPreviewSize quality = EnumPreviewSize.MEDIUM;
+
+    @Config.Comment("the width of the previewUrl image")
+    public static int previewWidth = 800;
+
+    @Config.Comment("the height of the previewUrl image")
+    public static int previewHeight = 600;
 
     public static class ChannelConfig {
         @Config.Comment("Please enter your Twitch CHANNELS here:")
@@ -30,17 +41,12 @@ public class TCConfig {
             ALWAYS,
             LIVE_ONLY
         }
-        enum Size {
-            SMALL,
-            MEDIUM,
-            LARGE
-        }
 
         @Config.Comment("Should the Twitch ICON always be shown on screen, or only when a channel is live?")
         public State iconState = State.ALWAYS;
 
         @Config.Comment("Change the twitch icon size")
-        public Size iconSize = Size.LARGE;
+        public EnumIconSize iconSize = EnumIconSize.MEDIUM;
 
         @Config.Comment("Icon X position (from the left)")
         @Config.RangeInt(min = 0)
@@ -58,7 +64,6 @@ public class TCConfig {
         public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
             if(event.getModID().equalsIgnoreCase(Twitchy.MODID)) {
                 ConfigManager.sync(Twitchy.MODID, Config.Type.INSTANCE);
-                TCDrawScreen.updateIconSize();
                 TwitchHandler.startStreamChecker();
             }
         }

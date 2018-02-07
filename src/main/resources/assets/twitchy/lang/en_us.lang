@@ -1,10 +1,11 @@
 #PARSE_ESCAPES
 
+twitchy.tooltip.broadcaster=Broadcaster: %s
 twitchy.tooltip.title=Stream Title: %s
 twitchy.tooltip.game=Current Game: %s
 twitchy.tooltip.viewers=Current Viewers: %s
 twitchy.tooltip.watch=Click to watch %s on Twitch!
-twitchy.tooltip.offline=%s all Streamers are offline Click to go to the config screen.
+twitchy.tooltip.offline=all Streamers are currently offline.\nClick to go to the config screen!
 twitchy.tooltip.info=Press %s for more information
 
 twitchy.config.title=Twitchy Configs

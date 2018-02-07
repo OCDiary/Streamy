@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.Scanner;
 
 public class StreamCheck implements Runnable {
+
     private static final String CLIENT_ID = "n3w3pptkwczocn9gw2r8pbjfe76xzr";
 
     @Override
