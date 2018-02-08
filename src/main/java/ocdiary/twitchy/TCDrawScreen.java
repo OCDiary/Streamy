@@ -8,11 +8,14 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.RenderTooltipEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -38,7 +41,7 @@ public class TCDrawScreen {
 
     private static final int BORDER = 2; //TODO adjust
     private static final int PROFILE_PIC_ORIGINAL_SIZE = 300;
-    private static final int PROFILE_PIC_NEW_SIZE = 8;
+    private static final int PROFILE_PIC_NEW_SIZE = 12;
 
     private static boolean expandList = false; //TODO move to config to save value?
 
@@ -101,14 +104,13 @@ public class TCDrawScreen {
 
             if (Twitchy.isLive && expandList) {
                 int x = TCConfig.ICON.posX;
-                int y = TCConfig.ICON.posY + icon.height + BORDER;
-                //TODO draw background
-
+                int y = TCConfig.ICON.posY + icon.height + BORDER * 3;
                 synchronized (Twitchy.LIVE_STREAMERS) {
+                    drawTooltipBoxBackground(x + BORDER + 2, y, PROFILE_PIC_NEW_SIZE, (PROFILE_PIC_NEW_SIZE + 2) * (Twitchy.LIVE_STREAMERS.size() - 1) + PROFILE_PIC_NEW_SIZE, 0);
                     int i = 0;
                     for (String broadcaster : Twitchy.LIVE_STREAMERS.keySet()) {
                         int localX = x + BORDER + 2;
-                        int localY = y + (PROFILE_PIC_NEW_SIZE + 2) * i++;
+                        int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
                         StreamInfo info = Twitchy.LIVE_STREAMERS.get(broadcaster);
                         ResourceLocation profilePic = ImageUtil.loadImage(info.profilePicUrl, broadcaster + "_profile");
                         mc.renderEngine.bindTexture(profilePic);
@@ -119,7 +121,7 @@ public class TCDrawScreen {
                     //important: need to draw the tooltip AFTER all icons have been drawn
                     for (String broadcaster : Twitchy.LIVE_STREAMERS.keySet()) {
                         int localX = x + BORDER + 2;
-                        int localY = y + (PROFILE_PIC_NEW_SIZE + 2) * i++;
+                        int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
                         if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mouseX, mouseY)) {
                             StreamInfo info = Twitchy.LIVE_STREAMERS.get(broadcaster);
                             drawStreamInfo(localX, localY, mouseX, mouseY, info, GuiScreen.isShiftKeyDown(), maxTextWidth);
@@ -136,6 +138,29 @@ public class TCDrawScreen {
             );
             GuiUtils.drawHoveringText(tooltips, mousePos.x, mousePos.y + 5, mc.displayWidth, mc.displayHeight, maxTextWidth, mc.fontRenderer);
         }
+    }
+
+    private static void drawTooltipBoxBackground(int x, int y, int width, int height, int zLevel) {
+        int backgroundColor = 0xF0100010;
+        int borderColorStart = 0x505000FF;
+        int borderColorEnd = (borderColorStart & 0xFEFEFE) >> 1 | borderColorStart & 0xFF000000;
+        RenderTooltipEvent.Color colorEvent = new RenderTooltipEvent.Color(ItemStack.EMPTY, Lists.newArrayList(), x, y, mc.fontRenderer, backgroundColor, borderColorStart, borderColorEnd);
+        MinecraftForge.EVENT_BUS.post(colorEvent);
+        backgroundColor = colorEvent.getBackground();
+        borderColorStart = colorEvent.getBorderStart();
+        borderColorEnd = colorEvent.getBorderEnd();
+        GuiUtils.drawGradientRect(zLevel, x - 3, y - 4, x + width + 3, y - 3, backgroundColor, backgroundColor);
+        GuiUtils.drawGradientRect(zLevel, x - 3, y + height + 3, x + width + 3, y + height + 4, backgroundColor, backgroundColor);
+        GuiUtils.drawGradientRect(zLevel, x - 3, y - 3, x + width + 3, y + height + 3, backgroundColor, backgroundColor);
+        GuiUtils.drawGradientRect(zLevel, x - 4, y - 3, x - 3, y + height + 3, backgroundColor, backgroundColor);
+        GuiUtils.drawGradientRect(zLevel, x + width + 3, y - 3, x + width + 4, y + height + 3, backgroundColor, backgroundColor);
+        GuiUtils.drawGradientRect(zLevel, x - 3, y - 3 + 1, x - 3 + 1, y + height + 3 - 1, borderColorStart, borderColorEnd);
+        GuiUtils.drawGradientRect(zLevel, x + width + 2, y - 3 + 1, x + width + 3, y + height + 3 - 1, borderColorStart, borderColorEnd);
+        GuiUtils.drawGradientRect(zLevel, x - 3, y - 3, x + width + 3, y - 3 + 1, borderColorStart, borderColorStart);
+        GuiUtils.drawGradientRect(zLevel, x - 3, y + height + 2, x + width + 3, y + height + 3, borderColorEnd, borderColorEnd);
+
+        MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostBackground(ItemStack.EMPTY, colorEvent.getLines(), x, y, colorEvent.getFontRenderer(), width, height));
+
     }
 
     private static boolean isMouseOver(int x, int y, int width, int height, int mouseX, int mouseY) {
@@ -161,10 +186,10 @@ public class TCDrawScreen {
             }
             if(expandList && Twitchy.isLive) {
                 int i = 0;
-                int y = TCConfig.ICON.posY + TCConfig.ICON.iconSize.height + BORDER;
+                int y = TCConfig.ICON.posY + TCConfig.ICON.iconSize.height + BORDER * 3;
                 for(String broadcaster : Twitchy.LIVE_STREAMERS.keySet()) {
                     int localX = TCConfig.ICON.posX + BORDER + 2;
-                    int localY = y + (PROFILE_PIC_NEW_SIZE + 2) * i++;
+                    int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
                     if(isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos.x, mousePos.y)) {
                         openTwitchStream(broadcaster);
                     }
