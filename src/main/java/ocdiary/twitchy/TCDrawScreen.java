@@ -106,10 +106,10 @@ public class TCDrawScreen {
                 int x = TCConfig.ICON.posX;
                 int y = TCConfig.ICON.posY + icon.height + BORDER * 3;
                 synchronized (Twitchy.LIVE_STREAMERS) {
-                    drawTooltipBoxBackground(x + BORDER + 2, y, PROFILE_PIC_NEW_SIZE, (PROFILE_PIC_NEW_SIZE + 2) * (Twitchy.LIVE_STREAMERS.size() - 1) + PROFILE_PIC_NEW_SIZE, 0);
+                    int localX = x + BORDER + 2;
+                    drawTooltipBoxBackground(localX + BORDER / 2, y + BORDER / 2, PROFILE_PIC_NEW_SIZE - BORDER, (PROFILE_PIC_NEW_SIZE + 2) * (Twitchy.LIVE_STREAMERS.size() - 1) + PROFILE_PIC_NEW_SIZE - BORDER / 2, 0);
                     int i = 0;
                     for (String broadcaster : Twitchy.LIVE_STREAMERS.keySet()) {
-                        int localX = x + BORDER + 2;
                         int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
                         StreamInfo info = Twitchy.LIVE_STREAMERS.get(broadcaster);
                         ResourceLocation profilePic = ImageUtil.loadImage(info.profilePicUrl, broadcaster + "_profile");
@@ -120,7 +120,6 @@ public class TCDrawScreen {
                     i = 0;
                     //important: need to draw the tooltip AFTER all icons have been drawn
                     for (String broadcaster : Twitchy.LIVE_STREAMERS.keySet()) {
-                        int localX = x + BORDER + 2;
                         int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
                         if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mouseX, mouseY)) {
                             StreamInfo info = Twitchy.LIVE_STREAMERS.get(broadcaster);
