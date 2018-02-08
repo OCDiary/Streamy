@@ -3,6 +3,8 @@ package ocdiary.twitchy;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import ocdiary.twitchy.util.ImageUtil;
+import ocdiary.twitchy.util.StreamInfo;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URL;
@@ -15,35 +17,39 @@ public class StreamCheck implements Runnable {
     @Override
     public void run()
     {
-        TCDrawScreen.invalidatePreviewCache();
-        try {
-            String url = "https://api.twitch.tv/kraken/streams/" + TCConfig.CHANNELS.channel + "?client_id=" + CLIENT_ID;
-            Scanner sc = new Scanner(new URL(url).openStream());
-            StringBuilder sb = new StringBuilder();
-            while(sc.hasNextLine())
-                sb.append(sc.nextLine());
-            String json = sb.toString();
-            JsonObject jsonData = new JsonParser().parse(json).getAsJsonObject();
-            JsonElement streamElement = jsonData.get("stream");
-            boolean isLive = !streamElement.isJsonNull();
-            Twitchy.isLive = isLive;
-            if(!isLive)
-            {
-                Twitchy.streamGame = "";
-                Twitchy.streamViewers = 0;
-                Twitchy.streamTitle = "";
+        boolean live = false;
+        synchronized (Twitchy.LIVE_STREAMERS) {
+            ImageUtil.invalidatePreviewCache();
+            Twitchy.LIVE_STREAMERS.clear();
+            for(String broadcaster : TCConfig.CHANNELS.channels) {
+                try {
+                    String url = "https://api.twitch.tv/kraken/streams/" + broadcaster + "?client_id=" + CLIENT_ID;
+                    Scanner sc = new Scanner(new URL(url).openStream());
+                    StringBuilder sb = new StringBuilder();
+                    while(sc.hasNextLine())
+                        sb.append(sc.nextLine());
+                    String json = sb.toString();
+                    JsonObject jsonData = new JsonParser().parse(json).getAsJsonObject();
+                    JsonElement streamElement = jsonData.get("stream");
+                    if(!streamElement.isJsonNull())
+                    {
+                        live = true;
+                        JsonObject stream = streamElement.getAsJsonObject();
+                        String game = getJsonString(stream.get("game"));
+                        int viewerCount = getJsonInt(stream.get("viewers"));
+                        JsonObject channelInfo = stream.get("channel").getAsJsonObject();
+                        String title = getJsonString(channelInfo.get("status"));
+                        String broadcasterName = getJsonString(channelInfo.get("display_name"));
+                        String logo = getJsonString(channelInfo.get("logo"));
+                        String preview = getJsonString(stream.get("preview").getAsJsonObject().get(TCConfig.Quality.getKey())).replace("{width}", String.valueOf(TCConfig.Quality.width)).replace("{height}", String.valueOf(TCConfig.Quality.height));
+                        Twitchy.LIVE_STREAMERS.put(broadcaster, new StreamInfo(broadcasterName, game, title, preview, logo, viewerCount));
+                    }
+                } catch (Exception e) {
+                    Twitchy.LOGGER.error("Error getting stream info for channel \"" + broadcaster + "\"", e);
+                }
             }
-            else
-            {
-                JsonObject stream = streamElement.getAsJsonObject();
-                Twitchy.streamGame = getJsonString(stream.get("game"));
-                Twitchy.streamViewers = getJsonInt(stream.get("viewers"));
-                Twitchy.streamTitle = getJsonString(stream.get("channel").getAsJsonObject().get("status"));
-                Twitchy.streamPreview = getJsonString(stream.get("preview").getAsJsonObject().get("medium"));
-            }
-        } catch (Exception e) {
-            Twitchy.LOGGER.error("Error getting stream info", e);
         }
+        Twitchy.isLive = live;
     }
 
     private static String getJsonString(JsonElement element)

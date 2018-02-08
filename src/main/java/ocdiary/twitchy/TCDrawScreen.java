@@ -1,14 +1,15 @@
 package ocdiary.twitchy;
 
+import com.google.common.collect.Lists;
 import io.netty.util.internal.StringUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent;
@@ -20,40 +21,26 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import ocdiary.twitchy.util.EnumIconSize;
-import org.lwjgl.input.Keyboard;
+import ocdiary.twitchy.util.ImageUtil;
+import ocdiary.twitchy.util.StreamInfo;
 import org.lwjgl.input.Mouse;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Mod.EventBusSubscriber(modid = Twitchy.MODID, value = Side.CLIENT)
 public class TCDrawScreen {
 
     private static final ResourceLocation TWITCH_ICON = new ResourceLocation(Twitchy.MODID, "textures/gui/twitch.png");
-    private static final ResourceLocation NO_PREVIEW = new ResourceLocation(Twitchy.MODID, "textures/gui/no_preview.png");
-    private static final Map<String, ResourceLocation> previews = new ConcurrentHashMap<>();
     private static final Minecraft mc = Minecraft.getMinecraft();
 
-    private static Rectangle twitchRect = new Rectangle(TCConfig.ICON.posX, TCConfig.ICON.posY, 23, 23);
+    private static final int BORDER = 2; //TODO adjust
+    private static final int PROFILE_PIC_ORIGINAL_SIZE = 300;
+    private static final int PROFILE_PIC_NEW_SIZE = 8;
 
-    public static volatile boolean shouldReloadPreviews;
-
-    private static void clearPreviewCache()
-    {
-        for(String previewUrl : previews.keySet()) {
-            ResourceLocation preview = previews.get(previewUrl);
-            if(!preview.equals(NO_PREVIEW)) mc.getTextureManager().deleteTexture(preview);
-        }
-        previews.clear();
-    }
+    private static boolean expandList = false; //TODO move to config to save value?
 
     private static void drawIcon()
     {
@@ -61,28 +48,12 @@ public class TCDrawScreen {
         GlStateManager.enableBlend();
         mc.getTextureManager().bindTexture(TWITCH_ICON);
         EnumIconSize iconSize = TCConfig.ICON.iconSize;
-        GuiUtils.drawTexturedModalRect(twitchRect.x, twitchRect.y, iconSize.outlineU, iconSize.outlineV, twitchRect.width, twitchRect.height, 0);
-        if(Twitchy.isLive) GuiUtils.drawTexturedModalRect(twitchRect.x, twitchRect.y, iconSize.overlayU, iconSize.overlayV, twitchRect.width, twitchRect.height, 0);
-        //TODO draw collapsible menu
+        GuiUtils.drawTexturedModalRect(TCConfig.ICON.posX, TCConfig.ICON.posY, iconSize.outlineU, iconSize.outlineV, iconSize.width, iconSize.height, 0);
+        if(Twitchy.isLive) GuiUtils.drawTexturedModalRect(TCConfig.ICON.posX, TCConfig.ICON.posY, iconSize.overlayU, iconSize.overlayV, iconSize.width, iconSize.height, 0);
     }
 
-    private static void drawTooltip(int mouseX, int mouseY, StreamInfo info)
-    {
-        List<ITextComponent> tooltip = new ArrayList<>();
-        if (Twitchy.isLive) {
-            if (GuiScreen.isShiftKeyDown()) {
-                tooltip.add(new TextComponentTranslation("twitchy.tooltip.broadcaster", TextFormatting.AQUA + info.broadcaster));
-                tooltip.add(new TextComponentTranslation("twitchy.tooltip.title", TextFormatting.BLUE.toString() + info.title));
-                tooltip.add(new TextComponentTranslation("twitchy.tooltip.game", TextFormatting.DARK_GREEN.toString() + info.game));
-                tooltip.add(new TextComponentTranslation("twitchy.tooltip.viewers", TextFormatting.DARK_RED.toString() + info.viewers));
-            } else tooltip.add(new TextComponentTranslation("twitchy.tooltip.watch", TextFormatting.GOLD.toString() + info.broadcaster));
-            if (!GuiScreen.isShiftKeyDown()) tooltip.add(new TextComponentTranslation("twitchy.tooltip.info", TextFormatting.AQUA.toString() + Keyboard.getKeyName(Keyboard.KEY_LSHIFT)));
-        } else tooltip.add(new TextComponentTranslation("twitchy.tooltip.offline"));
-        List<String> text = new ArrayList<>();
-        tooltip.forEach(textComponent -> text.add(textComponent.getFormattedText()));
-        int maxTextWidth = new ScaledResolution(mc).getScaledWidth() - mouseX - 16;
-
-        if(Twitchy.isLive && GuiScreen.isShiftKeyDown()) {
+    private static void drawStreamInfo(int x, int y, int mouseX, int mouseY, StreamInfo info, boolean showPreview, int maxTextWidth) {
+        if(showPreview) {
             String url = info.previewUrl;
             if(!StringUtil.isNullOrEmpty(url)) {
                 GlStateManager.pushMatrix();
@@ -90,32 +61,85 @@ public class TCDrawScreen {
                 GlStateManager.translate(0.0F, 0.0F, zLevel);
 
                 ResourceLocation preview;
-                if(!previews.containsKey(url)) {
-                    preview = loadPreview(url);
+                if(!ImageUtil.previews.containsKey(url)) {
+                    preview = ImageUtil.loadImage(url, info.broadcaster + "_preview");
                 }
-                else preview = previews.get(url);
+                else preview = ImageUtil.previews.get(url);
                 mc.getTextureManager().bindTexture(preview);
-                int textHeight = 0;
-                for(String str : text) {
-                    textHeight += mc.fontRenderer.getWordWrappedHeight(str, maxTextWidth) + 3;
-                }
-                Gui.drawScaledCustomSizeModalRect(mouseX + 8, mouseY + 5 + textHeight, 0, 0, Twitchy.previewWidth, Twitchy.previewHeight, TCConfig.previewWidth, TCConfig.previewHeight, Twitchy.previewWidth, Twitchy.previewHeight);
+
+                Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, Twitchy.previewWidth, Twitchy.previewHeight, TCConfig.previewWidth, TCConfig.previewHeight, Twitchy.previewWidth, Twitchy.previewHeight);
                 GlStateManager.popMatrix();
             }
+            GuiUtils.drawHoveringText(Lists.newArrayList(), mouseX, mouseY + 15 + Twitchy.previewHeight, mc.displayWidth, mc.displayHeight, Math.min(maxTextWidth, Twitchy.previewWidth) + BORDER, mc.fontRenderer);
         }
-        GuiUtils.drawHoveringText(text, mouseX, mouseY + 20, mc.displayWidth, mc.displayHeight, maxTextWidth, mc.fontRenderer);
+        else {
+            List<String> tooltips = Lists.newArrayList(
+                    I18n.format("twitchy.tooltip.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()),
+                    I18n.format("twitchy.tooltip.title", TextFormatting.BLUE.toString() + info.title + TextFormatting.RESET.toString()),
+                    I18n.format("twitchy.tooltip.game", TextFormatting.DARK_GREEN.toString() + info.game + TextFormatting.RESET.toString()),
+                    I18n.format("twitchy.tooltip.viewers", TextFormatting.DARK_RED.toString() + info.viewers + TextFormatting.RESET.toString()),
+                    "",
+                    TextFormatting.GRAY + I18n.format("twitchy.tooltip.watch", TextFormatting.WHITE.toString() + info.broadcaster + TextFormatting.GRAY.toString()) + TextFormatting.RESET,
+                    I18n.format("twitchy.tooltip.preview", TextFormatting.GOLD.toString() + "SHIFT" + TextFormatting.RESET.toString())
+            );
+            GuiUtils.drawHoveringText(tooltips, mouseX, mouseY + 20, mc.displayWidth, mc.displayHeight, maxTextWidth, mc.fontRenderer);
+        }
     }
 
     @SubscribeEvent
     public static void drawScreen(TickEvent.RenderTickEvent event)
     {
         if(event.phase != TickEvent.Phase.END) return;
-        if(shouldReloadPreviews) TCDrawScreen.clearPreviewCache();
+        if(ImageUtil.shouldReloadPreviews) ImageUtil.clearPreviewCache();
+        Point mousePos = getCurrentMousePosition();
+        int mouseX = mousePos.x;
+        int mouseY = mousePos.y;
+        EnumIconSize icon = TCConfig.ICON.iconSize;
+        int maxTextWidth = new ScaledResolution(mc).getScaledWidth() - mouseX - 16;
         if (Twitchy.isLive || TCConfig.ICON.iconState == TCConfig.Icon.State.ALWAYS) {
-            drawIcon();
-            Point mousePos = getCurrentMousePosition();
-            if (twitchRect.contains(mousePos.x, mousePos.y)) drawTooltip(mousePos.x, mousePos.y);
+            drawIcon(); //draw the twitch icon
+
+            if (Twitchy.isLive && expandList) {
+                int x = TCConfig.ICON.posX;
+                int y = TCConfig.ICON.posY + icon.height + BORDER;
+                //TODO draw background
+
+                synchronized (Twitchy.LIVE_STREAMERS) {
+                    int i = 0;
+                    for (String broadcaster : Twitchy.LIVE_STREAMERS.keySet()) {
+                        int localX = x + BORDER + 2;
+                        int localY = y + (PROFILE_PIC_NEW_SIZE + 2) * i++;
+                        StreamInfo info = Twitchy.LIVE_STREAMERS.get(broadcaster);
+                        ResourceLocation profilePic = ImageUtil.loadImage(info.profilePicUrl, broadcaster + "_profile");
+                        mc.renderEngine.bindTexture(profilePic);
+                        Gui.drawScaledCustomSizeModalRect(localX, localY, 0, 0, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE);
+                    }
+
+                    i = 0;
+                    //important: need to draw the tooltip AFTER all icons have been drawn
+                    for (String broadcaster : Twitchy.LIVE_STREAMERS.keySet()) {
+                        int localX = x + BORDER + 2;
+                        int localY = y + (PROFILE_PIC_NEW_SIZE + 2) * i++;
+                        if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mouseX, mouseY)) {
+                            StreamInfo info = Twitchy.LIVE_STREAMERS.get(broadcaster);
+                            drawStreamInfo(localX, localY, mouseX, mouseY, info, GuiScreen.isShiftKeyDown(), maxTextWidth);
+                        }
+                    }
+                }
+            }
         }
+        if (isMouseOver(TCConfig.ICON.posX, TCConfig.ICON.posY, icon.width, icon.height, mouseX, mouseY)) {
+            String key = expandList ? "collapse" : "expand";
+            List<String> tooltips = Lists.newArrayList(
+                    new TextComponentTranslation("twitchy.tooltip." + key).setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText(),
+                    new TextComponentTranslation("twitchy.tooltip.info", TextFormatting.BLUE.toString() + "ALT + Click").getFormattedText()
+            );
+            GuiUtils.drawHoveringText(tooltips, mousePos.x, mousePos.y + 5, mc.displayWidth, mc.displayHeight, maxTextWidth, mc.fontRenderer);
+        }
+    }
+
+    private static boolean isMouseOver(int x, int y, int width, int height, int mouseX, int mouseY) {
+        return mouseX >= x && mouseX <= (x + width) && mouseY >= y && mouseY <= (y + height);
     }
 
     private static Point getCurrentMousePosition() {
@@ -131,12 +155,19 @@ public class TCDrawScreen {
     {
         if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
             Point mousePos = getCurrentMousePosition();
-            if (twitchRect.contains(mousePos.x, mousePos.y)) {
-                if(Twitchy.isLive) {
-                    openTwitchStream(TCConfig.CHANNELS.channel);
-                }
-                else {
-                    mc.displayGuiScreen(FMLClientHandler.instance().getGuiFactoryFor(FMLCommonHandler.instance().findContainerFor(Twitchy.MODID)).createConfigGui(mc.currentScreen));
+            if (isMouseOver(TCConfig.ICON.posX, TCConfig.ICON.posY, TCConfig.ICON.iconSize.width, TCConfig.ICON.iconSize.height, mousePos.x, mousePos.y)) {
+                if(GuiScreen.isAltKeyDown()) mc.displayGuiScreen(FMLClientHandler.instance().getGuiFactoryFor(FMLCommonHandler.instance().findContainerFor(Twitchy.MODID)).createConfigGui(mc.currentScreen));
+                else expandList = !expandList;
+            }
+            if(expandList && Twitchy.isLive) {
+                int i = 0;
+                int y = TCConfig.ICON.posY + TCConfig.ICON.iconSize.height + BORDER;
+                for(String broadcaster : Twitchy.LIVE_STREAMERS.keySet()) {
+                    int localX = TCConfig.ICON.posX + BORDER + 2;
+                    int localY = y + (PROFILE_PIC_NEW_SIZE + 2) * i++;
+                    if(isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos.x, mousePos.y)) {
+                        openTwitchStream(broadcaster);
+                    }
                 }
             }
         }
@@ -158,25 +189,4 @@ public class TCDrawScreen {
         }
     }
 
-    private static ResourceLocation loadPreview(String url) {
-        ResourceLocation imageRL;
-        try {
-            BufferedImage image = ImageIO.read(new URL(url));
-            DynamicTexture texture = new DynamicTexture(image);
-            texture.loadTexture(mc.getResourceManager());
-            Twitchy.previewWidth = image.getWidth();
-            Twitchy.previewHeight = image.getHeight();
-            imageRL = mc.getTextureManager().getDynamicTextureLocation(Twitchy.MODID + "_preview", texture);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            imageRL = NO_PREVIEW;
-        }
-        if(url != null) previews.put(url, imageRL);
-        return imageRL;
-    }
-
-    public static void invalidatePreviewCache() {
-        shouldReloadPreviews = true;
-    }
 }

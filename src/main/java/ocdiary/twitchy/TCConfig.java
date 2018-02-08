@@ -17,18 +17,19 @@ public class TCConfig {
     @Config.Comment("In-game icon configs")
     public static final Icon ICON = new Icon();
 
-    @Config.Comment("the quality of the previewUrl image")
-    public static EnumPreviewSize quality = EnumPreviewSize.MEDIUM;
+    @Config.Comment("the Quality of the previewUrl image")
+    public static EnumPreviewSize Quality = EnumPreviewSize.LARGE;
 
     @Config.Comment("the width of the previewUrl image")
-    public static int previewWidth = 800;
+    public static int previewWidth = 320;
 
     @Config.Comment("the height of the previewUrl image")
-    public static int previewHeight = 600;
+    public static int previewHeight = 180;
 
     public static class ChannelConfig {
+
         @Config.Comment("Please enter your Twitch CHANNELS here:")
-        public String channel = "OCDiary";
+        public String[] channels = new String[]{"OCDiary"};
 
         @Config.Comment("Please enter the time (in seconds) between checking the Twitch CHANNELS status:")
         @Config.RangeInt(min = 5)

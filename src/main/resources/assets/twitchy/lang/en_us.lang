@@ -4,8 +4,10 @@ twitchy.tooltip.broadcaster=Broadcaster: %s
 twitchy.tooltip.title=Stream Title: %s
 twitchy.tooltip.game=Current Game: %s
 twitchy.tooltip.viewers=Current Viewers: %s
+twitchy.tooltip.info=%s to get to the config menu!
+twitchy.tooltip.expand=Click to expand the menu!
+twitchy.tooltip.collapse=Click to collapse the menu!
+twitchy.tooltip.preview=Press %s to see a preview!
 twitchy.tooltip.watch=Click to watch %s on Twitch!
-twitchy.tooltip.offline=all Streamers are currently offline.\nClick to go to the config screen!
-twitchy.tooltip.info=Press %s for more information
 
 twitchy.config.title=Twitchy Configs
