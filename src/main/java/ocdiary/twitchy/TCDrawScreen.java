@@ -107,7 +107,7 @@ public class TCDrawScreen {
                 int y = TCConfig.ICON.posY + icon.height + BORDER * 3;
                 synchronized (Twitchy.LIVE_STREAMERS) {
                     int localX = x + BORDER + 2;
-                    drawTooltipBoxBackground(localX + BORDER / 2, y + BORDER / 2, PROFILE_PIC_NEW_SIZE - BORDER, (PROFILE_PIC_NEW_SIZE + 2) * (Twitchy.LIVE_STREAMERS.size() - 1) + PROFILE_PIC_NEW_SIZE - BORDER / 2, 0);
+                    drawTooltipBoxBackground(localX + BORDER / 2, y + BORDER / 2, PROFILE_PIC_NEW_SIZE - BORDER, PROFILE_PIC_NEW_SIZE * Twitchy.LIVE_STREAMERS.size() + (Twitchy.LIVE_STREAMERS.size() - 1) * 3 - BORDER, 0);
                     int i = 0;
                     for (String broadcaster : Twitchy.LIVE_STREAMERS.keySet()) {
                         int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
