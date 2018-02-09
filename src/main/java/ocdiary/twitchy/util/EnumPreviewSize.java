@@ -15,10 +15,6 @@ public enum EnumPreviewSize {
 
     public final int width, height;
 
-    EnumPreviewSize() {
-        this(-1, -1);
-    }
-
     EnumPreviewSize(int width, int height) {
         this.width = width;
         this.height = height;

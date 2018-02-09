@@ -19,7 +19,20 @@ public class ImageUtil {
     private static final Minecraft mc = Minecraft.getMinecraft();
     private static final ResourceLocation NO_PREVIEW = new ResourceLocation(Twitchy.MODID, "textures/gui/no_preview.png");
     public static final Map<String, ResourceLocation> previews = new ConcurrentHashMap<>();
+    public static final Map<String, ResourceLocation> profiles = new ConcurrentHashMap<>();
     public static volatile boolean shouldReloadPreviews;
+
+    public enum ImageCacheType
+    {
+        PREVIEW,
+        PROFILE;
+
+        @Override
+        public String toString()
+        {
+            return super.toString().toLowerCase();
+        }
+    }
 
     public static void clearPreviewCache()
     {
@@ -30,21 +43,30 @@ public class ImageUtil {
         previews.clear();
     }
 
-    public static ResourceLocation loadImage(String url, String name) {
+    public static ResourceLocation loadImage(String url, String name, ImageCacheType type) {
         ResourceLocation imageRL;
         try {
             BufferedImage image = ImageIO.read(new URL(url));
             DynamicTexture texture = new DynamicTexture(image);
             texture.loadTexture(mc.getResourceManager());
-            //Twitchy.previewWidth = image.getWidth();
-            //Twitchy.previewHeight = image.getHeight();
-            imageRL = mc.getTextureManager().getDynamicTextureLocation(Twitchy.MODID + "_" + name, texture);
+            imageRL = mc.getTextureManager().getDynamicTextureLocation(Twitchy.MODID + "_" + name + "_" + type, texture);
         }
         catch (Exception e) {
             e.printStackTrace();
             imageRL = NO_PREVIEW;
         }
-        if(url != null) previews.put(url, imageRL);
+        if(url != null) {
+            switch(type) {
+                case PREVIEW:
+                    previews.put(url, imageRL);
+                    break;
+                case PROFILE:
+                    profiles.put(url, imageRL);
+                    break;
+                default:
+                    Twitchy.LOGGER.error("Unhandled ImageCacheType %s. Report this to the mod author!", type);
+            }
+        }
         return imageRL;
     }
 

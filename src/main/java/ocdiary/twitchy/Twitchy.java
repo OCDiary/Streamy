@@ -22,7 +22,7 @@ public class Twitchy {
     public static boolean isLive = false;
 
     /**
-     * all streamers taht are currently live
+     * All streamers that are currently live
      * <b>keys must be all lowercase!</b>
      */
     public static final Map<String, StreamInfo> LIVE_STREAMERS = Maps.newConcurrentMap();

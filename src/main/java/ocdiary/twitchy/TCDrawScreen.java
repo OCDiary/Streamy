@@ -58,7 +58,7 @@ public class TCDrawScreen {
     }
 
     private static void drawStreamInfo(int x, int y, int mouseX, int mouseY, StreamInfo info, boolean showPreview, int maxTextWidth) {
-        if(showPreview) {
+        if(showPreview && info.title != null) {
             String url = info.previewUrl;
             EnumPreviewSize quality = TCConfig.quality;
             if(!StringUtil.isNullOrEmpty(url)) {
@@ -67,10 +67,10 @@ public class TCDrawScreen {
                 GlStateManager.translate(0.0F, 0.0F, zLevel);
 
                 ResourceLocation preview;
-                if(!ImageUtil.previews.containsKey(url)) {
-                    preview = ImageUtil.loadImage(url, info.broadcaster + "_preview");
-                }
-                else preview = ImageUtil.previews.get(url);
+                if(!ImageUtil.previews.containsKey(url))
+                    preview = ImageUtil.loadImage(url, info.broadcaster, ImageUtil.ImageCacheType.PREVIEW);
+                else
+                    preview = ImageUtil.previews.get(url);
                 mc.getTextureManager().bindTexture(preview);
 
                 Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, quality.width, quality.height, quality.width, quality.height, quality.width, quality.height);
@@ -114,7 +114,7 @@ public class TCDrawScreen {
         if (Twitchy.isLive || TCConfig.ICON.iconState == TCConfig.Icon.State.ALWAYS) {
             drawIcon(); //draw the twitch icon
 
-            if (Twitchy.isLive && expandList) {
+            if (expandList) {
                 int x = TCConfig.ICON.posX;
                 int y = TCConfig.ICON.posY + icon.height + BORDER * 3;
                 synchronized (Twitchy.LIVE_STREAMERS) {
@@ -124,7 +124,11 @@ public class TCDrawScreen {
                     for (String broadcaster : Twitchy.LIVE_STREAMERS.keySet()) {
                         int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
                         StreamInfo info = Twitchy.LIVE_STREAMERS.get(broadcaster);
-                        ResourceLocation profilePic = ImageUtil.loadImage(info.profilePicUrl, broadcaster + "_profile");
+                        ResourceLocation profilePic;
+                        if(!ImageUtil.profiles.containsKey(info.profilePicUrl))
+                            profilePic = ImageUtil.loadImage(info.profilePicUrl, broadcaster, ImageUtil.ImageCacheType.PROFILE);
+                        else
+                            profilePic = ImageUtil.profiles.get(info.profilePicUrl);
                         mc.renderEngine.bindTexture(profilePic);
                         Gui.drawScaledCustomSizeModalRect(localX, localY, 0, 0, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE);
                     }

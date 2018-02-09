@@ -41,11 +41,15 @@ public class StreamCheck implements Runnable {
                     }
                     else
                     {
-                        //Get channel info for the profile icon
-                        JsonObject channelData = getJsonFromAPI("channels", broadcaster);
-                        String broadcasterName = getJsonString(channelData.get("display_name"));
-                        String profilePic = getJsonString(channelData.get("logo"));
-                        Twitchy.LIVE_STREAMERS.put(broadcaster, new StreamInfo(broadcasterName, profilePic));
+                        //Get channel info for the profile icon if we don't already have them
+                        StreamInfo currentInfo = Twitchy.LIVE_STREAMERS.get(broadcaster);
+                        if(currentInfo == null)
+                        {
+                            JsonObject channelData = getJsonFromAPI("channels", broadcaster);
+                            String broadcasterName = getJsonString(channelData.get("display_name"));
+                            String profilePic = getJsonString(channelData.get("logo"));
+                            Twitchy.LIVE_STREAMERS.put(broadcaster, new StreamInfo(broadcasterName, profilePic));
+                        }
                     }
                 } catch (Exception e) {
                     Twitchy.LOGGER.error("Error getting stream info for channel \"" + broadcaster + "\"", e);
