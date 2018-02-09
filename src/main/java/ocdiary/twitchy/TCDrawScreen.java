@@ -34,6 +34,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = Twitchy.MODID, value = Side.CLIENT)
 public class TCDrawScreen {
@@ -119,11 +121,16 @@ public class TCDrawScreen {
                 int y = TCConfig.ICON.posY + icon.height + BORDER * 3;
                 synchronized (Twitchy.LIVE_STREAMERS) {
                     int localX = x + BORDER + 2;
-                    drawTooltipBoxBackground(localX + BORDER / 2, y + BORDER / 2, PROFILE_PIC_NEW_SIZE - BORDER, PROFILE_PIC_NEW_SIZE * Twitchy.LIVE_STREAMERS.size() + (Twitchy.LIVE_STREAMERS.size() - 1) * 3 - BORDER, 0);
+                    Map<String, StreamInfo> streamers = TCConfig.CHANNELS.showOfflineChannels ?
+                            Twitchy.LIVE_STREAMERS :
+                            Twitchy.LIVE_STREAMERS.entrySet().stream()
+                                    .filter(entry -> entry.getValue().title != null)
+                                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    drawTooltipBoxBackground(localX + BORDER / 2, y + BORDER / 2, PROFILE_PIC_NEW_SIZE - BORDER, PROFILE_PIC_NEW_SIZE * streamers.size() + (streamers.size() - 1) * 3 - BORDER, 0);
                     int i = 0;
-                    for (String broadcaster : Twitchy.LIVE_STREAMERS.keySet()) {
+                    for (String broadcaster : streamers.keySet()) {
                         int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
-                        StreamInfo info = Twitchy.LIVE_STREAMERS.get(broadcaster);
+                        StreamInfo info = streamers.get(broadcaster);
                         ResourceLocation profilePic;
                         if(!ImageUtil.profiles.containsKey(info.profilePicUrl))
                             profilePic = ImageUtil.loadImage(info.profilePicUrl, broadcaster, ImageUtil.ImageCacheType.PROFILE);
@@ -135,10 +142,10 @@ public class TCDrawScreen {
 
                     i = 0;
                     //important: need to draw the tooltip AFTER all icons have been drawn
-                    for (String broadcaster : Twitchy.LIVE_STREAMERS.keySet()) {
+                    for (String broadcaster : streamers.keySet()) {
                         int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
                         if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mouseX, mouseY)) {
-                            StreamInfo info = Twitchy.LIVE_STREAMERS.get(broadcaster);
+                            StreamInfo info = streamers.get(broadcaster);
                             drawStreamInfo(localX, localY, mouseX, mouseY, info, GuiScreen.isShiftKeyDown(), maxTextWidth);
                         }
                     }

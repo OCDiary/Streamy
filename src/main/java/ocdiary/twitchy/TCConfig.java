@@ -28,6 +28,9 @@ public class TCConfig {
         @Config.Comment("Please enter the time (in seconds) between checking the Twitch CHANNELS status:")
         @Config.RangeInt(min = 5)
         public int interval = 30;
+
+        @Config.Comment("Whether to show offline channels")
+        public boolean showOfflineChannels = true;
     }
 
     public static class Icon {
