@@ -20,7 +20,6 @@ public class Twitchy {
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
     public static boolean isLive = false;
-    public static int previewWidth, previewHeight;
 
     /**
      * all streamers taht are currently live

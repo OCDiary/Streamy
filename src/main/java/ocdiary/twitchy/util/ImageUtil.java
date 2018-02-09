@@ -36,8 +36,8 @@ public class ImageUtil {
             BufferedImage image = ImageIO.read(new URL(url));
             DynamicTexture texture = new DynamicTexture(image);
             texture.loadTexture(mc.getResourceManager());
-            Twitchy.previewWidth = image.getWidth();
-            Twitchy.previewHeight = image.getHeight();
+            //Twitchy.previewWidth = image.getWidth();
+            //Twitchy.previewHeight = image.getHeight();
             imageRL = mc.getTextureManager().getDynamicTextureLocation(Twitchy.MODID + "_" + name, texture);
         }
         catch (Exception e) {

@@ -24,6 +24,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import ocdiary.twitchy.util.EnumIconSize;
+import ocdiary.twitchy.util.EnumPreviewSize;
 import ocdiary.twitchy.util.ImageUtil;
 import ocdiary.twitchy.util.StreamInfo;
 import org.lwjgl.input.Mouse;
@@ -31,6 +32,7 @@ import org.lwjgl.input.Mouse;
 import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = Twitchy.MODID, value = Side.CLIENT)
@@ -58,6 +60,7 @@ public class TCDrawScreen {
     private static void drawStreamInfo(int x, int y, int mouseX, int mouseY, StreamInfo info, boolean showPreview, int maxTextWidth) {
         if(showPreview) {
             String url = info.previewUrl;
+            EnumPreviewSize quality = TCConfig.quality;
             if(!StringUtil.isNullOrEmpty(url)) {
                 GlStateManager.pushMatrix();
                 int zLevel = 300; //300 is minimum as vanilla inventory items are rendered at that level and we want to render above these.
@@ -70,21 +73,30 @@ public class TCDrawScreen {
                 else preview = ImageUtil.previews.get(url);
                 mc.getTextureManager().bindTexture(preview);
 
-                Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, Twitchy.previewWidth, Twitchy.previewHeight, TCConfig.previewWidth, TCConfig.previewHeight, Twitchy.previewWidth, Twitchy.previewHeight);
+                Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, quality.width, quality.height, quality.width, quality.height, quality.width, quality.height);
                 GlStateManager.popMatrix();
             }
-            GuiUtils.drawHoveringText(Lists.newArrayList(), mouseX, mouseY + 15 + Twitchy.previewHeight, mc.displayWidth, mc.displayHeight, Math.min(maxTextWidth, Twitchy.previewWidth) + BORDER, mc.fontRenderer);
+            GuiUtils.drawHoveringText(Lists.newArrayList(), mouseX, mouseY + 15 + quality.height, mc.displayWidth, mc.displayHeight, Math.min(maxTextWidth, quality.width) + BORDER, mc.fontRenderer);
         }
         else {
-            List<String> tooltips = Lists.newArrayList(
-                    I18n.format("twitchy.tooltip.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()),
-                    I18n.format("twitchy.tooltip.title", TextFormatting.BLUE.toString() + info.title + TextFormatting.RESET.toString()),
-                    I18n.format("twitchy.tooltip.game", TextFormatting.DARK_GREEN.toString() + info.game + TextFormatting.RESET.toString()),
-                    I18n.format("twitchy.tooltip.viewers", TextFormatting.DARK_RED.toString() + info.viewers + TextFormatting.RESET.toString()),
-                    "",
-                    TextFormatting.GRAY + I18n.format("twitchy.tooltip.watch", TextFormatting.WHITE.toString() + info.broadcaster + TextFormatting.GRAY.toString()) + TextFormatting.RESET,
-                    I18n.format("twitchy.tooltip.preview", TextFormatting.GOLD.toString() + "SHIFT" + TextFormatting.RESET.toString())
-            );
+            List<String> tooltips = new ArrayList<>();
+            Lists.newArrayList(I18n.format("twitchy.tooltip.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()));
+            if(info.title == null) {
+                tooltips.addAll(Lists.newArrayList(
+                        I18n.format("twitchy.tooltip.offline", TextFormatting.RED + info.broadcaster + TextFormatting.RESET.toString()),
+                        ""));
+            }
+            else {
+                tooltips.addAll(Lists.newArrayList(
+                        I18n.format("twitchy.tooltip.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()),
+                        I18n.format("twitchy.tooltip.title", TextFormatting.BLUE.toString() + info.title + TextFormatting.RESET.toString()),
+                        I18n.format("twitchy.tooltip.game", TextFormatting.DARK_GREEN.toString() + info.game + TextFormatting.RESET.toString()),
+                        I18n.format("twitchy.tooltip.viewers", TextFormatting.DARK_RED.toString() + info.viewers + TextFormatting.RESET.toString()),
+                        "",
+                        I18n.format("twitchy.tooltip.preview", TextFormatting.GOLD.toString() + "SHIFT" + TextFormatting.RESET.toString())
+                ));
+            }
+            tooltips.add(TextFormatting.GRAY + I18n.format("twitchy.tooltip.watch", TextFormatting.WHITE.toString() + info.broadcaster + TextFormatting.GRAY.toString()) + TextFormatting.RESET);
             GuiUtils.drawHoveringText(tooltips, mouseX, mouseY + 20, mc.displayWidth, mc.displayHeight, maxTextWidth, mc.fontRenderer);
         }
     }

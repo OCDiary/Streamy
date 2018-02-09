@@ -7,9 +7,9 @@ import java.util.Locale;
  */
 public enum EnumPreviewSize {
 
-    SMALL,
-    MEDIUM,
-    LARGE,
+    SMALL(80, 45),
+    MEDIUM(320, 180),
+    LARGE(640, 360),
     HD(1280, 720),
     FULL_HD(1920, 1080);
 

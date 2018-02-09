@@ -4,6 +4,7 @@ twitchy.tooltip.broadcaster=Broadcaster: %s
 twitchy.tooltip.title=Stream Title: %s
 twitchy.tooltip.game=Current Game: %s
 twitchy.tooltip.viewers=Current Viewers: %s
+twitchy.tooltip.offline=%s is currently offline!
 twitchy.tooltip.info=%s to get to the config menu!
 twitchy.tooltip.expand=Click to expand the menu!
 twitchy.tooltip.collapse=Click to collapse the menu!

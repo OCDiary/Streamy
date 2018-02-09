@@ -17,14 +17,8 @@ public class TCConfig {
     @Config.Comment("In-game icon configs")
     public static final Icon ICON = new Icon();
 
-    @Config.Comment("the Quality of the previewUrl image")
-    public static EnumPreviewSize Quality = EnumPreviewSize.LARGE;
-
-    @Config.Comment("the width of the previewUrl image")
-    public static int previewWidth = 320;
-
-    @Config.Comment("the height of the previewUrl image")
-    public static int previewHeight = 180;
+    @Config.Comment("The quality of the previewUrl image")
+    public static EnumPreviewSize quality = EnumPreviewSize.LARGE;
 
     public static class ChannelConfig {
 
