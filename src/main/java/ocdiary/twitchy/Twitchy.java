@@ -29,7 +29,6 @@ public class Twitchy {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        TwitchHandler.startStreamChecker();
+        StreamHandler.startStreamChecker();
     }
-
 }

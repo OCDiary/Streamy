@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -23,10 +24,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import ocdiary.twitchy.util.EnumIconSize;
-import ocdiary.twitchy.util.EnumPreviewSize;
-import ocdiary.twitchy.util.ImageUtil;
-import ocdiary.twitchy.util.StreamInfo;
+import ocdiary.twitchy.util.*;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
@@ -38,7 +36,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = Twitchy.MODID, value = Side.CLIENT)
-public class TCDrawScreen {
+public class RenderingHandler
+{
 
     private static final ResourceLocation TWITCH_ICON = new ResourceLocation(Twitchy.MODID, "textures/gui/twitch.png");
     private static final Minecraft mc = Minecraft.getMinecraft();
@@ -54,15 +53,15 @@ public class TCDrawScreen {
         GlStateManager.color(1f, 1f, 1f, 1f);
         GlStateManager.enableBlend();
         mc.getTextureManager().bindTexture(TWITCH_ICON);
-        EnumIconSize iconSize = TCConfig.ICON.iconSize;
-        GuiUtils.drawTexturedModalRect(TCConfig.ICON.posX, TCConfig.ICON.posY, iconSize.outlineU, iconSize.outlineV, iconSize.width, iconSize.height, 0);
-        if(Twitchy.isLive) GuiUtils.drawTexturedModalRect(TCConfig.ICON.posX, TCConfig.ICON.posY, iconSize.overlayU, iconSize.overlayV, iconSize.width, iconSize.height, 0);
+        EnumIconSize iconSize = TwitchyConfig.ICON.iconSize;
+        GuiUtils.drawTexturedModalRect(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, iconSize.outlineU, iconSize.outlineV, iconSize.width, iconSize.height, 0);
+        if(Twitchy.isLive) GuiUtils.drawTexturedModalRect(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, iconSize.overlayU, iconSize.overlayV, iconSize.width, iconSize.height, 0);
     }
 
     private static void drawStreamInfo(int x, int y, int mouseX, int mouseY, StreamInfo info, boolean showPreview, int maxTextWidth) {
-        if(showPreview && info.title != null) {
+        if(showPreview && info.streaming) {
             String url = info.previewUrl;
-            EnumPreviewSize quality = TCConfig.quality;
+            EnumPreviewSize quality = TwitchyConfig.quality;
             if(!StringUtil.isNullOrEmpty(url)) {
                 GlStateManager.pushMatrix();
                 int zLevel = 300; //300 is minimum as vanilla inventory items are rendered at that level and we want to render above these.
@@ -83,7 +82,7 @@ public class TCDrawScreen {
         else {
             List<String> tooltips = new ArrayList<>();
             Lists.newArrayList(I18n.format("twitchy.tooltip.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()));
-            if(info.title == null) {
+            if(!info.streaming) {
                 tooltips.addAll(Lists.newArrayList(
                         I18n.format("twitchy.tooltip.offline", TextFormatting.RED + info.broadcaster + TextFormatting.RESET.toString()),
                         ""));
@@ -103,32 +102,54 @@ public class TCDrawScreen {
         }
     }
 
+    private static String getPlayerStreamerName()
+    {
+        String username = TwitchyConfig.CHANNELS.streamerModeNameOverride;
+        if(StringUtils.isNullOrEmpty(username))
+            username = mc.player.getName();
+        return username;
+    }
+
+    private static boolean streamerFilter(StreamInfo streamer)
+    {
+        //Do not show channel if showOfflineChannels == false and streamer is offline
+        if(!TwitchyConfig.CHANNELS.showOfflineChannels && !streamer.streaming)
+            return false;
+        //If streamerMode == OFF, then show streamer
+        if(TwitchyConfig.CHANNELS.streamerMode == EnumStreamerMode.OFF)
+            return true;
+        //If username is equal to the streamer name, then don't show
+        return !streamer.broadcaster.equalsIgnoreCase(getPlayerStreamerName());
+    }
+
     @SubscribeEvent
     public static void drawScreen(TickEvent.RenderTickEvent event)
     {
-        if(event.phase != TickEvent.Phase.END) return;
+        if(event.phase != TickEvent.Phase.END || TwitchyConfig.CHANNELS.streamerMode == EnumStreamerMode.FULL) return;
         if(ImageUtil.shouldReloadPreviews) ImageUtil.clearPreviewCache();
         Point mousePos = getCurrentMousePosition();
         int mouseX = mousePos.x;
         int mouseY = mousePos.y;
-        EnumIconSize icon = TCConfig.ICON.iconSize;
+        EnumIconSize icon = TwitchyConfig.ICON.iconSize;
         int maxTextWidth = new ScaledResolution(mc).getScaledWidth() - mouseX - 16;
-        if (Twitchy.isLive || TCConfig.ICON.iconState == TCConfig.Icon.State.ALWAYS) {
+        if (Twitchy.isLive || TwitchyConfig.ICON.iconState == EnumIconVisibility.ALWAYS) {
             drawIcon(); //draw the twitch icon
 
             if (expandList) {
-                int x = TCConfig.ICON.posX;
-                int y = TCConfig.ICON.posY + icon.height + BORDER * 3;
+                int x = TwitchyConfig.ICON.posX;
+                int y = TwitchyConfig.ICON.posY + icon.height + BORDER * 3;
                 synchronized (Twitchy.LIVE_STREAMERS) {
                     int localX = x + BORDER + 2;
-                    Map<String, StreamInfo> streamers = TCConfig.CHANNELS.showOfflineChannels ?
-                            Twitchy.LIVE_STREAMERS :
-                            Twitchy.LIVE_STREAMERS.entrySet().stream()
-                                    .filter(entry -> entry.getValue().title != null)
+                    Map<String, StreamInfo> streamers = Twitchy.LIVE_STREAMERS.entrySet().stream()
+                                    .filter(entry -> streamerFilter(entry.getValue()))
                                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
                     drawTooltipBoxBackground(localX + BORDER / 2, y + BORDER / 2, PROFILE_PIC_NEW_SIZE - BORDER, PROFILE_PIC_NEW_SIZE * streamers.size() + (streamers.size() - 1) * 3 - BORDER, 0);
+
                     int i = 0;
-                    for (String broadcaster : streamers.keySet()) {
+                    List<String> broadcasters = Lists.newArrayList(streamers.keySet());
+                    if(TwitchyConfig.CHANNELS.sortChannels)
+                        broadcasters.sort(String::compareToIgnoreCase);
+                    for (String broadcaster : broadcasters) {
                         int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
                         StreamInfo info = streamers.get(broadcaster);
                         ResourceLocation profilePic;
@@ -142,7 +163,7 @@ public class TCDrawScreen {
 
                     i = 0;
                     //important: need to draw the tooltip AFTER all icons have been drawn
-                    for (String broadcaster : streamers.keySet()) {
+                    for (String broadcaster : broadcasters) {
                         int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
                         if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mouseX, mouseY)) {
                             StreamInfo info = streamers.get(broadcaster);
@@ -152,7 +173,7 @@ public class TCDrawScreen {
                 }
             }
         }
-        if (isMouseOver(TCConfig.ICON.posX, TCConfig.ICON.posY, icon.width, icon.height, mouseX, mouseY)) {
+        if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, icon.width, icon.height, mouseX, mouseY)) {
             String key = expandList ? "collapse" : "expand";
             List<String> tooltips = Lists.newArrayList(
                     new TextComponentTranslation("twitchy.tooltip." + key).setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText(),
@@ -200,17 +221,18 @@ public class TCDrawScreen {
     @SubscribeEvent
     public static void mouseClick(GuiScreenEvent.MouseInputEvent.Pre event)
     {
+        if(TwitchyConfig.CHANNELS.streamerMode == EnumStreamerMode.FULL) return;
         if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
             Point mousePos = getCurrentMousePosition();
-            if (isMouseOver(TCConfig.ICON.posX, TCConfig.ICON.posY, TCConfig.ICON.iconSize.width, TCConfig.ICON.iconSize.height, mousePos.x, mousePos.y)) {
+            if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, TwitchyConfig.ICON.iconSize.width, TwitchyConfig.ICON.iconSize.height, mousePos.x, mousePos.y)) {
                 if(GuiScreen.isAltKeyDown()) mc.displayGuiScreen(FMLClientHandler.instance().getGuiFactoryFor(FMLCommonHandler.instance().findContainerFor(Twitchy.MODID)).createConfigGui(mc.currentScreen));
                 else expandList = !expandList;
             }
             if(expandList && Twitchy.isLive) {
                 int i = 0;
-                int y = TCConfig.ICON.posY + TCConfig.ICON.iconSize.height + BORDER * 3;
+                int y = TwitchyConfig.ICON.posY + TwitchyConfig.ICON.iconSize.height + BORDER * 3;
                 for(String broadcaster : Twitchy.LIVE_STREAMERS.keySet()) {
-                    int localX = TCConfig.ICON.posX + BORDER + 2;
+                    int localX = TwitchyConfig.ICON.posX + BORDER + 2;
                     int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
                     if(isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos.x, mousePos.y)) {
                         openTwitchStream(broadcaster);

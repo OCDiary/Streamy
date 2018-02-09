@@ -4,7 +4,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class TwitchHandler {
+public class StreamHandler
+{
 
     private static ScheduledExecutorService executorService = null;
     private static final Object threadLock = new Object();
@@ -14,7 +15,7 @@ public class TwitchHandler {
             stopStreamChecker();
             Twitchy.LOGGER.info("Starting Twitch stream status checker...");
             executorService = Executors.newSingleThreadScheduledExecutor();
-            executorService.scheduleAtFixedRate(new StreamCheck(), 0, TCConfig.CHANNELS.interval, TimeUnit.SECONDS);
+            executorService.scheduleAtFixedRate(new StreamChecker(), 0, TwitchyConfig.CHANNELS.interval, TimeUnit.SECONDS);
         }
     }
 

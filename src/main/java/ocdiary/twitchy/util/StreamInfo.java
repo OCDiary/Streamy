@@ -7,6 +7,7 @@ public class StreamInfo {
 
     public final String broadcaster, game, title, previewUrl, profilePicUrl;
     public final int viewers;
+    public final boolean streaming;
 
     public StreamInfo(String broadcaster, String profilePic) {
         this(broadcaster, null, null, null, profilePic, 0);
@@ -19,5 +20,6 @@ public class StreamInfo {
         this.previewUrl = preview;
         this.profilePicUrl = profilePic;
         this.viewers = viewers;
+        this.streaming = title != null;
     }
 }

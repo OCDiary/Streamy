@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.net.URL;
 import java.util.Scanner;
 
-public class StreamCheck implements Runnable {
+public class StreamChecker implements Runnable {
 
     private static final String CLIENT_ID = "n3w3pptkwczocn9gw2r8pbjfe76xzr";
 
@@ -21,7 +21,7 @@ public class StreamCheck implements Runnable {
         synchronized (Twitchy.LIVE_STREAMERS) {
             ImageUtil.invalidatePreviewCache();
             Twitchy.LIVE_STREAMERS.clear();
-            for(String broadcaster : TCConfig.CHANNELS.channels) {
+            for(String broadcaster : TwitchyConfig.CHANNELS.channels) {
                 try {
                     //Get stream info
                     JsonObject streamData = getJsonFromAPI("streams", broadcaster);
@@ -36,7 +36,7 @@ public class StreamCheck implements Runnable {
                         String title = getJsonString(channelInfo.get("status"));
                         String broadcasterName = getJsonString(channelInfo.get("display_name"));
                         String profilePic = getJsonString(channelInfo.get("logo"));
-                        String preview = getJsonString(stream.get("preview").getAsJsonObject().get(TCConfig.quality.getKey())).replace("{width}", String.valueOf(TCConfig.quality.width)).replace("{height}", String.valueOf(TCConfig.quality.height));
+                        String preview = getJsonString(stream.get("preview").getAsJsonObject().get(TwitchyConfig.quality.getKey())).replace("{width}", String.valueOf(TwitchyConfig.quality.width)).replace("{height}", String.valueOf(TwitchyConfig.quality.height));
                         Twitchy.LIVE_STREAMERS.put(broadcaster, new StreamInfo(broadcasterName, game, title, preview, profilePic, viewerCount));
                     }
                     else
