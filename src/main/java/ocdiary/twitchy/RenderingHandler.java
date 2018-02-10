@@ -10,8 +10,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Session;
-import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -29,12 +27,8 @@ import ocdiary.twitchy.util.*;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = Twitchy.MODID, value = Side.CLIENT)
@@ -104,30 +98,10 @@ public class RenderingHandler
         }
     }
 
-    private static String getPlayerStreamerName()
-    {
-        String username = TwitchyConfig.CHANNELS.streamerModeNameOverride;
-        if(StringUtils.isNullOrEmpty(username))
-            username = mc.getSession().getUsername();
-        return username;
-    }
-
-    private static boolean streamerFilter(StreamInfo streamer)
-    {
-        //Do not show channel if showOfflineChannels == false and streamer is offline
-        if(!TwitchyConfig.CHANNELS.showOfflineChannels && !streamer.streaming)
-            return false;
-        //If streamerMode == OFF, then show streamer
-        if(TwitchyConfig.CHANNELS.streamerMode == EnumStreamerMode.OFF)
-            return true;
-        //If username is equal to the streamer name, then don't show
-        return !streamer.broadcaster.equalsIgnoreCase(getPlayerStreamerName());
-    }
-
     @SubscribeEvent
     public static void drawScreen(TickEvent.RenderTickEvent event)
     {
-        if(!TwitchyConfig.enabled || event.phase != TickEvent.Phase.END || TwitchyConfig.CHANNELS.streamerMode == EnumStreamerMode.FULL) return;
+        if(!ImageUtil.shouldShowIcon() || event.phase != TickEvent.Phase.END) return;
         if(ImageUtil.shouldReloadPreviews) ImageUtil.clearPreviewCache();
         Point mousePos = getCurrentMousePosition();
         int mouseX = mousePos.x;
@@ -143,7 +117,7 @@ public class RenderingHandler
                 synchronized (Twitchy.LIVE_STREAMERS) {
                     int localX = x + BORDER + 2;
                     Map<String, StreamInfo> streamers = Twitchy.LIVE_STREAMERS.entrySet().stream()
-                                    .filter(entry -> streamerFilter(entry.getValue()))
+                                    .filter(entry -> StreamerUtil.streamerFilter(entry.getValue()))
                                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
                     List<String> broadcasters = Lists.newArrayList(streamers.keySet());
                     if(TwitchyConfig.CHANNELS.sortChannels) broadcasters.sort(String::compareToIgnoreCase);
@@ -205,7 +179,6 @@ public class RenderingHandler
         GuiUtils.drawGradientRect(zLevel, x - 3, y + height + 2, x + width + 3, y + height + 3, borderColorEnd, borderColorEnd);
 
         MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostBackground(ItemStack.EMPTY, colorEvent.getLines(), x, y, colorEvent.getFontRenderer(), width, height));
-
     }
 
     private static boolean isMouseOver(int x, int y, int width, int height, int mouseX, int mouseY) {
@@ -223,7 +196,7 @@ public class RenderingHandler
     @SubscribeEvent
     public static void mouseClick(GuiScreenEvent.MouseInputEvent.Pre event)
     {
-        if(!TwitchyConfig.enabled || TwitchyConfig.CHANNELS.streamerMode == EnumStreamerMode.FULL) return;
+        if(!ImageUtil.shouldShowIcon()) return;
         if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
             Point mousePos = getCurrentMousePosition();
             if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, TwitchyConfig.ICON.iconSize.width, TwitchyConfig.ICON.iconSize.height, mousePos.x, mousePos.y)) {
@@ -234,7 +207,7 @@ public class RenderingHandler
                 int i = 0;
                 int y = TwitchyConfig.ICON.posY + TwitchyConfig.ICON.iconSize.height + BORDER * 3;
                 Map<String, StreamInfo> streamInfo = Twitchy.LIVE_STREAMERS.entrySet().stream()
-                        .filter(entry -> streamerFilter(entry.getValue()))
+                        .filter(entry -> StreamerUtil.streamerFilter(entry.getValue()))
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
                 List<String> streamers = new ArrayList<>(streamInfo.keySet());
@@ -243,26 +216,10 @@ public class RenderingHandler
                     int localX = TwitchyConfig.ICON.posX + BORDER + 2;
                     int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
                     if(isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos.x, mousePos.y)) {
-                        openTwitchStream(broadcaster);
+                        StreamerUtil.openTwitchStream(broadcaster.toLowerCase(Locale.ROOT));
                     }
                 }
             }
-        }
-    }
-
-    private static void openTwitchStream(String channel) {
-        String url = "https://twitch.tv/" + channel;
-        try {
-            if (Desktop.isDesktopSupported()) {
-                Desktop.getDesktop().browse(new URI(url));
-            }
-            else {
-                Twitchy.LOGGER.error("Can't open browser - Desktop not supported!");
-            }
-        } catch (URISyntaxException e) {
-            Twitchy.LOGGER.error("URL \"" + url + "\" is invalid. Report this to the mod author!");
-        } catch (Exception e) {
-            Twitchy.LOGGER.error("Can't open browser", e);
         }
     }
 

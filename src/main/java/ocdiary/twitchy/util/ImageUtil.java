@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.ResourceLocation;
 import ocdiary.twitchy.Twitchy;
+import ocdiary.twitchy.TwitchyConfig;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -73,4 +74,9 @@ public class ImageUtil {
     public static void invalidatePreviewCache() {
         shouldReloadPreviews = true;
     }
+
+    public static boolean shouldShowIcon() {
+        return TwitchyConfig.enabled && !Twitchy.isSelfStreaming || TwitchyConfig.streamerMode != EnumStreamerMode.FULL;
+    }
+
 }

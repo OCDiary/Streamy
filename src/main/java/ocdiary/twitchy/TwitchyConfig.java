@@ -30,6 +30,18 @@ public class TwitchyConfig
     @Config.Comment("the height of the preview image")
     public static int previewHeight = 180;
 
+    @Config.Comment({
+            "This is a config aimed at streamers. It will use your Minecraft username (unless overrided by the " +
+                    "streamerModeNameOverride config) as your streamer name, and do the following depending on the config:",
+            "OFF     -> Your own channel will always be displayed",
+            "PARTIAL -> Your own channel will not be displayed if you're streaming",
+            "FULL    -> Nothing will be displayed by this mod if you're streaming"
+    })
+    public static EnumStreamerMode streamerMode = EnumStreamerMode.OFF;
+
+    @Config.Comment("An override streamer name to use instead of your Minecraft username for the streamerMode config")
+    public static String streamerModeNameOverride = "";
+
     public static class ChannelConfig {
 
         @Config.Comment("The Twitch channels to monitor and show the status of")
@@ -45,17 +57,6 @@ public class TwitchyConfig
         @Config.RangeInt(min = 5)
         public int interval = 30;
 
-        @Config.Comment({
-                "This is a config aimed at streamers. It will use your Minecraft username (unless overrided by the " +
-                        "streamerModeNameOverride config) as your streamer name, and do the following depending on the config:",
-                "OFF     -> Your own channel will always be displayed",
-                "PARTIAL -> Your own channel will not be displayed if you're streaming",
-                "FULL    -> Nothing will be displayed by this mod if you're streaming"
-        })
-        public EnumStreamerMode streamerMode = EnumStreamerMode.OFF;
-
-        @Config.Comment("An override streamer name to use instead of your Minecraft username for the streamerMode config")
-        public String streamerModeNameOverride = "";
     }
 
     public static class Icon {

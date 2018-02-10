@@ -19,7 +19,7 @@ public class Twitchy {
 
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
-    public static boolean isLive = false;
+    public static boolean isLive = false, isSelfStreaming;
 
     /**
      * All streamers that are currently live
@@ -31,4 +31,5 @@ public class Twitchy {
     public void init(FMLInitializationEvent event) {
         if(TwitchyConfig.enabled) StreamHandler.startStreamChecker();
     }
+
 }
