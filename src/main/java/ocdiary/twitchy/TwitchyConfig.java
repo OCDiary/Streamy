@@ -23,6 +23,12 @@ public class TwitchyConfig
     @Config.Comment("The quality of the previewUrl image")
     public static EnumPreviewSize quality = EnumPreviewSize.LARGE;
 
+    @Config.Comment("the width of the preview image")
+    public static int previewWidth = 320;
+
+    @Config.Comment("the height of the preview image")
+    public static int previewHeight = 180;
+
     public static class ChannelConfig {
 
         @Config.Comment("The Twitch channels to monitor and show the status of")

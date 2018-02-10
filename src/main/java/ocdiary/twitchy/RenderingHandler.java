@@ -74,7 +74,7 @@ public class RenderingHandler
                     preview = ImageUtil.previews.get(url);
                 mc.getTextureManager().bindTexture(preview);
 
-                Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, quality.width, quality.height, quality.width, quality.height, quality.width, quality.height);
+                Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, quality.width, quality.height, TwitchyConfig.previewWidth, TwitchyConfig.previewHeight, quality.width, quality.height);
                 GlStateManager.popMatrix();
             }
             GuiUtils.drawHoveringText(Lists.newArrayList(), mouseX, mouseY + 15 + quality.height, mc.displayWidth, mc.displayHeight, Math.min(maxTextWidth, quality.width) + BORDER, mc.fontRenderer);
