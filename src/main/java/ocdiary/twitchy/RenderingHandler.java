@@ -33,6 +33,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = Twitchy.MODID, value = Side.CLIENT)
@@ -143,14 +144,14 @@ public class RenderingHandler
                     Map<String, StreamInfo> streamers = Twitchy.LIVE_STREAMERS.entrySet().stream()
                                     .filter(entry -> streamerFilter(entry.getValue()))
                                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    List<String> broadcasters = Lists.newArrayList(streamers.keySet());
+                    if(TwitchyConfig.CHANNELS.sortChannels) broadcasters.sort(String::compareToIgnoreCase);
+
                     drawTooltipBoxBackground(localX + BORDER / 2, y + BORDER / 2, PROFILE_PIC_NEW_SIZE - BORDER, PROFILE_PIC_NEW_SIZE * streamers.size() + (streamers.size() - 1) * 3 - BORDER, 0);
 
-                    int i = 0;
-                    List<String> broadcasters = Lists.newArrayList(streamers.keySet());
-                    if(TwitchyConfig.CHANNELS.sortChannels)
-                        broadcasters.sort(String::compareToIgnoreCase);
-                    for (String broadcaster : broadcasters) {
-                        int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
+                    for (int i = 0; i < broadcasters.size(); i++) {
+                        String broadcaster = broadcasters.get(i);
+                        int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i;
                         StreamInfo info = streamers.get(broadcaster);
                         ResourceLocation profilePic;
                         if(!ImageUtil.profiles.containsKey(info.profilePicUrl))
@@ -161,10 +162,10 @@ public class RenderingHandler
                         Gui.drawScaledCustomSizeModalRect(localX, localY, 0, 0, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE);
                     }
 
-                    i = 0;
                     //important: need to draw the tooltip AFTER all icons have been drawn
-                    for (String broadcaster : broadcasters) {
-                        int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
+                    for (int i = 0; i < broadcasters.size(); i++) {
+                        String broadcaster = broadcasters.get(i);
+                        int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i;
                         if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mouseX, mouseY)) {
                             StreamInfo info = streamers.get(broadcaster);
                             drawStreamInfo(localX, localY, mouseX, mouseY, info, GuiScreen.isShiftKeyDown(), maxTextWidth);
@@ -231,7 +232,13 @@ public class RenderingHandler
             if(expandList && Twitchy.isLive) {
                 int i = 0;
                 int y = TwitchyConfig.ICON.posY + TwitchyConfig.ICON.iconSize.height + BORDER * 3;
-                for(String broadcaster : Twitchy.LIVE_STREAMERS.keySet()) {
+                Map<String, StreamInfo> streamInfo = Twitchy.LIVE_STREAMERS.entrySet().stream()
+                        .filter(entry -> streamerFilter(entry.getValue()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+                List<String> streamers = new ArrayList<>(streamInfo.keySet());
+                if(TwitchyConfig.CHANNELS.sortChannels) streamers.sort(String::compareToIgnoreCase);
+                for(String broadcaster : streamers) {
                     int localX = TwitchyConfig.ICON.posX + BORDER + 2;
                     int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
                     if(isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos.x, mousePos.y)) {
