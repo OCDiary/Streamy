@@ -122,28 +122,29 @@ public class RenderingHandler
                     List<String> broadcasters = Lists.newArrayList(streamers.keySet());
                     if(TwitchyConfig.CHANNELS.sortChannels) broadcasters.sort(String::compareToIgnoreCase);
 
-                    drawTooltipBoxBackground(localX + BORDER / 2, y + BORDER / 2, PROFILE_PIC_NEW_SIZE - BORDER, PROFILE_PIC_NEW_SIZE * streamers.size() + (streamers.size() - 1) * 3 - BORDER, 0);
-
-                    for (int i = 0; i < broadcasters.size(); i++) {
-                        String broadcaster = broadcasters.get(i);
-                        int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i;
-                        StreamInfo info = streamers.get(broadcaster);
-                        ResourceLocation profilePic;
-                        if(!ImageUtil.profiles.containsKey(info.profilePicUrl))
-                            profilePic = ImageUtil.loadImage(info.profilePicUrl, broadcaster, ImageUtil.ImageCacheType.PROFILE);
-                        else
-                            profilePic = ImageUtil.profiles.get(info.profilePicUrl);
-                        mc.renderEngine.bindTexture(profilePic);
-                        Gui.drawScaledCustomSizeModalRect(localX, localY, 0, 0, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE);
-                    }
-
-                    //important: need to draw the tooltip AFTER all icons have been drawn
-                    for (int i = 0; i < broadcasters.size(); i++) {
-                        String broadcaster = broadcasters.get(i);
-                        int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i;
-                        if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mouseX, mouseY)) {
+                    if(!broadcasters.isEmpty()) {
+                        drawTooltipBoxBackground(localX + BORDER / 2, y + BORDER / 2, PROFILE_PIC_NEW_SIZE - BORDER, PROFILE_PIC_NEW_SIZE * streamers.size() + (streamers.size() - 1) * 3 - BORDER, 0);
+                        for (int i = 0; i < broadcasters.size(); i++) {
+                            String broadcaster = broadcasters.get(i);
+                            int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i;
                             StreamInfo info = streamers.get(broadcaster);
-                            drawStreamInfo(localX, localY, mouseX, mouseY, info, GuiScreen.isShiftKeyDown(), maxTextWidth);
+                            ResourceLocation profilePic;
+                            if(!ImageUtil.profiles.containsKey(info.profilePicUrl))
+                                profilePic = ImageUtil.loadImage(info.profilePicUrl, broadcaster, ImageUtil.ImageCacheType.PROFILE);
+                            else
+                                profilePic = ImageUtil.profiles.get(info.profilePicUrl);
+                            mc.renderEngine.bindTexture(profilePic);
+                            Gui.drawScaledCustomSizeModalRect(localX, localY, 0, 0, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE);
+                        }
+
+                        //important: need to draw the tooltip AFTER all icons have been drawn
+                        for (int i = 0; i < broadcasters.size(); i++) {
+                            String broadcaster = broadcasters.get(i);
+                            int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i;
+                            if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mouseX, mouseY)) {
+                                StreamInfo info = streamers.get(broadcaster);
+                                drawStreamInfo(localX, localY, mouseX, mouseY, info, GuiScreen.isShiftKeyDown(), maxTextWidth);
+                            }
                         }
                     }
                 }
