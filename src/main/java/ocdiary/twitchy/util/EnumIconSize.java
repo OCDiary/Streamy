@@ -9,8 +9,8 @@ import java.util.Locale;
  */
 public enum EnumIconSize implements IStringSerializable {
 
-    SMALL(-1, 87, 26, 87, 10, 10),
-    MEDIUM(0, 38, 25, 38, 16, 17),
+    SMALL(0, 88, 27, 88, 10, 10),
+    MEDIUM(0, 39, 25, 39, 16, 17),
     LARGE(0, 0, 24, 0, 20, 21);
 
     public final int outlineU, outlineV, overlayU, overlayV, width, height;
