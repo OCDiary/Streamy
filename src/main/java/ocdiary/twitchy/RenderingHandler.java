@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Session;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -107,7 +108,7 @@ public class RenderingHandler
     {
         String username = TwitchyConfig.CHANNELS.streamerModeNameOverride;
         if(StringUtils.isNullOrEmpty(username))
-            username = mc.player.getName();
+            username = mc.getSession().getUsername();
         return username;
     }
 
