@@ -125,7 +125,7 @@ public class RenderingHandler
     @SubscribeEvent
     public static void drawScreen(TickEvent.RenderTickEvent event)
     {
-        if(event.phase != TickEvent.Phase.END || TwitchyConfig.CHANNELS.streamerMode == EnumStreamerMode.FULL) return;
+        if(!TwitchyConfig.enabled || event.phase != TickEvent.Phase.END || TwitchyConfig.CHANNELS.streamerMode == EnumStreamerMode.FULL) return;
         if(ImageUtil.shouldReloadPreviews) ImageUtil.clearPreviewCache();
         Point mousePos = getCurrentMousePosition();
         int mouseX = mousePos.x;
@@ -221,7 +221,7 @@ public class RenderingHandler
     @SubscribeEvent
     public static void mouseClick(GuiScreenEvent.MouseInputEvent.Pre event)
     {
-        if(TwitchyConfig.CHANNELS.streamerMode == EnumStreamerMode.FULL) return;
+        if(!TwitchyConfig.enabled || TwitchyConfig.CHANNELS.streamerMode == EnumStreamerMode.FULL) return;
         if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
             Point mousePos = getCurrentMousePosition();
             if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, TwitchyConfig.ICON.iconSize.width, TwitchyConfig.ICON.iconSize.height, mousePos.x, mousePos.y)) {

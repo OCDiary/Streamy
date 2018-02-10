@@ -5,15 +5,16 @@ import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import ocdiary.twitchy.util.EnumIconSize;
-import ocdiary.twitchy.util.EnumIconVisibility;
-import ocdiary.twitchy.util.EnumPreviewSize;
-import ocdiary.twitchy.util.EnumStreamerMode;
+import ocdiary.twitchy.util.*;
 
 @Config(modid = Twitchy.MODID)
 @Config.LangKey(Twitchy.MODID + ".config.title")
 public class TwitchyConfig
 {
+
+    @Config.Comment("this acts as a global switch to disable the entire mod")
+    public static boolean enabled = true;
+
     @Config.Comment("Twitch channel configs")
     public static final ChannelConfig CHANNELS = new ChannelConfig();
 
@@ -81,7 +82,14 @@ public class TwitchyConfig
         public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
             if(event.getModID().equalsIgnoreCase(Twitchy.MODID)) {
                 ConfigManager.sync(Twitchy.MODID, Config.Type.INSTANCE);
-                StreamHandler.startStreamChecker();
+                if(enabled) {
+                    StreamHandler.startStreamChecker();
+                }
+                else {
+                    StreamHandler.stopStreamChecker();
+                    ImageUtil.invalidatePreviewCache();
+                    Twitchy.isLive = false;
+                }
             }
         }
     }
