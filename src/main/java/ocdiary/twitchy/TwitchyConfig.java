@@ -56,6 +56,14 @@ public class TwitchyConfig
         @Config.RangeInt(min = 5)
         public int interval = 30;
 
+        @Config.Comment("Disable the number of viewers being displayed for a live stream")
+        public boolean disableViewers = false;
+
+        @Config.Comment("Disable the game being played being displayed for a live stream")
+        public boolean disableGame = false;
+
+        @Config.Comment("Disable the stream title being displayed for a live stream")
+        public boolean disableTitle = false;
     }
 
     public static class Icon {

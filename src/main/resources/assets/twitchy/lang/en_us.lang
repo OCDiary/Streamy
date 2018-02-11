@@ -1,6 +1,6 @@
 #PARSE_ESCAPES
 
-twitchy.tooltip.broadcaster=Broadcaster: %s
+twitchy.tooltip.broadcaster=%s is currently live!
 twitchy.tooltip.title=Stream Title: %s
 twitchy.tooltip.game=Current Game: %s
 twitchy.tooltip.viewers=Current Viewers: %s
