@@ -1,7 +1,6 @@
 package ocdiary.twitchy.util;
 
-public enum EnumIconVisibility
-{
+public enum EnumIconVisibility {
     ALWAYS,
     LIVE_ONLY
 }

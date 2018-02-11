@@ -6,7 +6,7 @@ import net.minecraft.util.StringUtils;
 import ocdiary.twitchy.Twitchy;
 import ocdiary.twitchy.TwitchyConfig;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -21,16 +21,16 @@ public class StreamerUtil {
 
     public static String getPlayerStreamerName() {
         String username = TwitchyConfig.GENERAL.streamerModeNameOverride;
-        if(StringUtils.isNullOrEmpty(username)) username = Minecraft.getMinecraft().getSession().getUsername();
+        if (StringUtils.isNullOrEmpty(username)) username = Minecraft.getMinecraft().getSession().getUsername();
         return username;
     }
 
     private static boolean streamerFilter(StreamInfo streamer) {
         //Do not show channel if showOfflineChannels == false and streamer is offline
-        if(!TwitchyConfig.CHANNELS.showOfflineChannels && !streamer.streaming)
+        if (!TwitchyConfig.CHANNELS.showOfflineChannels && !streamer.streaming)
             return false;
         //If streamerMode == OFF, then show streamer
-        if(TwitchyConfig.GENERAL.streamerMode == EnumStreamerMode.OFF)
+        if (TwitchyConfig.GENERAL.streamerMode == EnumStreamerMode.OFF)
             return true;
         //If username is equal to the streamer name, then don't show
         return !streamer.broadcaster.equalsIgnoreCase(getPlayerStreamerName());
@@ -43,7 +43,7 @@ public class StreamerUtil {
     }
 
     public static List<String> sortChannelNames(Set<String> names) {
-        if(TwitchyConfig.CHANNELS.sortChannels) {
+        if (TwitchyConfig.CHANNELS.sortChannels) {
             List<String> sortedList = Lists.newArrayList(names);
             sortedList.sort(String::compareToIgnoreCase);
             return sortedList;
@@ -53,7 +53,7 @@ public class StreamerUtil {
             List<String> configNames = Lists.newArrayList(TwitchyConfig.CHANNELS.channels);
             configNames.forEach(name -> {
                 name = name.toLowerCase();
-                if(names.contains(name))
+                if (names.contains(name))
                     sortedList.add(name);
             });
             return sortedList;
@@ -65,8 +65,7 @@ public class StreamerUtil {
         try {
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().browse(new URI(url));
-            }
-            else {
+            } else {
                 Twitchy.LOGGER.error("Can't open browser - Desktop not supported!");
             }
         } catch (URISyntaxException e) {

@@ -24,31 +24,27 @@ public class ImageUtil {
     public static final Map<String, ResourceLocation> profiles = new ConcurrentHashMap<>();
     public static volatile boolean shouldReloadPreviews;
 
-    public enum ImageCacheType
-    {
+    public enum ImageCacheType {
         PREVIEW,
         PROFILE;
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return super.toString().toLowerCase();
         }
     }
 
-    public static void clearPreviewCache()
-    {
+    public static void clearPreviewCache() {
         previews.values().forEach(preview -> {
-            if(!preview.equals(NO_PREVIEW)) mc.getTextureManager().deleteTexture(preview);
+            if (!preview.equals(NO_PREVIEW)) mc.getTextureManager().deleteTexture(preview);
         });
         previews.clear();
         shouldReloadPreviews = false;
     }
 
-    public static void clearProfileCache()
-    {
+    public static void clearProfileCache() {
         profiles.values().forEach(profile -> {
-            if(!profile.equals(NO_PROFILE)) mc.getTextureManager().deleteTexture(profile);
+            if (!profile.equals(NO_PROFILE)) mc.getTextureManager().deleteTexture(profile);
         });
         profiles.clear();
     }
@@ -60,13 +56,12 @@ public class ImageUtil {
             DynamicTexture texture = new DynamicTexture(image);
             texture.loadTexture(mc.getResourceManager());
             imageRL = mc.getTextureManager().getDynamicTextureLocation(Twitchy.MODID + "_" + name + "_" + type, texture);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             imageRL = NO_PREVIEW;
         }
-        if(url != null) {
-            switch(type) {
+        if (url != null) {
+            switch (type) {
                 case PREVIEW:
                     previews.put(url, imageRL);
                     break;

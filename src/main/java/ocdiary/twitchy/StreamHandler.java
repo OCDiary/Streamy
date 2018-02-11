@@ -4,8 +4,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class StreamHandler
-{
+public class StreamHandler {
 
     private static ScheduledExecutorService executorService = null;
     private static final Object threadLock = new Object();
@@ -21,7 +20,7 @@ public class StreamHandler
 
     public static void stopStreamChecker() {
         synchronized (threadLock) {
-            if(isCheckerRunning()) {
+            if (isCheckerRunning()) {
                 Twitchy.LOGGER.info("Stopping Twitch stream status checker...");
                 executorService.shutdown();
             }

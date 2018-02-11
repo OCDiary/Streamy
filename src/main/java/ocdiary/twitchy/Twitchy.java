@@ -18,18 +18,16 @@ public class Twitchy {
     public static final String AVERSION = "[1.12, 1.12.2]";
 
     public static final Logger LOGGER = LogManager.getLogger(MODID);
-
-    public static boolean isLive, isSelfStreaming, isIconDismissed;
-
     /**
      * All streamers that are currently live
      * <b>keys must be all lowercase!</b>
      */
     public static final Map<String, StreamInfo> LIVE_STREAMERS = Maps.newConcurrentMap();
+    public static boolean isLive, isSelfStreaming, isIconDismissed;
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        if(TwitchyConfig.GENERAL.enabled) StreamHandler.startStreamChecker();
+        if (TwitchyConfig.GENERAL.enabled) StreamHandler.startStreamChecker();
     }
 
 }

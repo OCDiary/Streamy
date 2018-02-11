@@ -9,8 +9,7 @@ import ocdiary.twitchy.util.*;
 
 @Config(modid = Twitchy.MODID)
 @Config.LangKey(Twitchy.MODID + ".config.title")
-public class TwitchyConfig
-{
+public class TwitchyConfig {
     @Config.Comment("General mod configs")
     public static final General GENERAL = new General();
 
@@ -100,12 +99,11 @@ public class TwitchyConfig
 
         @SubscribeEvent
         public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
-            if(event.getModID().equalsIgnoreCase(Twitchy.MODID)) {
+            if (event.getModID().equalsIgnoreCase(Twitchy.MODID)) {
                 ConfigManager.sync(Twitchy.MODID, Config.Type.INSTANCE);
-                if(GENERAL.enabled) {
+                if (GENERAL.enabled) {
                     StreamHandler.startStreamChecker();
-                }
-                else {
+                } else {
                     StreamHandler.stopStreamChecker();
                     ImageUtil.invalidatePreviewCache();
                     ImageUtil.clearProfileCache();

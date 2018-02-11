@@ -30,7 +30,7 @@ public class StreamChecker implements Runnable {
 
             List<String> streamers = Arrays.asList(TwitchyConfig.CHANNELS.channels);
 
-            if(TwitchyConfig.GENERAL.streamerMode == EnumStreamerMode.FULL) {
+            if (TwitchyConfig.GENERAL.streamerMode == EnumStreamerMode.FULL) {
                 boolean hasCheckedBroadcaster = false;
                 for (String broadcaster : streamers) {
                     if (broadcaster.equalsIgnoreCase(StreamerUtil.getPlayerStreamerName())) {
@@ -87,22 +87,21 @@ public class StreamChecker implements Runnable {
         //Show the icon if it's dismissed and a stream just went live
         if (Twitchy.isIconDismissed && streamInfo.streaming) {
             StreamInfo currentInfo = Twitchy.LIVE_STREAMERS.get(name);
-            if(currentInfo != null && !currentInfo.streaming) {
+            if (currentInfo != null && !currentInfo.streaming) {
                 Twitchy.isIconDismissed = false;
             }
         }
         Twitchy.LIVE_STREAMERS.put(name, streamInfo);
     }
 
-    private static JsonObject getJsonFromAPI(String api, String broadcaster) throws Exception
-    {
+    private static JsonObject getJsonFromAPI(String api, String broadcaster) throws Exception {
         String url = String.format("https://api.twitch.tv/kraken/%s/%s?client_id=%s", api, broadcaster, CLIENT_ID);
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestMethod("GET");
         int code = connection.getResponseCode();
 
         //handle http errors to not clutter the log
-        if(code != HttpStatus.SC_OK) {
+        if (code != HttpStatus.SC_OK) {
             Twitchy.LOGGER.error("Unable to get streamer info on API {} for {}, Status Code {}: \"{}\"", api, broadcaster, String.valueOf(code), connection.getResponseMessage());
             connection.disconnect();
             return null;
@@ -110,19 +109,17 @@ public class StreamChecker implements Runnable {
 
         Scanner sc = new Scanner(connection.getInputStream());
         StringBuilder sb = new StringBuilder();
-        while(sc.hasNextLine()) sb.append(sc.nextLine());
+        while (sc.hasNextLine()) sb.append(sc.nextLine());
         String json = sb.toString();
         connection.disconnect();
         return new JsonParser().parse(json).getAsJsonObject();
     }
 
-    private static String getJsonString(JsonElement element)
-    {
+    private static String getJsonString(JsonElement element) {
         return element == null ? StringUtils.EMPTY : element.getAsString();
     }
 
-    private static int getJsonInt(JsonElement element)
-    {
+    private static int getJsonInt(JsonElement element) {
         return element == null ? -1 : element.getAsInt();
     }
 }

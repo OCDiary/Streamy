@@ -27,12 +27,13 @@ import ocdiary.twitchy.util.*;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = Twitchy.MODID, value = Side.CLIENT)
-public class RenderingHandler
-{
+public class RenderingHandler {
 
     private static final ResourceLocation TWITCH_ICON = new ResourceLocation(Twitchy.MODID, "textures/gui/twitch.png");
     private static final Minecraft mc = Minecraft.getMinecraft();
@@ -43,28 +44,28 @@ public class RenderingHandler
 
     private static boolean expandList = false; //TODO move to config to save value?
 
-    private static void drawIcon()
-    {
+    private static void drawIcon() {
         GlStateManager.color(1f, 1f, 1f, 1f);
         GlStateManager.enableBlend();
         mc.getTextureManager().bindTexture(TWITCH_ICON);
         EnumIconSize iconSize = TwitchyConfig.ICON.iconSize;
         GuiUtils.drawTexturedModalRect(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, iconSize.outlineU, iconSize.outlineV, iconSize.width, iconSize.height, 0);
-        if(Twitchy.isLive) GuiUtils.drawTexturedModalRect(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, iconSize.overlayU, iconSize.overlayV, iconSize.width, iconSize.height, 0);
+        if (Twitchy.isLive)
+            GuiUtils.drawTexturedModalRect(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, iconSize.overlayU, iconSize.overlayV, iconSize.width, iconSize.height, 0);
     }
 
     private static void drawStreamInfo(int x, int y, Point mousePos, StreamInfo info, boolean showPreview, int maxTextWidth) {
         int mouseX = mousePos.x, mouseY = mousePos.y;
-        if(showPreview && info.streaming) {
+        if (showPreview && info.streaming) {
             String url = info.previewUrl;
             EnumPreviewSize quality = TwitchyConfig.PREVIEW.quality;
-            if(!StringUtil.isNullOrEmpty(url)) {
+            if (!StringUtil.isNullOrEmpty(url)) {
                 GlStateManager.pushMatrix();
                 int zLevel = 300; //300 is minimum as vanilla inventory items are rendered at that level and we want to render above these.
                 GlStateManager.translate(0.0F, 0.0F, zLevel);
 
                 ResourceLocation preview;
-                if(!ImageUtil.previews.containsKey(url))
+                if (!ImageUtil.previews.containsKey(url))
                     preview = ImageUtil.loadImage(url, info.broadcaster, ImageUtil.ImageCacheType.PREVIEW);
                 else
                     preview = ImageUtil.previews.get(url);
@@ -74,22 +75,20 @@ public class RenderingHandler
                 GlStateManager.popMatrix();
             }
             GuiUtils.drawHoveringText(Lists.newArrayList(), mouseX, mouseY + 15 + quality.height, mc.displayWidth, mc.displayHeight, Math.min(maxTextWidth, quality.width) + BORDER, mc.fontRenderer);
-        }
-        else {
+        } else {
             List<String> tooltips = new ArrayList<>();
             Lists.newArrayList(I18n.format("twitchy.stream.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()));
-            if(!info.streaming) {
+            if (!info.streaming) {
                 tooltips.addAll(Lists.newArrayList(
                         I18n.format("twitchy.stream.offline", TextFormatting.RED + info.broadcaster + TextFormatting.RESET.toString()),
                         ""));
-            }
-            else {
+            } else {
                 tooltips.add(I18n.format("twitchy.stream.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()));
-                if(!TwitchyConfig.CHANNELS.disableTitle)
+                if (!TwitchyConfig.CHANNELS.disableTitle)
                     tooltips.add(I18n.format("twitchy.stream.title", TextFormatting.BLUE.toString() + info.title + TextFormatting.RESET.toString()));
-                if(!TwitchyConfig.CHANNELS.disableGame)
+                if (!TwitchyConfig.CHANNELS.disableGame)
                     tooltips.add(I18n.format("twitchy.stream.game", TextFormatting.DARK_GREEN.toString() + info.game + TextFormatting.RESET.toString()));
-                if(!TwitchyConfig.CHANNELS.disableViewers)
+                if (!TwitchyConfig.CHANNELS.disableViewers)
                     tooltips.add(I18n.format("twitchy.stream.viewers", TextFormatting.DARK_RED.toString() + info.viewers + TextFormatting.RESET.toString()));
                 tooltips.add("");
                 tooltips.add(I18n.format("twitchy.stream.preview", TextFormatting.GOLD.toString() + "SHIFT" + TextFormatting.RESET.toString()));
@@ -100,10 +99,9 @@ public class RenderingHandler
     }
 
     @SubscribeEvent
-    public static void drawScreen(TickEvent.RenderTickEvent event)
-    {
-        if(!ImageUtil.shouldShowIcon() || event.phase != TickEvent.Phase.END) return;
-        if(ImageUtil.shouldReloadPreviews) ImageUtil.clearPreviewCache();
+    public static void drawScreen(TickEvent.RenderTickEvent event) {
+        if (!ImageUtil.shouldShowIcon() || event.phase != TickEvent.Phase.END) return;
+        if (ImageUtil.shouldReloadPreviews) ImageUtil.clearPreviewCache();
         Point mousePos = getCurrentMousePosition();
         EnumIconSize icon = TwitchyConfig.ICON.iconSize;
         int maxTextWidth = new ScaledResolution(mc).getScaledWidth() - mousePos.x - 16;
@@ -117,14 +115,14 @@ public class RenderingHandler
                     int localX = x + BORDER + 2;
                     Map<String, StreamInfo> streamers = StreamerUtil.getStreamers();
                     List<String> broadcasters = StreamerUtil.sortChannelNames(streamers.keySet());
-                    if(!broadcasters.isEmpty()) {
+                    if (!broadcasters.isEmpty()) {
                         drawTooltipBoxBackground(localX + BORDER / 2, y + BORDER / 2, PROFILE_PIC_NEW_SIZE - BORDER, PROFILE_PIC_NEW_SIZE * streamers.size() + (streamers.size() - 1) * 3 - BORDER, 0);
                         for (int i = 0; i < broadcasters.size(); i++) {
                             String broadcaster = broadcasters.get(i);
                             int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i;
                             StreamInfo info = streamers.get(broadcaster);
                             ResourceLocation profilePic;
-                            if(!ImageUtil.profiles.containsKey(info.profilePicUrl))
+                            if (!ImageUtil.profiles.containsKey(info.profilePicUrl))
                                 profilePic = ImageUtil.loadImage(info.profilePicUrl, broadcaster, ImageUtil.ImageCacheType.PROFILE);
                             else
                                 profilePic = ImageUtil.profiles.get(info.profilePicUrl);
@@ -191,9 +189,8 @@ public class RenderingHandler
     }
 
     @SubscribeEvent
-    public static void mouseClick(GuiScreenEvent.MouseInputEvent.Pre event)
-    {
-        if(!ImageUtil.shouldShowIcon()) return;
+    public static void mouseClick(GuiScreenEvent.MouseInputEvent.Pre event) {
+        if (!ImageUtil.shouldShowIcon()) return;
         if (Mouse.getEventButtonState()) {
             Point mousePos = getCurrentMousePosition();
             if (Mouse.getEventButton() == 0) {
