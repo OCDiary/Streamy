@@ -26,7 +26,6 @@ public class StreamChecker implements Runnable {
         boolean live = false;
         synchronized (Twitchy.LIVE_STREAMERS) {
             ImageUtil.invalidatePreviewCache();
-            Twitchy.LIVE_STREAMERS.clear();
 
             List<String> streamers = Arrays.asList(TwitchyConfig.CHANNELS.channels);
 

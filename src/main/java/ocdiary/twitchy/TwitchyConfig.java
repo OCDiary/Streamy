@@ -108,6 +108,7 @@ public class TwitchyConfig {
                     ImageUtil.invalidatePreviewCache();
                     ImageUtil.clearProfileCache();
                     Twitchy.isLive = false;
+                    Twitchy.LIVE_STREAMERS.clear();
                 }
             }
         }
