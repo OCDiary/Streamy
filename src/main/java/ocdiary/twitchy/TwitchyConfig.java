@@ -108,6 +108,7 @@ public class TwitchyConfig
                 else {
                     StreamHandler.stopStreamChecker();
                     ImageUtil.invalidatePreviewCache();
+                    ImageUtil.clearProfileCache();
                     Twitchy.isLive = false;
                 }
             }

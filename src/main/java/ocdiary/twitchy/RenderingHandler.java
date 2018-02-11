@@ -53,7 +53,8 @@ public class RenderingHandler
         if(Twitchy.isLive) GuiUtils.drawTexturedModalRect(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, iconSize.overlayU, iconSize.overlayV, iconSize.width, iconSize.height, 0);
     }
 
-    private static void drawStreamInfo(int x, int y, int mouseX, int mouseY, StreamInfo info, boolean showPreview, int maxTextWidth) {
+    private static void drawStreamInfo(int x, int y, Point mousePos, StreamInfo info, boolean showPreview, int maxTextWidth) {
+        int mouseX = mousePos.x, mouseY = mousePos.y;
         if(showPreview && info.streaming) {
             String url = info.previewUrl;
             EnumPreviewSize quality = TwitchyConfig.PREVIEW.quality;
@@ -76,24 +77,24 @@ public class RenderingHandler
         }
         else {
             List<String> tooltips = new ArrayList<>();
-            Lists.newArrayList(I18n.format("twitchy.tooltip.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()));
+            Lists.newArrayList(I18n.format("twitchy.stream.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()));
             if(!info.streaming) {
                 tooltips.addAll(Lists.newArrayList(
-                        I18n.format("twitchy.tooltip.offline", TextFormatting.RED + info.broadcaster + TextFormatting.RESET.toString()),
+                        I18n.format("twitchy.stream.offline", TextFormatting.RED + info.broadcaster + TextFormatting.RESET.toString()),
                         ""));
             }
             else {
-                tooltips.add(I18n.format("twitchy.tooltip.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()));
+                tooltips.add(I18n.format("twitchy.stream.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()));
                 if(!TwitchyConfig.CHANNELS.disableTitle)
-                    tooltips.add(I18n.format("twitchy.tooltip.title", TextFormatting.BLUE.toString() + info.title + TextFormatting.RESET.toString()));
+                    tooltips.add(I18n.format("twitchy.stream.title", TextFormatting.BLUE.toString() + info.title + TextFormatting.RESET.toString()));
                 if(!TwitchyConfig.CHANNELS.disableGame)
-                    tooltips.add(I18n.format("twitchy.tooltip.game", TextFormatting.DARK_GREEN.toString() + info.game + TextFormatting.RESET.toString()));
+                    tooltips.add(I18n.format("twitchy.stream.game", TextFormatting.DARK_GREEN.toString() + info.game + TextFormatting.RESET.toString()));
                 if(!TwitchyConfig.CHANNELS.disableViewers)
-                    tooltips.add(I18n.format("twitchy.tooltip.viewers", TextFormatting.DARK_RED.toString() + info.viewers + TextFormatting.RESET.toString()));
+                    tooltips.add(I18n.format("twitchy.stream.viewers", TextFormatting.DARK_RED.toString() + info.viewers + TextFormatting.RESET.toString()));
                 tooltips.add("");
-                tooltips.add(I18n.format("twitchy.tooltip.preview", TextFormatting.GOLD.toString() + "SHIFT" + TextFormatting.RESET.toString()));
+                tooltips.add(I18n.format("twitchy.stream.preview", TextFormatting.GOLD.toString() + "SHIFT" + TextFormatting.RESET.toString()));
             }
-            tooltips.add(TextFormatting.GRAY + I18n.format("twitchy.tooltip.watch", TextFormatting.WHITE.toString() + info.broadcaster + TextFormatting.GRAY.toString()) + TextFormatting.RESET);
+            tooltips.add(TextFormatting.GRAY + I18n.format("twitchy.stream.watch", TextFormatting.WHITE.toString() + info.broadcaster + TextFormatting.GRAY.toString()) + TextFormatting.RESET);
             GuiUtils.drawHoveringText(tooltips, mouseX, mouseY + 20, mc.displayWidth, mc.displayHeight, maxTextWidth, mc.fontRenderer);
         }
     }
@@ -104,10 +105,8 @@ public class RenderingHandler
         if(!ImageUtil.shouldShowIcon() || event.phase != TickEvent.Phase.END) return;
         if(ImageUtil.shouldReloadPreviews) ImageUtil.clearPreviewCache();
         Point mousePos = getCurrentMousePosition();
-        int mouseX = mousePos.x;
-        int mouseY = mousePos.y;
         EnumIconSize icon = TwitchyConfig.ICON.iconSize;
-        int maxTextWidth = new ScaledResolution(mc).getScaledWidth() - mouseX - 16;
+        int maxTextWidth = new ScaledResolution(mc).getScaledWidth() - mousePos.x - 16;
         if (Twitchy.isLive || TwitchyConfig.ICON.iconState == EnumIconVisibility.ALWAYS) {
             drawIcon(); //draw the twitch icon
 
@@ -137,20 +136,20 @@ public class RenderingHandler
                         for (int i = 0; i < broadcasters.size(); i++) {
                             String broadcaster = broadcasters.get(i);
                             int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i;
-                            if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mouseX, mouseY)) {
+                            if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
                                 StreamInfo info = streamers.get(broadcaster);
-                                drawStreamInfo(localX, localY, mouseX, mouseY, info, GuiScreen.isShiftKeyDown(), maxTextWidth);
+                                drawStreamInfo(localX, localY, mousePos, info, GuiScreen.isShiftKeyDown(), maxTextWidth);
                             }
                         }
                     }
                 }
             }
         }
-        if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, icon.width, icon.height, mouseX, mouseY)) {
+        if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, icon.width, icon.height, mousePos)) {
             String key = expandList ? "collapse" : "expand";
             List<String> tooltips = Lists.newArrayList(
-                    new TextComponentTranslation("twitchy.tooltip." + key).setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText(),
-                    new TextComponentTranslation("twitchy.tooltip.info", TextFormatting.BLUE.toString() + "ALT + Click").getFormattedText()
+                    new TextComponentTranslation("twitchy.icon." + key).setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText(),
+                    new TextComponentTranslation("twitchy.icon.info", TextFormatting.BLUE.toString() + "ALT + Click").getFormattedText()
             );
             GuiUtils.drawHoveringText(tooltips, mousePos.x, mousePos.y + 5, mc.displayWidth, mc.displayHeight, maxTextWidth, mc.fontRenderer);
         }
@@ -178,8 +177,9 @@ public class RenderingHandler
         MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostBackground(ItemStack.EMPTY, colorEvent.getLines(), x, y, colorEvent.getFontRenderer(), width, height));
     }
 
-    private static boolean isMouseOver(int x, int y, int width, int height, int mouseX, int mouseY) {
-        return mouseX >= x && mouseX <= (x + width) && mouseY >= y && mouseY <= (y + height);
+    private static boolean isMouseOver(int x, int y, int width, int height, Point mousePos) {
+        int mx = mousePos.x, my = mousePos.y;
+        return mx >= x && mx <= (x + width) && my >= y && my <= (y + height);
     }
 
     private static Point getCurrentMousePosition() {
@@ -194,26 +194,32 @@ public class RenderingHandler
     public static void mouseClick(GuiScreenEvent.MouseInputEvent.Pre event)
     {
         if(!ImageUtil.shouldShowIcon()) return;
-        if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
+        if (Mouse.getEventButtonState()) {
             Point mousePos = getCurrentMousePosition();
-            if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, TwitchyConfig.ICON.iconSize.width, TwitchyConfig.ICON.iconSize.height, mousePos.x, mousePos.y)) {
-                if(GuiScreen.isAltKeyDown()) mc.displayGuiScreen(FMLClientHandler.instance().getGuiFactoryFor(FMLCommonHandler.instance().findContainerFor(Twitchy.MODID)).createConfigGui(mc.currentScreen));
-                else expandList = !expandList;
-            }
-            if(expandList && Twitchy.isLive) {
-                int i = 0;
-                int y = TwitchyConfig.ICON.posY + TwitchyConfig.ICON.iconSize.height + BORDER * 3;
-                Map<String, StreamInfo> streamers = StreamerUtil.getStreamers();
-                List<String> broadcasters = StreamerUtil.sortChannelNames(streamers.keySet());
-                for(String broadcaster : broadcasters) {
-                    int localX = TwitchyConfig.ICON.posX + BORDER + 2;
-                    int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
-                    if(isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos.x, mousePos.y)) {
-                        StreamerUtil.openTwitchStream(broadcaster.toLowerCase(Locale.ROOT));
+            if (Mouse.getEventButton() == 0) {
+                if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, TwitchyConfig.ICON.iconSize.width, TwitchyConfig.ICON.iconSize.height, mousePos)) {
+                    if (GuiScreen.isAltKeyDown())
+                        mc.displayGuiScreen(FMLClientHandler.instance().getGuiFactoryFor(FMLCommonHandler.instance().findContainerFor(Twitchy.MODID)).createConfigGui(mc.currentScreen));
+                    else expandList = !expandList;
+                }
+                if (expandList && Twitchy.isLive) {
+                    int i = 0;
+                    int y = TwitchyConfig.ICON.posY + TwitchyConfig.ICON.iconSize.height + BORDER * 3;
+                    Map<String, StreamInfo> streamers = StreamerUtil.getStreamers();
+                    List<String> broadcasters = StreamerUtil.sortChannelNames(streamers.keySet());
+                    for (String broadcaster : broadcasters) {
+                        int localX = TwitchyConfig.ICON.posX + BORDER + 2;
+                        int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
+                        if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
+                            StreamerUtil.openTwitchStream(broadcaster.toLowerCase(Locale.ROOT));
+                        }
                     }
+                }
+            } else if (Mouse.getEventButton() == 1) {
+                if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, TwitchyConfig.ICON.iconSize.width, TwitchyConfig.ICON.iconSize.height, mousePos)) {
+                    Twitchy.isIconDismissed = true;
                 }
             }
         }
     }
-
 }

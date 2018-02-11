@@ -60,7 +60,7 @@ public class StreamChecker implements Runnable {
                         String preview = getJsonString(stream.get("preview").getAsJsonObject().get(TwitchyConfig.PREVIEW.quality.getKey()))
                                 .replace("{width}", String.valueOf(TwitchyConfig.PREVIEW.quality.width))
                                 .replace("{height}", String.valueOf(TwitchyConfig.PREVIEW.quality.height));
-                        Twitchy.LIVE_STREAMERS.put(broadcaster.toLowerCase(Locale.ROOT), new StreamInfo(broadcasterName, game, title, preview, profilePic, viewerCount));
+                        addStreamer(broadcaster.toLowerCase(Locale.ROOT), new StreamInfo(broadcasterName, game, title, preview, profilePic, viewerCount));
 
                         //only show live icon if not in streamer mode
                         if (TwitchyConfig.GENERAL.streamerMode == EnumStreamerMode.OFF || !broadcaster.equalsIgnoreCase(StreamerUtil.getPlayerStreamerName()))
@@ -71,7 +71,7 @@ public class StreamChecker implements Runnable {
                         if (channelData == null) continue;
                         String broadcasterName = getJsonString(channelData.get("display_name"));
                         String profilePic = getJsonString(channelData.get("logo"));
-                        Twitchy.LIVE_STREAMERS.put(broadcaster.toLowerCase(Locale.ROOT), new StreamInfo(broadcasterName, profilePic));
+                        addStreamer(broadcaster.toLowerCase(Locale.ROOT), new StreamInfo(broadcasterName, profilePic));
                     }
                 } catch (Exception e) {
                     Twitchy.LOGGER.error("Error getting stream info for channel \"" + broadcaster + "\"", e);
@@ -81,6 +81,17 @@ public class StreamChecker implements Runnable {
         Twitchy.isLive = live;
         String username = StreamerUtil.getPlayerStreamerName();
         Twitchy.isSelfStreaming = Twitchy.LIVE_STREAMERS.containsKey(username) && Twitchy.LIVE_STREAMERS.get(username).streaming;
+    }
+
+    private static void addStreamer(String name, StreamInfo streamInfo) {
+        //Show the icon if it's dismissed and a stream just went live
+        if (Twitchy.isIconDismissed && streamInfo.streaming) {
+            StreamInfo currentInfo = Twitchy.LIVE_STREAMERS.get(name);
+            if(currentInfo != null && !currentInfo.streaming) {
+                Twitchy.isIconDismissed = false;
+            }
+        }
+        Twitchy.LIVE_STREAMERS.put(name, streamInfo);
     }
 
     private static JsonObject getJsonFromAPI(String api, String broadcaster) throws Exception

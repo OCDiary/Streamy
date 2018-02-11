@@ -1,14 +1,15 @@
 #PARSE_ESCAPES
 
-twitchy.tooltip.broadcaster=%s is currently live!
-twitchy.tooltip.title=Stream Title: %s
-twitchy.tooltip.game=Current Game: %s
-twitchy.tooltip.viewers=Current Viewers: %s
-twitchy.tooltip.offline=%s is currently offline!
-twitchy.tooltip.info=%s to get to the config menu!
-twitchy.tooltip.expand=Click to expand the menu!
-twitchy.tooltip.collapse=Click to collapse the menu!
-twitchy.tooltip.preview=Press %s to see a preview!
-twitchy.tooltip.watch=Click to watch %s on Twitch!
+twitchy.icon.info=%s to get to the config menu!
+twitchy.icon.expand=Click to expand the menu!
+twitchy.icon.collapse=Click to collapse the menu!
+
+twitchy.stream.broadcaster=%s is currently live!
+twitchy.stream.title=Stream Title: %s
+twitchy.stream.game=Current Game: %s
+twitchy.stream.viewers=Current Viewers: %s
+twitchy.stream.offline=%s is currently offline!
+twitchy.stream.preview=Press %s to see a preview!
+twitchy.stream.watch=Click to watch %s on Twitch!
 
 twitchy.config.title=Twitchy Configs

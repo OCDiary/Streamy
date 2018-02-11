@@ -19,6 +19,7 @@ public class ImageUtil {
 
     private static final Minecraft mc = Minecraft.getMinecraft();
     private static final ResourceLocation NO_PREVIEW = new ResourceLocation(Twitchy.MODID, "textures/gui/no_preview.png");
+    private static final ResourceLocation NO_PROFILE = new ResourceLocation(Twitchy.MODID, "textures/gui/no_profile.png");
     public static final Map<String, ResourceLocation> previews = new ConcurrentHashMap<>();
     public static final Map<String, ResourceLocation> profiles = new ConcurrentHashMap<>();
     public static volatile boolean shouldReloadPreviews;
@@ -37,11 +38,19 @@ public class ImageUtil {
 
     public static void clearPreviewCache()
     {
-        for(String previewUrl : previews.keySet()) {
-            ResourceLocation preview = previews.get(previewUrl);
+        previews.values().forEach(preview -> {
             if(!preview.equals(NO_PREVIEW)) mc.getTextureManager().deleteTexture(preview);
-        }
+        });
         previews.clear();
+        shouldReloadPreviews = false;
+    }
+
+    public static void clearProfileCache()
+    {
+        profiles.values().forEach(profile -> {
+            if(!profile.equals(NO_PROFILE)) mc.getTextureManager().deleteTexture(profile);
+        });
+        profiles.clear();
     }
 
     public static ResourceLocation loadImage(String url, String name, ImageCacheType type) {
@@ -76,7 +85,6 @@ public class ImageUtil {
     }
 
     public static boolean shouldShowIcon() {
-        return TwitchyConfig.GENERAL.enabled && !Twitchy.isSelfStreaming || TwitchyConfig.GENERAL.streamerMode != EnumStreamerMode.FULL;
+        return TwitchyConfig.GENERAL.enabled && !Twitchy.isIconDismissed && (!Twitchy.isSelfStreaming || TwitchyConfig.GENERAL.streamerMode != EnumStreamerMode.FULL);
     }
-
 }
