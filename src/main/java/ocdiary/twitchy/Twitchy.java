@@ -29,7 +29,7 @@ public class Twitchy {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        if(TwitchyConfig.enabled) StreamHandler.startStreamChecker();
+        if(TwitchyConfig.GENERAL.enabled) StreamHandler.startStreamChecker();
     }
 
 }

@@ -30,7 +30,7 @@ public class StreamChecker implements Runnable {
 
             List<String> streamers = Arrays.asList(TwitchyConfig.CHANNELS.channels);
 
-            if(TwitchyConfig.streamerMode == EnumStreamerMode.FULL) {
+            if(TwitchyConfig.GENERAL.streamerMode == EnumStreamerMode.FULL) {
                 boolean hasCheckedBroadcaster = false;
                 for (String broadcaster : streamers) {
                     if (broadcaster.equalsIgnoreCase(StreamerUtil.getPlayerStreamerName())) {
@@ -57,11 +57,13 @@ public class StreamChecker implements Runnable {
                         String title = getJsonString(channelInfo.get("status"));
                         String broadcasterName = getJsonString(channelInfo.get("display_name"));
                         String profilePic = getJsonString(channelInfo.get("logo"));
-                        String preview = getJsonString(stream.get("preview").getAsJsonObject().get(TwitchyConfig.quality.getKey())).replace("{width}", String.valueOf(TwitchyConfig.quality.width)).replace("{height}", String.valueOf(TwitchyConfig.quality.height));
+                        String preview = getJsonString(stream.get("preview").getAsJsonObject().get(TwitchyConfig.PREVIEW.quality.getKey()))
+                                .replace("{width}", String.valueOf(TwitchyConfig.PREVIEW.quality.width))
+                                .replace("{height}", String.valueOf(TwitchyConfig.PREVIEW.quality.height));
                         Twitchy.LIVE_STREAMERS.put(broadcaster.toLowerCase(Locale.ROOT), new StreamInfo(broadcasterName, game, title, preview, profilePic, viewerCount));
 
                         //only show live icon if not in streamer mode
-                        if (TwitchyConfig.streamerMode == EnumStreamerMode.OFF || !broadcaster.equalsIgnoreCase(StreamerUtil.getPlayerStreamerName()))
+                        if (TwitchyConfig.GENERAL.streamerMode == EnumStreamerMode.OFF || !broadcaster.equalsIgnoreCase(StreamerUtil.getPlayerStreamerName()))
                             live = true;
                     } else {
                         //Get channel info for the profile icon

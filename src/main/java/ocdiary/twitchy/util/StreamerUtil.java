@@ -1,36 +1,63 @@
 package ocdiary.twitchy.util;
 
+import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.StringUtils;
 import ocdiary.twitchy.Twitchy;
 import ocdiary.twitchy.TwitchyConfig;
 
-import java.awt.*;
+import java.awt.Desktop;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author UpcraftLP
  */
 public class StreamerUtil {
 
-    public static String getPlayerStreamerName()
-    {
-        String username = TwitchyConfig.streamerModeNameOverride;
+    public static String getPlayerStreamerName() {
+        String username = TwitchyConfig.GENERAL.streamerModeNameOverride;
         if(StringUtils.isNullOrEmpty(username)) username = Minecraft.getMinecraft().getSession().getUsername();
         return username;
     }
 
-    public static boolean streamerFilter(StreamInfo streamer)
-    {
+    private static boolean streamerFilter(StreamInfo streamer) {
         //Do not show channel if showOfflineChannels == false and streamer is offline
         if(!TwitchyConfig.CHANNELS.showOfflineChannels && !streamer.streaming)
             return false;
         //If streamerMode == OFF, then show streamer
-        if(TwitchyConfig.streamerMode == EnumStreamerMode.OFF)
+        if(TwitchyConfig.GENERAL.streamerMode == EnumStreamerMode.OFF)
             return true;
         //If username is equal to the streamer name, then don't show
         return !streamer.broadcaster.equalsIgnoreCase(getPlayerStreamerName());
+    }
+
+    public static Map<String, StreamInfo> getStreamers() {
+        return Twitchy.LIVE_STREAMERS.entrySet().stream()
+                .filter(entry -> StreamerUtil.streamerFilter(entry.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public static List<String> sortChannelNames(Set<String> names) {
+        if(TwitchyConfig.CHANNELS.sortChannels) {
+            List<String> sortedList = Lists.newArrayList(names);
+            sortedList.sort(String::compareToIgnoreCase);
+            return sortedList;
+        } else {
+            //Sort by the order in the configs
+            List<String> sortedList = Lists.newArrayList();
+            List<String> configNames = Lists.newArrayList(TwitchyConfig.CHANNELS.channels);
+            configNames.forEach(name -> {
+                name = name.toLowerCase();
+                if(names.contains(name))
+                    sortedList.add(name);
+            });
+            return sortedList;
+        }
     }
 
     public static void openTwitchStream(String channel) {

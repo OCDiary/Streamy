@@ -29,7 +29,6 @@ import org.lwjgl.input.Mouse;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = Twitchy.MODID, value = Side.CLIENT)
 public class RenderingHandler
@@ -57,7 +56,7 @@ public class RenderingHandler
     private static void drawStreamInfo(int x, int y, int mouseX, int mouseY, StreamInfo info, boolean showPreview, int maxTextWidth) {
         if(showPreview && info.streaming) {
             String url = info.previewUrl;
-            EnumPreviewSize quality = TwitchyConfig.quality;
+            EnumPreviewSize quality = TwitchyConfig.PREVIEW.quality;
             if(!StringUtil.isNullOrEmpty(url)) {
                 GlStateManager.pushMatrix();
                 int zLevel = 300; //300 is minimum as vanilla inventory items are rendered at that level and we want to render above these.
@@ -70,7 +69,7 @@ public class RenderingHandler
                     preview = ImageUtil.previews.get(url);
                 mc.getTextureManager().bindTexture(preview);
 
-                Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, quality.width, quality.height, TwitchyConfig.previewWidth, TwitchyConfig.previewHeight, quality.width, quality.height);
+                Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, quality.width, quality.height, TwitchyConfig.PREVIEW.previewWidth, TwitchyConfig.PREVIEW.previewHeight, quality.width, quality.height);
                 GlStateManager.popMatrix();
             }
             GuiUtils.drawHoveringText(Lists.newArrayList(), mouseX, mouseY + 15 + quality.height, mc.displayWidth, mc.displayHeight, Math.min(maxTextWidth, quality.width) + BORDER, mc.fontRenderer);
@@ -116,12 +115,8 @@ public class RenderingHandler
                 int y = TwitchyConfig.ICON.posY + icon.height + BORDER * 3;
                 synchronized (Twitchy.LIVE_STREAMERS) {
                     int localX = x + BORDER + 2;
-                    Map<String, StreamInfo> streamers = Twitchy.LIVE_STREAMERS.entrySet().stream()
-                                    .filter(entry -> StreamerUtil.streamerFilter(entry.getValue()))
-                                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                    List<String> broadcasters = Lists.newArrayList(streamers.keySet());
-                    if(TwitchyConfig.CHANNELS.sortChannels) broadcasters.sort(String::compareToIgnoreCase);
-
+                    Map<String, StreamInfo> streamers = StreamerUtil.getStreamers();
+                    List<String> broadcasters = StreamerUtil.sortChannelNames(streamers.keySet());
                     if(!broadcasters.isEmpty()) {
                         drawTooltipBoxBackground(localX + BORDER / 2, y + BORDER / 2, PROFILE_PIC_NEW_SIZE - BORDER, PROFILE_PIC_NEW_SIZE * streamers.size() + (streamers.size() - 1) * 3 - BORDER, 0);
                         for (int i = 0; i < broadcasters.size(); i++) {
@@ -207,13 +202,9 @@ public class RenderingHandler
             if(expandList && Twitchy.isLive) {
                 int i = 0;
                 int y = TwitchyConfig.ICON.posY + TwitchyConfig.ICON.iconSize.height + BORDER * 3;
-                Map<String, StreamInfo> streamInfo = Twitchy.LIVE_STREAMERS.entrySet().stream()
-                        .filter(entry -> StreamerUtil.streamerFilter(entry.getValue()))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-                List<String> streamers = new ArrayList<>(streamInfo.keySet());
-                if(TwitchyConfig.CHANNELS.sortChannels) streamers.sort(String::compareToIgnoreCase);
-                for(String broadcaster : streamers) {
+                Map<String, StreamInfo> streamers = StreamerUtil.getStreamers();
+                List<String> broadcasters = StreamerUtil.sortChannelNames(streamers.keySet());
+                for(String broadcaster : broadcasters) {
                     int localX = TwitchyConfig.ICON.posX + BORDER + 2;
                     int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
                     if(isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos.x, mousePos.y)) {

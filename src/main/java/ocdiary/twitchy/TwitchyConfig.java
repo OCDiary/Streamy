@@ -11,38 +11,37 @@ import ocdiary.twitchy.util.*;
 @Config.LangKey(Twitchy.MODID + ".config.title")
 public class TwitchyConfig
 {
-
-    @Config.Comment("this acts as a global switch to disable the entire mod")
-    public static boolean enabled = true;
+    @Config.Comment("General mod configs")
+    public static final General GENERAL = new General();
 
     @Config.Comment("Twitch channel configs")
-    public static final ChannelConfig CHANNELS = new ChannelConfig();
+    public static final Channel CHANNELS = new Channel();
 
     @Config.Comment("In-game icon configs")
     public static final Icon ICON = new Icon();
 
-    @Config.Comment("The quality of the previewUrl image")
-    public static EnumPreviewSize quality = EnumPreviewSize.LARGE;
+    @Config.Comment("Stream preview configs")
+    public static final Preview PREVIEW = new Preview();
 
-    @Config.Comment("the width of the preview image")
-    public static int previewWidth = 320;
+    public static class General {
 
-    @Config.Comment("the height of the preview image")
-    public static int previewHeight = 180;
+        @Config.Comment("This acts as a global switch to disable the entire mod")
+        public boolean enabled = true;
 
-    @Config.Comment({
-            "This is a config aimed at streamers. It will use your Minecraft username (unless overrided by the " +
-                    "streamerModeNameOverride config) as your streamer name, and do the following depending on the config:",
-            "OFF     -> Your own channel will always be displayed",
-            "PARTIAL -> Your own channel will not be displayed if you're streaming",
-            "FULL    -> Nothing will be displayed by this mod if you're streaming"
-    })
-    public static EnumStreamerMode streamerMode = EnumStreamerMode.OFF;
+        @Config.Comment({
+                "This is a config aimed at streamers. It will use your Minecraft username (unless overrided by the " +
+                        "streamerModeNameOverride config) as your streamer name, and do the following depending on the config:",
+                "OFF     -> Your own channel will always be displayed",
+                "PARTIAL -> Your own channel will not be displayed if you're streaming",
+                "FULL    -> Nothing will be displayed by this mod if you're streaming"
+        })
+        public EnumStreamerMode streamerMode = EnumStreamerMode.OFF;
 
-    @Config.Comment("An override streamer name to use instead of your Minecraft username for the streamerMode config")
-    public static String streamerModeNameOverride = "";
+        @Config.Comment("An override streamer name to use instead of your Minecraft username for the streamerMode config")
+        public String streamerModeNameOverride = "";
+    }
 
-    public static class ChannelConfig {
+    public static class Channel {
 
         @Config.Comment("The Twitch channels to monitor and show the status of")
         public String[] channels = new String[]{"OCDiary"};
@@ -76,6 +75,18 @@ public class TwitchyConfig
         public int posY = 1;
     }
 
+    public static class Preview {
+
+        @Config.Comment("The quality of the previewUrl image")
+        public EnumPreviewSize quality = EnumPreviewSize.LARGE;
+
+        @Config.Comment("The width of the preview image")
+        public int previewWidth = 320;
+
+        @Config.Comment("The height of the preview image")
+        public int previewHeight = 180;
+    }
+
     @Mod.EventBusSubscriber(modid = Twitchy.MODID)
     private static class Handler {
 
@@ -83,7 +94,7 @@ public class TwitchyConfig
         public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
             if(event.getModID().equalsIgnoreCase(Twitchy.MODID)) {
                 ConfigManager.sync(Twitchy.MODID, Config.Type.INSTANCE);
-                if(enabled) {
+                if(GENERAL.enabled) {
                     StreamHandler.startStreamChecker();
                 }
                 else {

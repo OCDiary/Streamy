@@ -76,7 +76,7 @@ public class ImageUtil {
     }
 
     public static boolean shouldShowIcon() {
-        return TwitchyConfig.enabled && !Twitchy.isSelfStreaming || TwitchyConfig.streamerMode != EnumStreamerMode.FULL;
+        return TwitchyConfig.GENERAL.enabled && !Twitchy.isSelfStreaming || TwitchyConfig.GENERAL.streamerMode != EnumStreamerMode.FULL;
     }
 
 }
