@@ -1,11 +1,14 @@
 package ocdiary.twitchy;
 
 import com.google.common.collect.Maps;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import ocdiary.twitchy.util.StreamInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.input.Keyboard;
 
 import java.util.Map;
 
@@ -24,9 +27,11 @@ public class Twitchy {
      */
     public static final Map<String, StreamInfo> LIVE_STREAMERS = Maps.newConcurrentMap();
     public static boolean isLive, isSelfStreaming, isIconDismissed;
+    public static KeyBinding keyDismiss = new KeyBinding("key.twitchy.dismiss", Keyboard.KEY_Z, "key.twitchy.category");
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
+        ClientRegistry.registerKeyBinding(keyDismiss);
         if (TwitchyConfig.GENERAL.enabled) StreamHandler.startStreamChecker();
     }
 

@@ -38,6 +38,9 @@ public class TwitchyConfig {
 
         @Config.Comment("An override streamer name to use instead of your Minecraft username for the streamerMode config")
         public String streamerModeNameOverride = "";
+
+        @Config.Comment("Enables the use of holding Alt and right clicking to toggle dismissing the icon")
+        public boolean enableAltRightClickDismiss = true;
     }
 
     public static class Channel {

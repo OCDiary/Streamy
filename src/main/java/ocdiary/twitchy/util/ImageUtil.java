@@ -80,6 +80,6 @@ public class ImageUtil {
     }
 
     public static boolean shouldShowIcon() {
-        return TwitchyConfig.GENERAL.enabled && !Twitchy.isIconDismissed && (!Twitchy.isSelfStreaming || TwitchyConfig.GENERAL.streamerMode != EnumStreamerMode.FULL);
+        return TwitchyConfig.GENERAL.enabled && !Twitchy.isIconDismissed && !(Twitchy.isSelfStreaming && TwitchyConfig.GENERAL.streamerMode == EnumStreamerMode.FULL);
     }
 }

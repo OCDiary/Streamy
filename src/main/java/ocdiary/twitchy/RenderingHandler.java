@@ -190,6 +190,10 @@ public class RenderingHandler {
 
     @SubscribeEvent
     public static void mouseClick(GuiScreenEvent.MouseInputEvent.Pre event) {
+        if (TwitchyConfig.GENERAL.enabled && (!Twitchy.isSelfStreaming || TwitchyConfig.GENERAL.streamerMode != EnumStreamerMode.FULL)) {
+            if (TwitchyConfig.GENERAL.enableAltRightClickDismiss && Mouse.getEventButton() == 1 && Mouse.getEventButtonState() && GuiScreen.isAltKeyDown())
+                Twitchy.isIconDismissed = !Twitchy.isIconDismissed;
+        }
         if (!ImageUtil.shouldShowIcon()) return;
         if (Mouse.getEventButtonState()) {
             Point mousePos = getCurrentMousePosition();

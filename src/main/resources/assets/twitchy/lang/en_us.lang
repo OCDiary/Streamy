@@ -13,3 +13,6 @@ twitchy.stream.preview=Press %s to see a preview!
 twitchy.stream.watch=Click to watch %s on Twitch!
 
 twitchy.config.title=Twitchy Configs
+
+key.twitchy.category=Twitchy
+key.twitchy.dismiss=Dismiss icon

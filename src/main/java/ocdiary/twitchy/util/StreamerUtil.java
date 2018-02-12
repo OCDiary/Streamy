@@ -29,11 +29,17 @@ public class StreamerUtil {
         //Do not show channel if showOfflineChannels == false and streamer is offline
         if (!TwitchyConfig.CHANNELS.showOfflineChannels && !streamer.streaming)
             return false;
-        //If streamerMode == OFF, then show streamer
-        if (TwitchyConfig.GENERAL.streamerMode == EnumStreamerMode.OFF)
-            return true;
-        //If username is equal to the streamer name, then don't show
-        return !streamer.broadcaster.equalsIgnoreCase(getPlayerStreamerName());
+        switch (TwitchyConfig.GENERAL.streamerMode) {
+            case FULL:
+                if (streamer.broadcaster.equalsIgnoreCase(getPlayerStreamerName()))
+                    return false;
+            case PARTIAL:
+                if (streamer.broadcaster.equalsIgnoreCase(getPlayerStreamerName()) && streamer.streaming)
+                    return false;
+            case OFF:
+            default:
+                return true;
+        }
     }
 
     public static Map<String, StreamInfo> getStreamers() {
