@@ -38,7 +38,7 @@ public class RenderingHandler {
     private static final ResourceLocation TWITCH_ICON = new ResourceLocation(Twitchy.MODID, "textures/gui/twitch.png");
     private static final Minecraft mc = Minecraft.getMinecraft();
 
-    private static final int BORDER = 2; //TODO adjust
+    private static final int BORDER = 2;
     private static final int PROFILE_PIC_ORIGINAL_SIZE = 300;
     private static final int PROFILE_PIC_NEW_SIZE = 12;
 
@@ -64,11 +64,7 @@ public class RenderingHandler {
                 int zLevel = 300; //300 is minimum as vanilla inventory items are rendered at that level and we want to render above these.
                 GlStateManager.translate(0.0F, 0.0F, zLevel);
 
-                ResourceLocation preview;
-                if (!ImageUtil.previews.containsKey(url))
-                    preview = ImageUtil.loadImage(url, info.broadcaster, ImageUtil.ImageCacheType.PREVIEW);
-                else
-                    preview = ImageUtil.previews.get(url);
+                ResourceLocation preview = ImageUtil.loadImage(url, info.broadcaster, ImageUtil.ImageCacheType.LIVE);
                 mc.getTextureManager().bindTexture(preview);
 
                 Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, quality.width, quality.height, TwitchyConfig.PREVIEW.previewWidth, TwitchyConfig.PREVIEW.previewHeight, quality.width, quality.height);
@@ -101,7 +97,6 @@ public class RenderingHandler {
     @SubscribeEvent
     public static void drawScreen(TickEvent.RenderTickEvent event) {
         if (!ImageUtil.shouldShowIcon() || event.phase != TickEvent.Phase.END) return;
-        if (ImageUtil.shouldReloadPreviews) ImageUtil.clearPreviewCache();
         Point mousePos = getCurrentMousePosition();
         EnumIconSize icon = TwitchyConfig.ICON.iconSize;
         int maxTextWidth = new ScaledResolution(mc).getScaledWidth() - mousePos.x - 16;
@@ -121,11 +116,7 @@ public class RenderingHandler {
                             String broadcaster = broadcasters.get(i);
                             int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i;
                             StreamInfo info = streamers.get(broadcaster);
-                            ResourceLocation profilePic;
-                            if (!ImageUtil.profiles.containsKey(info.profilePicUrl))
-                                profilePic = ImageUtil.loadImage(info.profilePicUrl, broadcaster, ImageUtil.ImageCacheType.PROFILE);
-                            else
-                                profilePic = ImageUtil.profiles.get(info.profilePicUrl);
+                            ResourceLocation profilePic = ImageUtil.loadImage(info.profilePicUrl, broadcaster, ImageUtil.ImageCacheType.CACHED);
                             mc.renderEngine.bindTexture(profilePic);
                             Gui.drawScaledCustomSizeModalRect(localX, localY, 0, 0, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE);
                         }

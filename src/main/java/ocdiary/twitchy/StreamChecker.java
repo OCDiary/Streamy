@@ -29,7 +29,7 @@ public class StreamChecker implements Runnable {
         boolean live = false;
         player = StreamerUtil.getPlayerStreamerName().toLowerCase(Locale.ROOT);
         synchronized (Twitchy.LIVE_STREAMERS) {
-            ImageUtil.invalidatePreviewCache();
+            ImageUtil.clearPreviewCache();
 
             List<String> streamers = Lists.newArrayList(TwitchyConfig.CHANNELS.channels);
 
