@@ -11,13 +11,20 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 
-@Mod(modid = Twitchy.MODID, name = Twitchy.NAME, version = Twitchy.VERSION, acceptedMinecraftVersions = Twitchy.AVERSION, clientSideOnly = true)
+@Mod(
+        modid = Twitchy.MODID,
+        name = Twitchy.NAME,
+        version = Twitchy.VERSION,
+        acceptedMinecraftVersions = Twitchy.MCVERSIONS,
+        dependencies = Twitchy.DEPENDENCIES,
+        clientSideOnly = true)
 public class Twitchy {
 
     public static final String MODID = "twitchy";
     public static final String NAME = "Twitchy";
     public static final String VERSION = "@VERSION@"; //This is replaced in the build.gradle
-    public static final String AVERSION = "[1.12, 1.12.2]";
+    public static final String MCVERSIONS = "[1.12, 1.12.2]";
+    public static final String DEPENDENCIES = "forge@[14.23.1.2595,)";
 
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     /**
