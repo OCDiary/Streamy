@@ -17,6 +17,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author UpcraftLP
@@ -24,10 +26,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ImageUtil {
 
     private static final Minecraft mc = Minecraft.getMinecraft();
-    private static final ResourceLocation NO_PREVIEW = new ResourceLocation(Twitchy.MODID, "textures/gui/no_preview.png");
-    private static final ResourceLocation NO_PROFILE = TextureMap.LOCATION_MISSING_TEXTURE; //TODO add proper missing texture
+    public static final ResourceLocation NO_PREVIEW = new ResourceLocation(Twitchy.MODID, "textures/gui/preview_failed.png");
+    public static final ResourceLocation NO_PROFILE = new ResourceLocation(Twitchy.MODID, "textures/gui/icon_failed.png");
+    public static final ResourceLocation LOADING_PREVIEW = new ResourceLocation(Twitchy.MODID, "textures/gui/preview_loading.png");
+    public static final ResourceLocation LOADING_PROFILE = new ResourceLocation(Twitchy.MODID, "textures/gui/icon_loading.png");
+
     private static final Map<String, ResourceLocation> previews = new ConcurrentHashMap<>();
     private static final Map<String, ResourceLocation> profiles = new ConcurrentHashMap<>();
+
+    private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor();
+
     private static File cacheDir;
 
     public static void init() {
@@ -51,14 +59,11 @@ public class ImageUtil {
 
     public static void clearPreviewCache() {
         synchronized (previews) {
-            previews.values().forEach(preview -> {
-                if (preview != NO_PREVIEW) mc.getTextureManager().deleteTexture(preview);
-            });
             previews.clear();
         }
     }
 
-    public static void clearOldFiles() {
+    private static void clearOldFiles() {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MONTH, -1);
         Date oldestFile = calendar.getTime();
@@ -72,18 +77,19 @@ public class ImageUtil {
      * used to load a texture from the web and cache it.
      * @param url the url to download the image from, also acts as unique identifier for the image
      * @param name the name of the image
-     * @param type either {@Code CACHED} or {@Code LIVE}, cached means to save the downloaded image as file and only refresh it every 30 days.
-     * @return the {@Link ResourceLocation} that this image can be accessed with
+     * @param type cached means to save the downloaded image as file and only refresh it every 30 days.
+     * @return the {@link ResourceLocation} that this image can be accessed with
      */
     public static ResourceLocation loadImage(String url, String name, ImageCacheType type) {
         if(type == ImageCacheType.CACHED && profiles.containsKey(url)) return profiles.get(url);
         else if(type == ImageCacheType.LIVE && previews.containsKey(url)) return previews.get(url);
-
         for(char c : ChatAllowedCharacters.ILLEGAL_FILE_CHARACTERS) {
             name = name.replace(c, '_');
         }
-        TextureManager textureManager = mc.getTextureManager();
+
         ResourceLocation imageRL = null;
+        TextureManager textureManager = mc.getTextureManager();
+
 
         //try to load from file
         if(type == ImageCacheType.CACHED) {
@@ -95,49 +101,70 @@ public class ImageUtil {
             } catch (Exception e) {
                 image.delete();
                 Twitchy.LOGGER.error("error reading cached profile image, trying to get texture from the web...");
+                imageRL = null;
             }
         }
 
         //else get from web
         if(imageRL == null) {
-            try {
-                BufferedImage bufferedImage = ImageIO.read(new URL(url));
-                DynamicTexture texture = new DynamicTexture(bufferedImage);
-                texture.loadTexture(mc.getResourceManager());
-                imageRL = textureManager.getDynamicTextureLocation(Twitchy.MODID + "_" + name + "_" + type, texture);
-                if(type == ImageCacheType.CACHED) {
-                    File image = new File(cacheDir, name + ".png");
-                    ImageIO.write(bufferedImage, "png", image);
-                    Twitchy.LOGGER.info("Successfully downloaded profile image for {} and saved to {}.", name, image.getName());
+            final String name2 = name;
+            EXECUTOR_SERVICE.execute(() -> {
+                try {
+                    BufferedImage bufferedImage = ImageIO.read(new URL(url));
+                    if (type == ImageCacheType.CACHED) {
+                        File image = new File(cacheDir, name2 + ".png");
+                        ImageIO.write(bufferedImage, "png", image);
+                        Twitchy.LOGGER.debug("Successfully downloaded profile image for {} and saved to {}.", name2, image.getName());
+                    }
+                    Minecraft.getMinecraft().addScheduledTask(() -> {
+                        DynamicTexture texture = new DynamicTexture(bufferedImage);
+                        ResourceLocation location = textureManager.getDynamicTextureLocation(Twitchy.MODID + "_" + name2 + "_" + type, texture);
+                        storeLocation(url, location, type);
+                        Twitchy.LOGGER.debug("Successfully uploaded texture for {} to the texture atlas as {}.", name2, location.toString());
+                    });
+                } catch (Exception e) {
+                    Twitchy.LOGGER.error("Exception getting image for {} from {}, type {}", name2, url, type);
+                    ResourceLocation resourceLocation;
+                    switch (type) {
+                        case CACHED:
+                            resourceLocation = NO_PROFILE;
+                            break;
+                        case LIVE:
+                            resourceLocation = NO_PREVIEW;
+                            break;
+                        default:
+                            resourceLocation = TextureMap.LOCATION_MISSING_TEXTURE;
+                            break;
+                    }
+                    storeLocation(url, resourceLocation, type);
                 }
-            } catch (Exception e) {
-                Twitchy.LOGGER.error("Exception getting image for {} from {}, type {}", name, url, type);
-                e.printStackTrace();
-                switch (type) {
-                    case LIVE:
-                        imageRL = NO_PREVIEW;
-                        break;
-                    case CACHED:
-                        imageRL = NO_PROFILE;
-                        break;
-                }
+            });
+            switch (type) {
+                case CACHED:
+                    imageRL = LOADING_PROFILE;
+                    break;
+                case LIVE:
+                    imageRL = LOADING_PREVIEW;
+                    break;
             }
         }
+        storeLocation(url, imageRL, type);
+        return imageRL;
+    }
 
-        //store texture
+    private static void storeLocation(String url, ResourceLocation location, ImageCacheType type) {
         switch (type) {
             case LIVE:
                 synchronized (previews) {
-                    previews.put(url, imageRL);
+                    previews.put(url, location);
                 }
                 break;
             case CACHED:
                 synchronized (profiles) {
-                    profiles.put(url, imageRL);
+                    profiles.put(url, location);
                 }
                 break;
         }
-        return imageRL;
     }
 
     public static boolean shouldShowIcon() {

@@ -109,8 +109,8 @@ public class TwitchyConfig {
                 } else {
                     StreamHandler.stopStreamChecker();
                     ImageUtil.clearPreviewCache();
-                    Twitchy.isLive = false;
                     Twitchy.LIVE_STREAMERS.clear();
+                    Twitchy.isLive = false;
                 }
             }
         }

@@ -21,14 +21,12 @@ public class StreamChecker implements Runnable {
 
     private static final String CLIENT_ID = "n3w3pptkwczocn9gw2r8pbjfe76xzr";
 
-    private String player;
-    private StreamInfo playerInfo;
-
     @Override
     public void run() {
         boolean live = false;
-        player = StreamerUtil.getPlayerStreamerName().toLowerCase(Locale.ROOT);
+        String player = StreamerUtil.getPlayerStreamerName().toLowerCase(Locale.ROOT);
         synchronized (Twitchy.LIVE_STREAMERS) {
+            Twitchy.LIVE_STREAMERS.clear();
             ImageUtil.clearPreviewCache();
 
             List<String> streamers = Lists.newArrayList(TwitchyConfig.CHANNELS.channels);
@@ -37,7 +35,7 @@ public class StreamChecker implements Runnable {
                 try {
                     JsonObject streamData = getJsonFromAPI("streams", player);
                     if (streamData != null) {
-                        playerInfo = createStreamInfoFromJson(streamData, player);
+                        StreamInfo playerInfo = createStreamInfoFromJson(streamData, player);
                         Twitchy.isSelfStreaming = playerInfo != null && playerInfo.streaming;
                         if (TwitchyConfig.GENERAL.streamerMode != EnumStreamerMode.PARTIAL && playerInfo.streaming)
                             addStreamer(player, playerInfo);

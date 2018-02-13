@@ -41,6 +41,7 @@ public class RenderingHandler {
     private static final int BORDER = 2;
     private static final int PROFILE_PIC_ORIGINAL_SIZE = 300;
     private static final int PROFILE_PIC_NEW_SIZE = 12;
+    private static final int PREVIEW_Z_LEVEL = 300; //300 is minimum as vanilla inventory items are rendered at that level and we want to render above these.
 
     private static boolean expandList = false; //TODO move to config to save value?
 
@@ -61,8 +62,7 @@ public class RenderingHandler {
             EnumPreviewSize quality = TwitchyConfig.PREVIEW.quality;
             if (!StringUtil.isNullOrEmpty(url)) {
                 GlStateManager.pushMatrix();
-                int zLevel = 300; //300 is minimum as vanilla inventory items are rendered at that level and we want to render above these.
-                GlStateManager.translate(0.0F, 0.0F, zLevel);
+                GlStateManager.translate(0.0F, 0.0F, PREVIEW_Z_LEVEL);
 
                 ResourceLocation preview = ImageUtil.loadImage(url, info.broadcaster, ImageUtil.ImageCacheType.LIVE);
                 mc.getTextureManager().bindTexture(preview);
@@ -102,7 +102,6 @@ public class RenderingHandler {
         int maxTextWidth = new ScaledResolution(mc).getScaledWidth() - mousePos.x - 16;
         if (Twitchy.isLive || TwitchyConfig.ICON.iconState == EnumIconVisibility.ALWAYS) {
             drawIcon(); //draw the twitch icon
-
             if (expandList) {
                 int x = TwitchyConfig.ICON.posX;
                 int y = TwitchyConfig.ICON.posY + icon.height + BORDER * 3;
@@ -128,6 +127,7 @@ public class RenderingHandler {
                             if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
                                 StreamInfo info = streamers.get(broadcaster);
                                 drawStreamInfo(localX, localY, mousePos, info, GuiScreen.isShiftKeyDown(), maxTextWidth);
+                                break;
                             }
                         }
                     }
@@ -181,36 +181,38 @@ public class RenderingHandler {
 
     @SubscribeEvent
     public static void mouseClick(GuiScreenEvent.MouseInputEvent.Pre event) {
-        if (TwitchyConfig.GENERAL.enabled && (!Twitchy.isSelfStreaming || TwitchyConfig.GENERAL.streamerMode != EnumStreamerMode.FULL)) {
-            if (TwitchyConfig.GENERAL.enableAltRightClickDismiss && Mouse.getEventButton() == 1 && Mouse.getEventButtonState() && GuiScreen.isAltKeyDown())
-                Twitchy.isIconDismissed = !Twitchy.isIconDismissed;
-        }
-        if (!ImageUtil.shouldShowIcon()) return;
+        if (!ImageUtil.shouldShowIcon()) return; //This covers all checks if the mod is active
         if (Mouse.getEventButtonState()) {
             Point mousePos = getCurrentMousePosition();
-            if (Mouse.getEventButton() == 0) {
-                if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, TwitchyConfig.ICON.iconSize.width, TwitchyConfig.ICON.iconSize.height, mousePos)) {
-                    if (GuiScreen.isAltKeyDown())
-                        mc.displayGuiScreen(FMLClientHandler.instance().getGuiFactoryFor(FMLCommonHandler.instance().findContainerFor(Twitchy.MODID)).createConfigGui(mc.currentScreen));
-                    else expandList = !expandList;
-                }
-                if (expandList && Twitchy.isLive) {
-                    int i = 0;
-                    int y = TwitchyConfig.ICON.posY + TwitchyConfig.ICON.iconSize.height + BORDER * 3;
-                    Map<String, StreamInfo> streamers = StreamerUtil.getStreamers();
-                    List<String> broadcasters = StreamerUtil.sortChannelNames(streamers.keySet());
-                    for (String broadcaster : broadcasters) {
-                        int localX = TwitchyConfig.ICON.posX + BORDER + 2;
-                        int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
-                        if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
-                            StreamerUtil.openTwitchStream(broadcaster.toLowerCase(Locale.ROOT));
+            switch (Mouse.getEventButton()) {
+                case 0:
+                    if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, TwitchyConfig.ICON.iconSize.width, TwitchyConfig.ICON.iconSize.height, mousePos)) {
+                        if (GuiScreen.isAltKeyDown())
+                            mc.displayGuiScreen(FMLClientHandler.instance().getGuiFactoryFor(FMLCommonHandler.instance().findContainerFor(Twitchy.MODID)).createConfigGui(mc.currentScreen));
+                        else expandList = !expandList;
+                    }
+                    if (expandList && Twitchy.isLive) {
+                        int i = 0;
+                        int y = TwitchyConfig.ICON.posY + TwitchyConfig.ICON.iconSize.height + BORDER * 3;
+                        Map<String, StreamInfo> streamers = StreamerUtil.getStreamers();
+                        List<String> broadcasters = StreamerUtil.sortChannelNames(streamers.keySet());
+                        for (String broadcaster : broadcasters) {
+                            int localX = TwitchyConfig.ICON.posX + BORDER + 2;
+                            int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
+                            if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
+                                StreamerUtil.openTwitchStream(broadcaster.toLowerCase(Locale.ROOT));
+                            }
                         }
                     }
-                }
-            } else if (Mouse.getEventButton() == 1) {
-                if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, TwitchyConfig.ICON.iconSize.width, TwitchyConfig.ICON.iconSize.height, mousePos)) {
-                    Twitchy.isIconDismissed = true;
-                }
+
+                    break;
+                case 1:
+                    if(TwitchyConfig.GENERAL.enableAltRightClickDismiss) {
+                        if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, TwitchyConfig.ICON.iconSize.width, TwitchyConfig.ICON.iconSize.height, mousePos)) {
+                            Twitchy.isIconDismissed = true;
+                        }
+                    }
+                    break;
             }
         }
     }
