@@ -138,6 +138,7 @@ public class RenderingHandler {
             String key = expandList ? "collapse" : "expand";
             List<String> tooltips = Lists.newArrayList(
                     new TextComponentTranslation("twitchy.icon." + key).setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText(),
+                    new TextComponentTranslation("twitchy.icon.info.right", TextFormatting.YELLOW.toString() + "ALT + Right-Click").getFormattedText(),
                     new TextComponentTranslation("twitchy.icon.info", TextFormatting.BLUE.toString() + "ALT + Click").getFormattedText()
             );
             GuiUtils.drawHoveringText(tooltips, mousePos.x, mousePos.y + 5, mc.displayWidth, mc.displayHeight, maxTextWidth, mc.fontRenderer);
@@ -181,6 +182,10 @@ public class RenderingHandler {
 
     @SubscribeEvent
     public static void mouseClick(GuiScreenEvent.MouseInputEvent.Pre event) {
+        if (TwitchyConfig.GENERAL.enabled && (!Twitchy.isSelfStreaming || TwitchyConfig.GENERAL.streamerMode != EnumStreamerMode.FULL)) {
+            if (TwitchyConfig.GENERAL.enableAltRightClickDismiss && Mouse.getEventButton() == 1 && Mouse.getEventButtonState() && GuiScreen.isAltKeyDown())
+                Twitchy.isIconDismissed = !Twitchy.isIconDismissed;
+        }
         if (!ImageUtil.shouldShowIcon()) return; //This covers all checks if the mod is active
         if (Mouse.getEventButtonState()) {
             Point mousePos = getCurrentMousePosition();

@@ -1,6 +1,7 @@
 #PARSE_ESCAPES
 
 twitchy.icon.info=%s to get to the config menu!
+twitchy.icon.info.right=%s anywhere to toggle the icon!
 twitchy.icon.expand=Click to expand the menu!
 twitchy.icon.collapse=Click to collapse the menu!
 
