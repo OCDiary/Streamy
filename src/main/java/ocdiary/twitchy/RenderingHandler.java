@@ -3,10 +3,12 @@ package ocdiary.twitchy;
 import com.google.common.collect.Lists;
 import io.netty.util.internal.StringUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -70,7 +72,7 @@ public class RenderingHandler {
                 Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, quality.width, quality.height, TwitchyConfig.PREVIEW.previewWidth, TwitchyConfig.PREVIEW.previewHeight, quality.width, quality.height);
                 GlStateManager.popMatrix();
             }
-            GuiUtils.drawHoveringText(Lists.newArrayList(), mouseX, mouseY + 15 + quality.height, mc.displayWidth, mc.displayHeight, Math.min(maxTextWidth, quality.width) + BORDER, mc.fontRenderer);
+            drawHoveringText(Lists.newArrayList(), mouseX, mouseY + 15 + quality.height, mc.displayWidth, mc.displayHeight, Math.min(maxTextWidth, quality.width) + BORDER, mc.fontRenderer);
         } else {
             List<String> tooltips = new ArrayList<>();
             Lists.newArrayList(I18n.format("twitchy.stream.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()));
@@ -90,7 +92,7 @@ public class RenderingHandler {
                 tooltips.add(I18n.format("twitchy.stream.preview", TextFormatting.GOLD.toString() + "SHIFT" + TextFormatting.RESET.toString()));
             }
             tooltips.add(TextFormatting.GRAY + I18n.format("twitchy.stream.watch", TextFormatting.WHITE.toString() + info.broadcaster + TextFormatting.GRAY.toString()) + TextFormatting.RESET);
-            GuiUtils.drawHoveringText(tooltips, mouseX, mouseY + 20, mc.displayWidth, mc.displayHeight, maxTextWidth, mc.fontRenderer);
+            drawHoveringText(tooltips, mouseX, mouseY + 20, mc.displayWidth, mc.displayHeight, maxTextWidth, mc.fontRenderer);
         }
     }
 
@@ -141,7 +143,7 @@ public class RenderingHandler {
                     new TextComponentTranslation("twitchy.icon.info.right", TextFormatting.YELLOW.toString() + "ALT + Right-Click").getFormattedText(),
                     new TextComponentTranslation("twitchy.icon.info", TextFormatting.BLUE.toString() + "ALT + Click").getFormattedText()
             );
-            GuiUtils.drawHoveringText(tooltips, mousePos.x, mousePos.y + 5, mc.displayWidth, mc.displayHeight, maxTextWidth, mc.fontRenderer);
+            drawHoveringText(tooltips, mousePos.x, mousePos.y + 5, mc.displayWidth, mc.displayHeight, maxTextWidth, mc.fontRenderer);
         }
     }
 
@@ -219,6 +221,148 @@ public class RenderingHandler {
                     }
                     break;
             }
+        }
+    }
+
+    /**
+     * THIS IS TEMPORARY UNTIL QUARK FIXES THE MISSING GUI NULL CHECK
+     *
+     * This is just copied from GuiUtils and has had all of the event firing removed
+     */
+    public static void drawHoveringText(List<String> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, FontRenderer font)
+    {
+        if (!textLines.isEmpty())
+        {
+            GlStateManager.disableRescaleNormal();
+            RenderHelper.disableStandardItemLighting();
+            GlStateManager.disableLighting();
+            GlStateManager.disableDepth();
+            int tooltipTextWidth = 0;
+
+            for (String textLine : textLines)
+            {
+                int textLineWidth = font.getStringWidth(textLine);
+
+                if (textLineWidth > tooltipTextWidth)
+                {
+                    tooltipTextWidth = textLineWidth;
+                }
+            }
+
+            boolean needsWrap = false;
+
+            int titleLinesCount = 1;
+            int tooltipX = mouseX + 12;
+            if (tooltipX + tooltipTextWidth + 4 > screenWidth)
+            {
+                tooltipX = mouseX - 16 - tooltipTextWidth;
+                if (tooltipX < 4) // if the tooltip doesn't fit on the screen
+                {
+                    if (mouseX > screenWidth / 2)
+                    {
+                        tooltipTextWidth = mouseX - 12 - 8;
+                    }
+                    else
+                    {
+                        tooltipTextWidth = screenWidth - 16 - mouseX;
+                    }
+                    needsWrap = true;
+                }
+            }
+
+            if (maxTextWidth > 0 && tooltipTextWidth > maxTextWidth)
+            {
+                tooltipTextWidth = maxTextWidth;
+                needsWrap = true;
+            }
+
+            if (needsWrap)
+            {
+                int wrappedTooltipWidth = 0;
+                List<String> wrappedTextLines = new ArrayList<>();
+                for (int i = 0; i < textLines.size(); i++)
+                {
+                    String textLine = textLines.get(i);
+                    List<String> wrappedLine = font.listFormattedStringToWidth(textLine, tooltipTextWidth);
+                    if (i == 0)
+                    {
+                        titleLinesCount = wrappedLine.size();
+                    }
+
+                    for (String line : wrappedLine)
+                    {
+                        int lineWidth = font.getStringWidth(line);
+                        if (lineWidth > wrappedTooltipWidth)
+                        {
+                            wrappedTooltipWidth = lineWidth;
+                        }
+                        wrappedTextLines.add(line);
+                    }
+                }
+                tooltipTextWidth = wrappedTooltipWidth;
+                textLines = wrappedTextLines;
+
+                if (mouseX > screenWidth / 2)
+                {
+                    tooltipX = mouseX - 16 - tooltipTextWidth;
+                }
+                else
+                {
+                    tooltipX = mouseX + 12;
+                }
+            }
+
+            int tooltipY = mouseY - 12;
+            int tooltipHeight = 8;
+
+            if (textLines.size() > 1)
+            {
+                tooltipHeight += (textLines.size() - 1) * 10;
+                if (textLines.size() > titleLinesCount) {
+                    tooltipHeight += 2; // gap between title lines and next lines
+                }
+            }
+
+            if (tooltipY < 4)
+            {
+                tooltipY = 4;
+            }
+            else if (tooltipY + tooltipHeight + 4 > screenHeight)
+            {
+                tooltipY = screenHeight - tooltipHeight - 4;
+            }
+
+            final int zLevel = 300;
+            int backgroundColor = 0xF0100010;
+            int borderColorStart = 0x505000FF;
+            int borderColorEnd = (borderColorStart & 0xFEFEFE) >> 1 | borderColorStart & 0xFF000000;
+            GuiUtils.drawGradientRect(zLevel, tooltipX - 3, tooltipY - 4, tooltipX + tooltipTextWidth + 3, tooltipY - 3, backgroundColor, backgroundColor);
+            GuiUtils.drawGradientRect(zLevel, tooltipX - 3, tooltipY + tooltipHeight + 3, tooltipX + tooltipTextWidth + 3, tooltipY + tooltipHeight + 4, backgroundColor, backgroundColor);
+            GuiUtils.drawGradientRect(zLevel, tooltipX - 3, tooltipY - 3, tooltipX + tooltipTextWidth + 3, tooltipY + tooltipHeight + 3, backgroundColor, backgroundColor);
+            GuiUtils.drawGradientRect(zLevel, tooltipX - 4, tooltipY - 3, tooltipX - 3, tooltipY + tooltipHeight + 3, backgroundColor, backgroundColor);
+            GuiUtils.drawGradientRect(zLevel, tooltipX + tooltipTextWidth + 3, tooltipY - 3, tooltipX + tooltipTextWidth + 4, tooltipY + tooltipHeight + 3, backgroundColor, backgroundColor);
+            GuiUtils.drawGradientRect(zLevel, tooltipX - 3, tooltipY - 3 + 1, tooltipX - 3 + 1, tooltipY + tooltipHeight + 3 - 1, borderColorStart, borderColorEnd);
+            GuiUtils.drawGradientRect(zLevel, tooltipX + tooltipTextWidth + 2, tooltipY - 3 + 1, tooltipX + tooltipTextWidth + 3, tooltipY + tooltipHeight + 3 - 1, borderColorStart, borderColorEnd);
+            GuiUtils.drawGradientRect(zLevel, tooltipX - 3, tooltipY - 3, tooltipX + tooltipTextWidth + 3, tooltipY - 3 + 1, borderColorStart, borderColorStart);
+            GuiUtils.drawGradientRect(zLevel, tooltipX - 3, tooltipY + tooltipHeight + 2, tooltipX + tooltipTextWidth + 3, tooltipY + tooltipHeight + 3, borderColorEnd, borderColorEnd);
+
+            for (int lineNumber = 0; lineNumber < textLines.size(); ++lineNumber)
+            {
+                String line = textLines.get(lineNumber);
+                font.drawStringWithShadow(line, (float)tooltipX, (float)tooltipY, -1);
+
+                if (lineNumber + 1 == titleLinesCount)
+                {
+                    tooltipY += 2;
+                }
+
+                tooltipY += 10;
+            }
+
+            GlStateManager.enableLighting();
+            GlStateManager.enableDepth();
+            RenderHelper.enableStandardItemLighting();
+            GlStateManager.enableRescaleNormal();
         }
     }
 }
