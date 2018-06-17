@@ -1,29 +1,17 @@
-package ocdiary.twitchy;
+package ocdiary.streamy;
 
-import com.google.common.collect.Sets;
-import ocdiary.twitchy.streams.Stream;
-import ocdiary.twitchy.streams.StreamSource;
-import ocdiary.twitchy.streams.TwitchStream;
-import ocdiary.twitchy.util.EnumStreamerMode;
-import ocdiary.twitchy.util.ImageUtil;
-import ocdiary.twitchy.util.StreamInfo;
-import ocdiary.twitchy.util.StreamerUtil;
+import ocdiary.streamy.streams.Stream;
+import ocdiary.streamy.streams.StreamSource;
+import ocdiary.streamy.streams.Streams;
+import ocdiary.streamy.util.EnumStreamerMode;
+import ocdiary.streamy.util.ImageUtil;
+import ocdiary.streamy.util.StreamInfo;
+import ocdiary.streamy.util.StreamerUtil;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 public class StreamChecker implements Runnable {
 
-    private static final Map<StreamSource, Stream> STREAMS = new HashMap<>();
-
-    static {
-        //TODO: Add other streams
-        STREAMS.put(StreamSource.TWITCH, new TwitchStream());
-    }
-
-    //TODO: Test this all works now
     @Override
     public void run() {
         boolean live = false;
@@ -32,26 +20,22 @@ public class StreamChecker implements Runnable {
             Streamy.LIVE_STREAMERS.clear();
             ImageUtil.clearPreviewCache();
 
-            Set<String> streamers = Sets.newHashSet(StreamyConfig.CHANNELS.channels);
-
-            for (String broadcaster : streamers) {
+            for (String broadcaster : StreamyConfig.CHANNELS.channels) {
                 try {
                     //Get stream info
-                    int index = broadcaster.indexOf(':');
-                    if (index < 0)
+                    String[] split = StreamerUtil.splitChannelConfig(broadcaster);
+                    if (split == null)
                         Streamy.LOGGER.error("Broadcaster %s doesn't have a source!", broadcaster);
                     else {
                         //Extract the source
-                        String sourceString = broadcaster.substring(0, index);
-                        StreamSource source = StreamSource.getSource(sourceString);
+                        StreamSource source = StreamSource.getSource(split[0]);
                         if (source == null)
-                            Streamy.LOGGER.error("Broadcaster %s has an invalid source '%s'!", broadcaster, sourceString);
+                            Streamy.LOGGER.error("Broadcaster %s has an invalid source '%s'!", broadcaster, split[0]);
                         else {
-                            Stream stream = STREAMS.get(source);
+                            Stream stream = Streams.getStream(source);
                             //Extract the channel
-                            String channelString = broadcaster.substring(index + 1);
-                            StreamInfo info = stream.getStreamInfo(channelString);
-                            if (channelString.equals(player)) {
+                            StreamInfo info = stream.getStreamInfo(split[1]);
+                            if (split[1].equals(player)) {
                                 Streamy.isSelfStreaming = info != null && info.streaming;
                                 if (StreamyConfig.GENERAL.streamerMode != EnumStreamerMode.PARTIAL && info != null && info.streaming)
                                     addStreamer(player, info);

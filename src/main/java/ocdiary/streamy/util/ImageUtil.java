@@ -1,4 +1,4 @@
-package ocdiary.twitchy.util;
+package ocdiary.streamy.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -6,8 +6,8 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.ResourceLocation;
-import ocdiary.twitchy.Streamy;
-import ocdiary.twitchy.StreamyConfig;
+import ocdiary.streamy.Streamy;
+import ocdiary.streamy.StreamyConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AgeFileFilter;
 

@@ -1,6 +1,6 @@
-package ocdiary.twitchy.streams;
+package ocdiary.streamy.streams;
 
-import ocdiary.twitchy.util.StreamInfo;
+import ocdiary.streamy.util.StreamInfo;
 
 public interface Stream {
 

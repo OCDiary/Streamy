@@ -1,4 +1,4 @@
-package ocdiary.twitchy;
+package ocdiary.streamy;
 
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.common.Mod;

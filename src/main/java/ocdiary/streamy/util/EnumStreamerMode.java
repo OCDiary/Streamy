@@ -1,4 +1,4 @@
-package ocdiary.twitchy.util;
+package ocdiary.streamy.util;
 
 public enum EnumStreamerMode {
     OFF,

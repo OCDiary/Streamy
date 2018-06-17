@@ -1,4 +1,4 @@
-package ocdiary.twitchy.util;
+package ocdiary.streamy.util;
 
 import java.util.Locale;
 

@@ -1,11 +1,11 @@
-package ocdiary.twitchy.streams;
+package ocdiary.streamy.streams;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import ocdiary.twitchy.Streamy;
-import ocdiary.twitchy.StreamyConfig;
-import ocdiary.twitchy.util.StreamInfo;
+import ocdiary.streamy.Streamy;
+import ocdiary.streamy.StreamyConfig;
+import ocdiary.streamy.util.StreamInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 

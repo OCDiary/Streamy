@@ -1,11 +1,11 @@
-package ocdiary.twitchy;
+package ocdiary.streamy;
 
 import com.google.common.collect.Maps;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import ocdiary.twitchy.util.ImageUtil;
-import ocdiary.twitchy.util.StreamInfo;
+import ocdiary.streamy.util.ImageUtil;
+import ocdiary.streamy.util.StreamInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

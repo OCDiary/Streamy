@@ -1,4 +1,4 @@
-package ocdiary.twitchy;
+package ocdiary.streamy;
 
 import com.google.common.collect.Lists;
 import io.netty.util.internal.StringUtil;
@@ -23,14 +23,13 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import ocdiary.twitchy.util.*;
+import ocdiary.streamy.streams.Streams;
+import ocdiary.streamy.util.*;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = Streamy.MODID, value = Side.CLIENT)
 public class RenderingHandler {
@@ -107,26 +106,22 @@ public class RenderingHandler {
                 int y = StreamyConfig.ICON.posY + icon.height + BORDER * 3;
                 synchronized (Streamy.LIVE_STREAMERS) {
                     int localX = x + BORDER + 2;
-                    Map<String, StreamInfo> streamers = StreamerUtil.getStreamers();
-                    List<String> broadcasters = StreamerUtil.sortChannelNames(streamers.keySet());
-                    if (!broadcasters.isEmpty()) {
+                    List<StreamInfo> streamers = StreamerUtil.getStreamers();
+                    if (!streamers.isEmpty()) {
                         drawTooltipBoxBackground(localX + BORDER / 2, y + BORDER / 2, PROFILE_PIC_NEW_SIZE - BORDER, PROFILE_PIC_NEW_SIZE * streamers.size() + (streamers.size() - 1) * 3 - BORDER, 0);
-                        for (int i = 0; i < broadcasters.size(); i++) {
-                            String broadcaster = broadcasters.get(i);
+                        for (int i = 0; i < streamers.size(); i++) {
+                            StreamInfo info = streamers.get(i);
                             int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i;
-                            StreamInfo info = streamers.get(broadcaster);
-                            ResourceLocation profilePic = ImageUtil.loadImage(info.profilePicUrl, broadcaster, ImageUtil.ImageCacheType.CACHED);
+                            ResourceLocation profilePic = ImageUtil.loadImage(info.profilePicUrl, info.broadcaster, ImageUtil.ImageCacheType.CACHED);
                             mc.renderEngine.bindTexture(profilePic);
                             Gui.drawScaledCustomSizeModalRect(localX, localY, 0, 0, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE);
                         }
 
                         //important: need to draw the tooltip AFTER all icons have been drawn
-                        for (int i = 0; i < broadcasters.size(); i++) {
-                            String broadcaster = broadcasters.get(i);
+                        for (int i = 0; i < streamers.size(); i++) {
                             int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i;
                             if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
-                                StreamInfo info = streamers.get(broadcaster);
-                                drawStreamInfo(localX, localY, mousePos, info, GuiScreen.isShiftKeyDown(), maxTextWidth);
+                                drawStreamInfo(localX, localY, mousePos, streamers.get(i), GuiScreen.isShiftKeyDown(), maxTextWidth);
                                 break;
                             }
                         }
@@ -199,13 +194,12 @@ public class RenderingHandler {
                     if (expandList && Streamy.isLive) {
                         int i = 0;
                         int y = StreamyConfig.ICON.posY + StreamyConfig.ICON.iconSize.height + BORDER * 3;
-                        Map<String, StreamInfo> streamers = StreamerUtil.getStreamers();
-                        List<String> broadcasters = StreamerUtil.sortChannelNames(streamers.keySet());
-                        for (String broadcaster : broadcasters) {
+                        List<StreamInfo> streamers = StreamerUtil.getStreamers();
+                        for (StreamInfo info : streamers) {
                             int localX = StreamyConfig.ICON.posX + BORDER + 2;
                             int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
                             if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
-                                StreamerUtil.openTwitchStream(broadcaster.toLowerCase(Locale.ROOT));
+                                Streams.getStream(info).openStreamURL(info.broadcaster);
                             }
                         }
                     }

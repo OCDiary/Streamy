@@ -1,6 +1,6 @@
-package ocdiary.twitchy.util;
+package ocdiary.streamy.util;
 
-import ocdiary.twitchy.streams.StreamSource;
+import ocdiary.streamy.streams.StreamSource;
 
 /**
  * @author UpcraftLP

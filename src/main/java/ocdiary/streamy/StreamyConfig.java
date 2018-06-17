@@ -1,11 +1,11 @@
-package ocdiary.twitchy;
+package ocdiary.streamy;
 
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import ocdiary.twitchy.util.*;
+import ocdiary.streamy.util.*;
 
 @Config(modid = Streamy.MODID)
 @Config.LangKey(Streamy.MODID + ".config.title")

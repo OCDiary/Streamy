@@ -1,4 +1,4 @@
-package ocdiary.twitchy.streams;
+package ocdiary.streamy.streams;
 
 public enum StreamSource {
     TWITCH("twitch"),
