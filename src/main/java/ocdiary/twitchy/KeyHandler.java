@@ -7,7 +7,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 
-@Mod.EventBusSubscriber(modid = Twitchy.MODID, value = Side.CLIENT)
+@Mod.EventBusSubscriber(modid = Streamy.MODID, value = Side.CLIENT)
 public class KeyHandler {
 
     public static KeyBinding keyDismiss = new KeyBinding("key.twitchy.dismiss", Keyboard.KEY_Z, "key.twitchy.category");
@@ -15,7 +15,7 @@ public class KeyHandler {
     @SubscribeEvent
     public static void onKey(InputEvent event) {
         if (keyDismiss.isPressed()) {
-            Twitchy.isIconDismissed = !Twitchy.isIconDismissed;
+            Streamy.isIconDismissed = !Streamy.isIconDismissed;
         }
     }
 }

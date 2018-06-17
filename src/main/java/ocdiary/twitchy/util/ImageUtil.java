@@ -6,8 +6,8 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.ResourceLocation;
-import ocdiary.twitchy.Twitchy;
-import ocdiary.twitchy.TwitchyConfig;
+import ocdiary.twitchy.Streamy;
+import ocdiary.twitchy.StreamyConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AgeFileFilter;
 
@@ -26,10 +26,10 @@ import java.util.concurrent.Executors;
 public class ImageUtil {
 
     private static final Minecraft mc = Minecraft.getMinecraft();
-    public static final ResourceLocation NO_PREVIEW = new ResourceLocation(Twitchy.MODID, "textures/gui/preview_failed.png");
-    public static final ResourceLocation NO_PROFILE = new ResourceLocation(Twitchy.MODID, "textures/gui/icon_failed.png");
-    public static final ResourceLocation LOADING_PREVIEW = new ResourceLocation(Twitchy.MODID, "textures/gui/preview_loading.png");
-    public static final ResourceLocation LOADING_PROFILE = new ResourceLocation(Twitchy.MODID, "textures/gui/icon_loading.png");
+    public static final ResourceLocation NO_PREVIEW = new ResourceLocation(Streamy.MODID, "textures/gui/preview_failed.png");
+    public static final ResourceLocation NO_PROFILE = new ResourceLocation(Streamy.MODID, "textures/gui/icon_failed.png");
+    public static final ResourceLocation LOADING_PREVIEW = new ResourceLocation(Streamy.MODID, "textures/gui/preview_loading.png");
+    public static final ResourceLocation LOADING_PROFILE = new ResourceLocation(Streamy.MODID, "textures/gui/icon_loading.png");
 
     private static final Map<String, ResourceLocation> previews = new ConcurrentHashMap<>();
     private static final Map<String, ResourceLocation> profiles = new ConcurrentHashMap<>();
@@ -39,9 +39,9 @@ public class ImageUtil {
     private static File cacheDir;
 
     public static void init() {
-        cacheDir = new File(Minecraft.getMinecraft().mcDataDir, Twitchy.MODID + "/profileCache");
-        if(!cacheDir.exists()) {
-            Twitchy.LOGGER.info("no profile cache found, creating cache directory at {}.", ImageUtil.cacheDir.getAbsolutePath());
+        cacheDir = new File(Minecraft.getMinecraft().mcDataDir, Streamy.MODID + "/profileCache");
+        if (!cacheDir.exists()) {
+            Streamy.LOGGER.info("no profile cache found, creating cache directory at {}.", ImageUtil.cacheDir.getAbsolutePath());
             ImageUtil.cacheDir.mkdirs();
         }
         clearOldFiles();
@@ -75,15 +75,16 @@ public class ImageUtil {
 
     /**
      * used to load a texture from the web and cache it.
-     * @param url the url to download the image from, also acts as unique identifier for the image
+     *
+     * @param url  the url to download the image from, also acts as unique identifier for the image
      * @param name the name of the image
      * @param type cached means to save the downloaded image as file and only refresh it every 30 days.
      * @return the {@link ResourceLocation} that this image can be accessed with
      */
     public static ResourceLocation loadImage(String url, String name, ImageCacheType type) {
-        if(type == ImageCacheType.CACHED && profiles.containsKey(url)) return profiles.get(url);
-        else if(type == ImageCacheType.LIVE && previews.containsKey(url)) return previews.get(url);
-        for(char c : ChatAllowedCharacters.ILLEGAL_FILE_CHARACTERS) {
+        if (type == ImageCacheType.CACHED && profiles.containsKey(url)) return profiles.get(url);
+        else if (type == ImageCacheType.LIVE && previews.containsKey(url)) return previews.get(url);
+        for (char c : ChatAllowedCharacters.ILLEGAL_FILE_CHARACTERS) {
             name = name.replace(c, '_');
         }
 
@@ -92,21 +93,21 @@ public class ImageUtil {
 
 
         //try to load from file
-        if(type == ImageCacheType.CACHED) {
+        if (type == ImageCacheType.CACHED) {
             File image = new File(cacheDir, name + ".png");
             try {
                 if (image.exists() && !image.isDirectory()) {
-                    imageRL = textureManager.getDynamicTextureLocation(Twitchy.MODID + "_" + name + "_" + type, new DynamicTexture(ImageIO.read(image)));
+                    imageRL = textureManager.getDynamicTextureLocation(Streamy.MODID + "_" + name + "_" + type, new DynamicTexture(ImageIO.read(image)));
                 }
             } catch (Exception e) {
                 image.delete();
-                Twitchy.LOGGER.error("error reading cached profile image, trying to get texture from the web...");
+                Streamy.LOGGER.error("error reading cached profile image, trying to get texture from the web...");
                 imageRL = null;
             }
         }
 
         //else get from web
-        if(imageRL == null) {
+        if (imageRL == null) {
             final String name2 = name;
             EXECUTOR_SERVICE.execute(() -> {
                 try {
@@ -114,16 +115,16 @@ public class ImageUtil {
                     if (type == ImageCacheType.CACHED) {
                         File image = new File(cacheDir, name2 + ".png");
                         ImageIO.write(bufferedImage, "png", image);
-                        Twitchy.LOGGER.debug("Successfully downloaded profile image for {} and saved to {}.", name2, image.getName());
+                        Streamy.LOGGER.debug("Successfully downloaded profile image for {} and saved to {}.", name2, image.getName());
                     }
                     Minecraft.getMinecraft().addScheduledTask(() -> {
                         DynamicTexture texture = new DynamicTexture(bufferedImage);
-                        ResourceLocation location = textureManager.getDynamicTextureLocation(Twitchy.MODID + "_" + name2 + "_" + type, texture);
+                        ResourceLocation location = textureManager.getDynamicTextureLocation(Streamy.MODID + "_" + name2 + "_" + type, texture);
                         storeLocation(url, location, type);
-                        Twitchy.LOGGER.debug("Successfully uploaded texture for {} to the texture atlas as {}.", name2, location.toString());
+                        Streamy.LOGGER.debug("Successfully uploaded texture for {} to the texture atlas as {}.", name2, location.toString());
                     });
                 } catch (Exception e) {
-                    Twitchy.LOGGER.error("Exception getting image for {} from {}, type {}", name2, url, type);
+                    Streamy.LOGGER.error("Exception getting image for {} from {}, type {}", name2, url, type);
                     ResourceLocation resourceLocation;
                     switch (type) {
                         case CACHED:
@@ -168,6 +169,6 @@ public class ImageUtil {
     }
 
     public static boolean shouldShowIcon() {
-        return TwitchyConfig.GENERAL.enabled && !Twitchy.isIconDismissed && !(Twitchy.isSelfStreaming && TwitchyConfig.GENERAL.streamerMode == EnumStreamerMode.FULL);
+        return StreamyConfig.GENERAL.enabled && !Streamy.isIconDismissed && !(Streamy.isSelfStreaming && StreamyConfig.GENERAL.streamerMode == EnumStreamerMode.FULL);
     }
 }

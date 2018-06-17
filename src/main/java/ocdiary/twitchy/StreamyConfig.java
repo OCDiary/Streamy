@@ -7,9 +7,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import ocdiary.twitchy.util.*;
 
-@Config(modid = Twitchy.MODID)
-@Config.LangKey(Twitchy.MODID + ".config.title")
-public class TwitchyConfig {
+@Config(modid = Streamy.MODID)
+@Config.LangKey(Streamy.MODID + ".config.title")
+public class StreamyConfig {
     @Config.Comment("General mod configs")
     public static final General GENERAL = new General();
 
@@ -46,7 +46,7 @@ public class TwitchyConfig {
     public static class Channel {
 
         @Config.Comment("The Twitch channels to monitor and show the status of")
-        public String[] channels = new String[]{"OCDiary"};
+        public String[] channels = new String[]{"twitch:P3PSIE"};
 
         @Config.Comment("Whether the channels are sorted alphabetically")
         public boolean sortChannels = true;
@@ -97,20 +97,20 @@ public class TwitchyConfig {
         public int previewHeight = 180;
     }
 
-    @Mod.EventBusSubscriber(modid = Twitchy.MODID)
+    @Mod.EventBusSubscriber(modid = Streamy.MODID)
     private static class Handler {
 
         @SubscribeEvent
         public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
-            if (event.getModID().equalsIgnoreCase(Twitchy.MODID)) {
-                ConfigManager.sync(Twitchy.MODID, Config.Type.INSTANCE);
+            if (event.getModID().equalsIgnoreCase(Streamy.MODID)) {
+                ConfigManager.sync(Streamy.MODID, Config.Type.INSTANCE);
                 if (GENERAL.enabled) {
                     StreamHandler.startStreamChecker();
                 } else {
                     StreamHandler.stopStreamChecker();
                     ImageUtil.clearPreviewCache();
-                    Twitchy.LIVE_STREAMERS.clear();
-                    Twitchy.isLive = false;
+                    Streamy.LIVE_STREAMERS.clear();
+                    Streamy.isLive = false;
                 }
             }
         }

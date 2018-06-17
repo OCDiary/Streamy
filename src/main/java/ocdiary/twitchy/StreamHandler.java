@@ -12,16 +12,16 @@ public class StreamHandler {
     public static void startStreamChecker() {
         synchronized (threadLock) {
             stopStreamChecker();
-            Twitchy.LOGGER.info("Starting Twitch stream status checker...");
+            Streamy.LOGGER.info("Starting stream status checker...");
             executorService = Executors.newSingleThreadScheduledExecutor();
-            executorService.scheduleAtFixedRate(new StreamChecker(), 0, TwitchyConfig.CHANNELS.interval, TimeUnit.SECONDS);
+            executorService.scheduleAtFixedRate(new StreamChecker(), 0, StreamyConfig.CHANNELS.interval, TimeUnit.SECONDS);
         }
     }
 
     public static void stopStreamChecker() {
         synchronized (threadLock) {
             if (isCheckerRunning()) {
-                Twitchy.LOGGER.info("Stopping Twitch stream status checker...");
+                Streamy.LOGGER.info("Stopping stream status checker...");
                 executorService.shutdown();
             }
         }

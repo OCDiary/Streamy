@@ -32,10 +32,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-@Mod.EventBusSubscriber(modid = Twitchy.MODID, value = Side.CLIENT)
+@Mod.EventBusSubscriber(modid = Streamy.MODID, value = Side.CLIENT)
 public class RenderingHandler {
 
-    private static final ResourceLocation TWITCH_ICON = new ResourceLocation(Twitchy.MODID, "textures/gui/twitch.png");
+    private static final ResourceLocation TWITCH_ICON = new ResourceLocation(Streamy.MODID, "textures/gui/twitch.png");
     private static final Minecraft mc = Minecraft.getMinecraft();
 
     private static final int BORDER = 2;
@@ -49,17 +49,17 @@ public class RenderingHandler {
         GlStateManager.color(1f, 1f, 1f, 1f);
         GlStateManager.enableBlend();
         mc.getTextureManager().bindTexture(TWITCH_ICON);
-        EnumIconSize iconSize = TwitchyConfig.ICON.iconSize;
-        GuiUtils.drawTexturedModalRect(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, iconSize.outlineU, iconSize.outlineV, iconSize.width, iconSize.height, 0);
-        if (Twitchy.isLive)
-            GuiUtils.drawTexturedModalRect(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, iconSize.overlayU, iconSize.overlayV, iconSize.width, iconSize.height, 0);
+        EnumIconSize iconSize = StreamyConfig.ICON.iconSize;
+        GuiUtils.drawTexturedModalRect(StreamyConfig.ICON.posX, StreamyConfig.ICON.posY, iconSize.outlineU, iconSize.outlineV, iconSize.width, iconSize.height, 0);
+        if (Streamy.isLive)
+            GuiUtils.drawTexturedModalRect(StreamyConfig.ICON.posX, StreamyConfig.ICON.posY, iconSize.overlayU, iconSize.overlayV, iconSize.width, iconSize.height, 0);
     }
 
     private static void drawStreamInfo(int x, int y, Point mousePos, StreamInfo info, boolean showPreview, int maxTextWidth) {
         int mouseX = mousePos.x, mouseY = mousePos.y;
         if (showPreview && info.streaming) {
             String url = info.previewUrl;
-            EnumPreviewSize quality = TwitchyConfig.PREVIEW.quality;
+            EnumPreviewSize quality = StreamyConfig.PREVIEW.quality;
             if (!StringUtil.isNullOrEmpty(url)) {
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(0.0F, 0.0F, PREVIEW_Z_LEVEL);
@@ -67,7 +67,7 @@ public class RenderingHandler {
                 ResourceLocation preview = ImageUtil.loadImage(url, info.broadcaster, ImageUtil.ImageCacheType.LIVE);
                 mc.getTextureManager().bindTexture(preview);
 
-                Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, quality.width, quality.height, TwitchyConfig.PREVIEW.previewWidth, TwitchyConfig.PREVIEW.previewHeight, quality.width, quality.height);
+                Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, quality.width, quality.height, StreamyConfig.PREVIEW.previewWidth, StreamyConfig.PREVIEW.previewHeight, quality.width, quality.height);
                 GlStateManager.popMatrix();
             }
             GuiUtils.drawHoveringText(Lists.newArrayList(), mouseX, mouseY + 15 + quality.height, mc.displayWidth, mc.displayHeight, Math.min(maxTextWidth, quality.width) + BORDER, mc.fontRenderer);
@@ -80,11 +80,11 @@ public class RenderingHandler {
                         ""));
             } else {
                 tooltips.add(I18n.format("twitchy.stream.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()));
-                if (!TwitchyConfig.CHANNELS.disableTitle)
+                if (!StreamyConfig.CHANNELS.disableTitle)
                     tooltips.add(I18n.format("twitchy.stream.title", TextFormatting.BLUE.toString() + info.title + TextFormatting.RESET.toString()));
-                if (!TwitchyConfig.CHANNELS.disableGame)
+                if (!StreamyConfig.CHANNELS.disableGame)
                     tooltips.add(I18n.format("twitchy.stream.game", TextFormatting.DARK_GREEN.toString() + info.game + TextFormatting.RESET.toString()));
-                if (!TwitchyConfig.CHANNELS.disableViewers)
+                if (!StreamyConfig.CHANNELS.disableViewers)
                     tooltips.add(I18n.format("twitchy.stream.viewers", TextFormatting.DARK_RED.toString() + info.viewers + TextFormatting.RESET.toString()));
                 tooltips.add("");
                 tooltips.add(I18n.format("twitchy.stream.preview", TextFormatting.GOLD.toString() + "SHIFT" + TextFormatting.RESET.toString()));
@@ -98,14 +98,14 @@ public class RenderingHandler {
     public static void drawScreen(TickEvent.RenderTickEvent event) {
         if (!ImageUtil.shouldShowIcon() || event.phase != TickEvent.Phase.END) return;
         Point mousePos = getCurrentMousePosition();
-        EnumIconSize icon = TwitchyConfig.ICON.iconSize;
+        EnumIconSize icon = StreamyConfig.ICON.iconSize;
         int maxTextWidth = new ScaledResolution(mc).getScaledWidth() - mousePos.x - 16;
-        if (Twitchy.isLive || TwitchyConfig.ICON.iconState == EnumIconVisibility.ALWAYS) {
+        if (Streamy.isLive || StreamyConfig.ICON.iconState == EnumIconVisibility.ALWAYS) {
             drawIcon(); //draw the twitch icon
             if (expandList) {
-                int x = TwitchyConfig.ICON.posX;
-                int y = TwitchyConfig.ICON.posY + icon.height + BORDER * 3;
-                synchronized (Twitchy.LIVE_STREAMERS) {
+                int x = StreamyConfig.ICON.posX;
+                int y = StreamyConfig.ICON.posY + icon.height + BORDER * 3;
+                synchronized (Streamy.LIVE_STREAMERS) {
                     int localX = x + BORDER + 2;
                     Map<String, StreamInfo> streamers = StreamerUtil.getStreamers();
                     List<String> broadcasters = StreamerUtil.sortChannelNames(streamers.keySet());
@@ -134,7 +134,7 @@ public class RenderingHandler {
                 }
             }
         }
-        if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, icon.width, icon.height, mousePos)) {
+        if (isMouseOver(StreamyConfig.ICON.posX, StreamyConfig.ICON.posY, icon.width, icon.height, mousePos)) {
             String key = expandList ? "collapse" : "expand";
             List<String> tooltips = Lists.newArrayList(
                     new TextComponentTranslation("twitchy.icon." + key).setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText(),
@@ -182,27 +182,27 @@ public class RenderingHandler {
 
     @SubscribeEvent
     public static void mouseClick(GuiScreenEvent.MouseInputEvent.Pre event) {
-        if (TwitchyConfig.GENERAL.enabled && (!Twitchy.isSelfStreaming || TwitchyConfig.GENERAL.streamerMode != EnumStreamerMode.FULL)) {
-            if (TwitchyConfig.GENERAL.enableAltRightClickDismiss && Mouse.getEventButton() == 1 && Mouse.getEventButtonState() && GuiScreen.isAltKeyDown())
-                Twitchy.isIconDismissed = !Twitchy.isIconDismissed;
+        if (StreamyConfig.GENERAL.enabled && (!Streamy.isSelfStreaming || StreamyConfig.GENERAL.streamerMode != EnumStreamerMode.FULL)) {
+            if (StreamyConfig.GENERAL.enableAltRightClickDismiss && Mouse.getEventButton() == 1 && Mouse.getEventButtonState() && GuiScreen.isAltKeyDown())
+                Streamy.isIconDismissed = !Streamy.isIconDismissed;
         }
         if (!ImageUtil.shouldShowIcon()) return; //This covers all checks if the mod is active
         if (Mouse.getEventButtonState()) {
             Point mousePos = getCurrentMousePosition();
             switch (Mouse.getEventButton()) {
                 case 0:
-                    if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, TwitchyConfig.ICON.iconSize.width, TwitchyConfig.ICON.iconSize.height, mousePos)) {
+                    if (isMouseOver(StreamyConfig.ICON.posX, StreamyConfig.ICON.posY, StreamyConfig.ICON.iconSize.width, StreamyConfig.ICON.iconSize.height, mousePos)) {
                         if (GuiScreen.isAltKeyDown())
-                            mc.displayGuiScreen(FMLClientHandler.instance().getGuiFactoryFor(FMLCommonHandler.instance().findContainerFor(Twitchy.MODID)).createConfigGui(mc.currentScreen));
+                            mc.displayGuiScreen(FMLClientHandler.instance().getGuiFactoryFor(FMLCommonHandler.instance().findContainerFor(Streamy.MODID)).createConfigGui(mc.currentScreen));
                         else expandList = !expandList;
                     }
-                    if (expandList && Twitchy.isLive) {
+                    if (expandList && Streamy.isLive) {
                         int i = 0;
-                        int y = TwitchyConfig.ICON.posY + TwitchyConfig.ICON.iconSize.height + BORDER * 3;
+                        int y = StreamyConfig.ICON.posY + StreamyConfig.ICON.iconSize.height + BORDER * 3;
                         Map<String, StreamInfo> streamers = StreamerUtil.getStreamers();
                         List<String> broadcasters = StreamerUtil.sortChannelNames(streamers.keySet());
                         for (String broadcaster : broadcasters) {
-                            int localX = TwitchyConfig.ICON.posX + BORDER + 2;
+                            int localX = StreamyConfig.ICON.posX + BORDER + 2;
                             int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
                             if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
                                 StreamerUtil.openTwitchStream(broadcaster.toLowerCase(Locale.ROOT));
@@ -212,9 +212,9 @@ public class RenderingHandler {
 
                     break;
                 case 1:
-                    if(TwitchyConfig.GENERAL.enableAltRightClickDismiss) {
-                        if (isMouseOver(TwitchyConfig.ICON.posX, TwitchyConfig.ICON.posY, TwitchyConfig.ICON.iconSize.width, TwitchyConfig.ICON.iconSize.height, mousePos)) {
-                            Twitchy.isIconDismissed = true;
+                    if (StreamyConfig.GENERAL.enableAltRightClickDismiss) {
+                        if (isMouseOver(StreamyConfig.ICON.posX, StreamyConfig.ICON.posY, StreamyConfig.ICON.iconSize.width, StreamyConfig.ICON.iconSize.height, mousePos)) {
+                            Streamy.isIconDismissed = true;
                         }
                     }
                     break;
