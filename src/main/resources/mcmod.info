@@ -12,11 +12,11 @@
           "updateUrl": "",
           "authorList": ["OCDiary", "Bright_Spark", "UpcraftLP"],
           "credits": "The Forge and FML guys, for making forge. Bright_Spark and UpcraftLP for their help and assistance!",
-          "logoFile": "assets/twitchy/logo.png",
+          "logoFile": "assets/streamy/logo.png",
           "screenshots": [],
           "parent": "",
           "dependants": [],
-          "dependencies": ["forge@[14.23.1.2595,)"],
+          "dependencies": ["forge@[14.21.1.2387,)"],
           "requiredMods": [],
           "useDependencyInformation": true
         }

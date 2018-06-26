@@ -17,14 +17,15 @@ import java.util.Map;
         version = Streamy.VERSION,
         acceptedMinecraftVersions = Streamy.MCVERSIONS,
         dependencies = Streamy.DEPENDENCIES,
-        clientSideOnly = true)
+        clientSideOnly = true
+)
 public class Streamy {
 
     public static final String MODID = "streamy";
     public static final String NAME = "Streamy";
     public static final String VERSION = "@VERSION@"; //This is replaced in the build.gradle
-    public static final String MCVERSIONS = "[1.12, 1.12.2]";
-    public static final String DEPENDENCIES = "forge@[14.23.1.2595,)";
+    public static final String MCVERSIONS = "[1.12,1.13)";
+    public static final String DEPENDENCIES = "forge@[14.21.1.2387,)";
 
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     /**

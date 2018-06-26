@@ -1,19 +1,19 @@
 #PARSE_ESCAPES
 
-twitchy.icon.info=%s to get to the config menu!
-twitchy.icon.info.right=%s anywhere to toggle the icon!
-twitchy.icon.expand=Click to expand the menu!
-twitchy.icon.collapse=Click to collapse the menu!
+streamy.icon.info=%s to get to the config menu!
+streamy.icon.info.right=%s anywhere to toggle the icon!
+streamy.icon.expand=Click to expand the menu!
+streamy.icon.collapse=Click to collapse the menu!
 
-twitchy.stream.broadcaster=%s is currently live!
-twitchy.stream.title=Stream Title: %s
-twitchy.stream.game=Current Game: %s
-twitchy.stream.viewers=Current Viewers: %s
-twitchy.stream.offline=%s is currently offline!
-twitchy.stream.preview=Press %s to see a preview!
-twitchy.stream.watch=Click to watch %s on Twitch!
+streamy.stream.broadcaster=%s is currently live!
+streamy.stream.title=Stream Title: %s
+streamy.stream.game=Current Game: %s
+streamy.stream.viewers=Current Viewers: %s
+streamy.stream.offline=%s is currently offline!
+streamy.stream.preview=Press %s to see a preview!
+streamy.stream.watch=Click to watch %s on Twitch!
 
-twitchy.config.title=Twitchy Configs
+streamy.config.title=Twitchy Configs
 
-key.twitchy.category=Twitchy
-key.twitchy.dismiss=Dismiss icon
+key.streamy.category=Twitchy
+key.streamy.dismiss=Dismiss icon
