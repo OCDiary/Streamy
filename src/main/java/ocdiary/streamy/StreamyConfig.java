@@ -24,7 +24,10 @@ public class StreamyConfig {
 
     public static class General {
 
-        @Config.Comment("This acts as a global switch to disable the entire mod")
+        @Config.Comment({
+                "This acts as a global switch to disable the entire mod",
+                "Useful if you are a content creator and want to disable this while streaming or recording"
+        })
         public boolean enabled = true;
 
         @Config.Comment({
@@ -45,7 +48,13 @@ public class StreamyConfig {
 
     public static class Channel {
 
-        @Config.Comment("The Twitch channels to monitor and show the status of")
+        //TODO: Update platforms in comment when we add support for more
+        @Config.Comment({
+                "The Twitch channels to monitor and show the status of",
+                "Entries must be in the format '<platform>:<streamer>'",
+                "Acceptable streaming platforms are:",
+                "twitch"
+        })
         public String[] channels = new String[]{"twitch:P3PSIE"};
 
         @Config.Comment("Whether the channels are sorted alphabetically")
@@ -83,6 +92,9 @@ public class StreamyConfig {
         @Config.Comment("Icon Y position (from the top)")
         @Config.RangeInt(min = 0)
         public int posY = 1;
+
+        @Config.Comment("The direction which the streamer list will expand in")
+        public EnumDirection expandDirection = EnumDirection.DOWN;
     }
 
     public static class Preview {

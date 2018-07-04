@@ -16,40 +16,38 @@ public class StreamChecker implements Runnable {
     public void run() {
         boolean live = false;
         String player = StreamerUtil.getPlayerStreamerName().toLowerCase(Locale.ROOT);
-        synchronized (Streamy.LIVE_STREAMERS) {
-            Streamy.LIVE_STREAMERS.clear();
-            ImageUtil.clearPreviewCache();
+        Streamy.LIVE_STREAMERS.clear();
+        ImageUtil.clearPreviewCache();
 
-            for (String broadcaster : StreamyConfig.CHANNELS.channels) {
-                try {
-                    //Get stream info
-                    String[] split = StreamerUtil.splitChannelConfig(broadcaster);
-                    if (split == null)
-                        Streamy.LOGGER.error("Broadcaster %s doesn't have a source!", broadcaster);
+        for (String broadcaster : StreamyConfig.CHANNELS.channels) {
+            try {
+                //Get stream info
+                String[] split = StreamerUtil.splitChannelConfig(broadcaster);
+                if (split == null)
+                    Streamy.LOGGER.error("Broadcaster %s doesn't have a source!", broadcaster);
+                else {
+                    //Extract the source
+                    StreamSource source = StreamSource.getSource(split[0]);
+                    if (source == null)
+                        Streamy.LOGGER.error("Broadcaster %s has an invalid source '%s'!", broadcaster, split[0]);
                     else {
-                        //Extract the source
-                        StreamSource source = StreamSource.getSource(split[0]);
-                        if (source == null)
-                            Streamy.LOGGER.error("Broadcaster %s has an invalid source '%s'!", broadcaster, split[0]);
-                        else {
-                            Stream stream = Streams.getStream(source);
-                            //Extract the channel
-                            StreamInfo info = stream.getStreamInfo(split[1]);
-                            if (split[1].equals(player)) {
-                                Streamy.isSelfStreaming = info != null && info.streaming;
-                                if (StreamyConfig.GENERAL.streamerMode != EnumStreamerMode.PARTIAL && info != null && info.streaming)
-                                    addStreamer(player, info);
-                            } else if (info != null) {
-                                //only show live icon if not in streamer mode
-                                if (info.streaming && (StreamyConfig.GENERAL.streamerMode == EnumStreamerMode.OFF || !broadcaster.equalsIgnoreCase(player)))
-                                    live = true;
-                                addStreamer(broadcaster.toLowerCase(Locale.ROOT), info);
-                            }
+                        Stream stream = Streams.getStream(source);
+                        //Extract the channel
+                        StreamInfo info = stream.getStreamInfo(split[1]);
+                        if (split[1].equals(player)) {
+                            Streamy.isSelfStreaming = info != null && info.streaming;
+                            if (StreamyConfig.GENERAL.streamerMode != EnumStreamerMode.PARTIAL && info != null && info.streaming)
+                                addStreamer(player, info);
+                        } else if (info != null) {
+                            //only show live icon if not in streamer mode
+                            if (info.streaming && (StreamyConfig.GENERAL.streamerMode == EnumStreamerMode.OFF || !broadcaster.equalsIgnoreCase(player)))
+                                live = true;
+                            addStreamer(broadcaster.toLowerCase(Locale.ROOT), info);
                         }
                     }
-                } catch (Exception e) {
-                    Streamy.LOGGER.error("Error getting stream info for channel \"" + broadcaster + "\"", e);
                 }
+            } catch (Exception e) {
+                Streamy.LOGGER.error("Error getting stream info for channel \"" + broadcaster + "\"", e);
             }
         }
         Streamy.isLive = live;

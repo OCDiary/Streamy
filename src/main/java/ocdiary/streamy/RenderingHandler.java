@@ -42,7 +42,8 @@ public class RenderingHandler {
     private static final int PROFILE_PIC_NEW_SIZE = 12;
     private static final int PREVIEW_Z_LEVEL = 300; //300 is minimum as vanilla inventory items are rendered at that level and we want to render above these.
 
-    private static boolean expandList = false; //TODO move to config to save value?
+    //Whether the streamer list is currently expanded
+    private static boolean expandList = false;
 
     private static void drawIcon() {
         GlStateManager.color(1f, 1f, 1f, 1f);
@@ -101,26 +102,24 @@ public class RenderingHandler {
             if (expandList) {
                 int x = StreamyConfig.ICON.posX;
                 int y = StreamyConfig.ICON.posY + icon.height + BORDER * 3;
-                synchronized (Streamy.LIVE_STREAMERS) {
-                    int localX = x + BORDER + 2;
-                    List<StreamInfo> streamers = StreamerUtil.getStreamers();
-                    if (!streamers.isEmpty()) {
-                        drawTooltipBoxBackground(localX + BORDER / 2, y + BORDER / 2, PROFILE_PIC_NEW_SIZE - BORDER, PROFILE_PIC_NEW_SIZE * streamers.size() + (streamers.size() - 1) * 3 - BORDER, 0);
-                        for (int i = 0; i < streamers.size(); i++) {
-                            StreamInfo info = streamers.get(i);
-                            int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i;
-                            ResourceLocation profilePic = ImageUtil.loadImage(info.profilePicUrl, info.broadcaster, ImageUtil.ImageCacheType.CACHED);
-                            mc.renderEngine.bindTexture(profilePic);
-                            Gui.drawScaledCustomSizeModalRect(localX, localY, 0, 0, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE);
-                        }
+                int localX = x + BORDER + 2;
+                List<StreamInfo> streamers = StreamerUtil.getStreamers();
+                if (!streamers.isEmpty()) {
+                    drawTooltipBoxBackground(localX + BORDER / 2, y + BORDER / 2, PROFILE_PIC_NEW_SIZE - BORDER, PROFILE_PIC_NEW_SIZE * streamers.size() + (streamers.size() - 1) * 3 - BORDER, 0);
+                    for (int i = 0; i < streamers.size(); i++) {
+                        StreamInfo info = streamers.get(i);
+                        int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i;
+                        ResourceLocation profilePic = ImageUtil.loadImage(info.profilePicUrl, info.broadcaster, ImageUtil.ImageCacheType.CACHED);
+                        mc.renderEngine.bindTexture(profilePic);
+                        Gui.drawScaledCustomSizeModalRect(localX, localY, 0, 0, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE);
+                    }
 
-                        //important: need to draw the tooltip AFTER all icons have been drawn
-                        for (int i = 0; i < streamers.size(); i++) {
-                            int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i;
-                            if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
-                                drawStreamInfo(localX, localY, mousePos, streamers.get(i), GuiScreen.isShiftKeyDown(), maxTextWidth);
-                                break;
-                            }
+                    //important: need to draw the tooltip AFTER all icons have been drawn
+                    for (int i = 0; i < streamers.size(); i++) {
+                        int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i;
+                        if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
+                            drawStreamInfo(localX, localY, mousePos, streamers.get(i), GuiScreen.isShiftKeyDown(), maxTextWidth);
+                            break;
                         }
                     }
                 }
