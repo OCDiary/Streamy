@@ -18,6 +18,7 @@ import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.config.IConfigElement;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -179,8 +180,30 @@ public class RenderingHandler {
                 case 0:
                     if (isMouseOver(StreamyConfig.ICON.posX, StreamyConfig.ICON.posY, StreamyConfig.ICON.iconSize.width, StreamyConfig.ICON.iconSize.height, mousePos)) {
                         if (GuiScreen.isAltKeyDown())
+                            //Show mod configs
                             mc.displayGuiScreen(FMLClientHandler.instance().getGuiFactoryFor(FMLCommonHandler.instance().findContainerFor(Streamy.MODID)).createConfigGui(mc.currentScreen));
-                        else expandList = !expandList;
+                        else if (GuiScreen.isCtrlKeyDown())
+                        {
+                            //Cycle to next expansion direction
+                            IConfigElement config = Streamy.getConfig("streamy.icon.expandDirection");
+                            int configIndex = 0;
+                            String currentValue = config.get().toString();
+                            String[] values = config.getValidValues();
+                            for (int i = 0; i < values.length; i++) {
+                                if (values[i].equalsIgnoreCase(currentValue)) {
+                                    configIndex = i + 1;
+                                    break;
+                                }
+                            }
+                            if(configIndex >= values.length)
+                                configIndex = 0;
+                            config.set(values[configIndex]);
+                            Streamy.configChanged(mc.world != null, config.requiresMcRestart());
+                            Streamy.LOGGER.info("Old: {}, New: {}", currentValue, config.get().toString());
+                        }
+                        else
+                            //Toggle streamer list
+                            expandList = !expandList;
                     }
                     if (expandList && Streamy.isLive) {
                         int i = 0;

@@ -1,9 +1,14 @@
 package ocdiary.streamy;
 
 import com.google.common.collect.Maps;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.ConfigElement;
+import net.minecraftforge.fml.client.config.IConfigElement;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import ocdiary.streamy.util.ImageUtil;
 import ocdiary.streamy.util.StreamInfo;
 import org.apache.logging.log4j.LogManager;
@@ -42,4 +47,41 @@ public class Streamy {
         if (StreamyConfig.GENERAL.enabled) StreamHandler.startStreamChecker();
     }
 
+    /**
+     * Gets the specified config element so that it can be changed
+     * Throws an exception if none found
+     */
+    public static IConfigElement getConfig(String configPath) {
+        IConfigElement config = getConfig(ConfigElement.from(StreamyConfig.class), configPath.split("\\."), 0);
+        if(config == null) throw new RuntimeException(String.format("No config found for path %s!", configPath));
+        return config;
+    }
+
+    //Recursive method to find the config
+    private static IConfigElement getConfig(IConfigElement element, String[] path, int level) {
+        String name = path[level];
+        if(element.getName().equalsIgnoreCase(name)) {
+            if (element.isProperty())
+                return element;
+            else if (level < path.length) {
+                int nextLevel = level + 1;
+                for (IConfigElement e : element.getChildElements()) {
+                    IConfigElement result = getConfig(e, path, nextLevel);
+                    if(result != null) return result;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Post the config changed events
+     * This will cause the configs to be saved to file and the StreamyConfig class to be updated
+     */
+    public static void configChanged(boolean isWorldRunning, boolean requiresMcRestart) {
+        ConfigChangedEvent event = new ConfigChangedEvent.OnConfigChangedEvent(MODID, null, isWorldRunning, requiresMcRestart);
+        MinecraftForge.EVENT_BUS.post(event);
+        if (!event.getResult().equals(Event.Result.DENY))
+            MinecraftForge.EVENT_BUS.post(new ConfigChangedEvent.PostConfigChangedEvent(MODID, null, isWorldRunning, requiresMcRestart));
+    }
 }
