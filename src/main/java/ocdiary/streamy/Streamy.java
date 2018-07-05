@@ -14,6 +14,7 @@ import ocdiary.streamy.util.StreamInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 @Mod(
@@ -78,10 +79,10 @@ public class Streamy {
      * Post the config changed events
      * This will cause the configs to be saved to file and the StreamyConfig class to be updated
      */
-    public static void configChanged(boolean isWorldRunning, boolean requiresMcRestart) {
-        ConfigChangedEvent event = new ConfigChangedEvent.OnConfigChangedEvent(MODID, null, isWorldRunning, requiresMcRestart);
+    public static void configChanged(@Nullable String configID, boolean isWorldRunning, boolean requiresMcRestart) {
+        ConfigChangedEvent event = new ConfigChangedEvent.OnConfigChangedEvent(MODID, configID, isWorldRunning, requiresMcRestart);
         MinecraftForge.EVENT_BUS.post(event);
         if (!event.getResult().equals(Event.Result.DENY))
-            MinecraftForge.EVENT_BUS.post(new ConfigChangedEvent.PostConfigChangedEvent(MODID, null, isWorldRunning, requiresMcRestart));
+            MinecraftForge.EVENT_BUS.post(new ConfigChangedEvent.PostConfigChangedEvent(MODID, configID, isWorldRunning, requiresMcRestart));
     }
 }

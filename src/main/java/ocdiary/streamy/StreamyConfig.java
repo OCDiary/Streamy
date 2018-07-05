@@ -117,7 +117,9 @@ public class StreamyConfig {
             if (event.getModID().equalsIgnoreCase(Streamy.MODID)) {
                 ConfigManager.sync(Streamy.MODID, Config.Type.INSTANCE);
                 if (GENERAL.enabled) {
-                    StreamHandler.startStreamChecker();
+                    //Don't restart stream checker if the direction is just being changed
+                    if (event.getConfigID() == null || !event.getConfigID().equals("expandDirection"))
+                        StreamHandler.startStreamChecker();
                 } else {
                     StreamHandler.stopStreamChecker();
                     ImageUtil.clearPreviewCache();
