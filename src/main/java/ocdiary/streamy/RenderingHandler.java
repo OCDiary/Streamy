@@ -123,7 +123,26 @@ public class RenderingHandler {
 
                 List<StreamInfo> streamers = StreamerUtil.getStreamers();
                 if (!streamers.isEmpty()) {
-                    drawTooltipBoxBackground(localPos.x, localPos.y, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE * streamers.size() + (streamers.size() - 1) * PROFILE_PIC_SPACING, 0);
+                    //Draw list background
+                    Rectangle bgRect = null;
+                    int listW = PROFILE_PIC_NEW_SIZE;
+                    int listL = PROFILE_PIC_NEW_SIZE * streamers.size() + (streamers.size() - 1) * PROFILE_PIC_SPACING;
+                    switch (direction) {
+                        case UP:
+                            bgRect = new Rectangle(localPos.x, localPos.y - listL + PROFILE_PIC_NEW_SIZE, listW, listL);
+                            break;
+                        case RIGHT:
+                            bgRect = new Rectangle(localPos.x, localPos.y, listL, listW);
+                            break;
+                        case DOWN:
+                            bgRect = new Rectangle(localPos.x, localPos.y, listW, listL);
+                            break;
+                        case LEFT:
+                            bgRect = new Rectangle(localPos.x - listL + PROFILE_PIC_NEW_SIZE, localPos.y, listL, listW);
+                            break;
+                    }
+                    drawTooltipBoxBackground(bgRect.x, bgRect.y, bgRect.width, bgRect.height, 0);
+                    //Draw list streamer icons
                     for (StreamInfo info : streamers) {
                         ResourceLocation profilePic = ImageUtil.loadImage(info.profilePicUrl, info.broadcaster, ImageUtil.ImageCacheType.CACHED);
                         mc.renderEngine.bindTexture(profilePic);

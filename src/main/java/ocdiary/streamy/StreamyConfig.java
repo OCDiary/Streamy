@@ -121,18 +121,20 @@ public class StreamyConfig {
             if (event.getModID().equalsIgnoreCase(Streamy.MODID)) {
                 ConfigManager.sync(Streamy.MODID, Config.Type.INSTANCE);
                 if (GENERAL.enabled) {
-                    //Remove streamers that aren't in the config anymore
-                    Set<String> toRemove = new HashSet<>();
-                    Set<String> channels = Sets.newHashSet(CHANNELS.channels);
-                    Streamy.LIVE_STREAMERS.keySet().forEach(s -> {
-                        if(!channels.contains(s))
-                            toRemove.add(s);
-                    });
-                    toRemove.forEach(Streamy.LIVE_STREAMERS::remove);
-                    ImageUtil.clearCachesOf(toRemove);
-                    //Don't restart stream checker if the direction is just being changed
-                    if (event.getConfigID() == null || !event.getConfigID().equals("expandDirection"))
+                    //Don't need to change anything if only the direction was changed
+                    if (event.getConfigID() == null || !event.getConfigID().equals("expandDirection")) {
+                        //Remove streamers that aren't in the config anymore
+                        Set<String> toRemove = new HashSet<>();
+                        Set<String> channels = Sets.newHashSet(CHANNELS.channels);
+                        Streamy.LIVE_STREAMERS.keySet().forEach(s -> {
+                            if (!channels.contains(s))
+                                toRemove.add(s);
+                        });
+                        toRemove.forEach(Streamy.LIVE_STREAMERS::remove);
+                        ImageUtil.clearCachesOf(toRemove);
+                        //Restart stream checker
                         StreamHandler.startStreamChecker();
+                    }
                 } else {
                     StreamHandler.stopStreamChecker();
                     ImageUtil.clearPreviewCache();
