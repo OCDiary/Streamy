@@ -45,6 +45,7 @@ public class RenderingHandler {
     private static final int PROFILE_PIC_NEW_SIZE = 12;
     /** Spacing between rendered profile pictures */
     private static final int PROFILE_PIC_SPACING = 3;
+    private static final int LIST_SPACING = PROFILE_PIC_NEW_SIZE + PROFILE_PIC_SPACING;
     private static final int RENDER_Z_LEVEL = 300; //300 is minimum as vanilla inventory items are rendered at that level and we want to render above these.
 
     /** Whether the streamer list is currently expanded */
@@ -101,6 +102,20 @@ public class RenderingHandler {
         return gui == null || gui instanceof GuiMainMenu || gui instanceof GuiIngameMenu || gui instanceof GuiChat || gui instanceof InventoryEffectRenderer;
     }
 
+    private static Point getListStartPos() {
+        int iconCenterX = StreamyConfig.ICON.posX + (StreamyConfig.ICON.iconSize.size / 2);
+        int iconCenterY = StreamyConfig.ICON.posY + (StreamyConfig.ICON.iconSize.size / 2);
+        Point pos = new Point(iconCenterX - (PROFILE_PIC_NEW_SIZE / 2), iconCenterY - (PROFILE_PIC_NEW_SIZE / 2));
+
+        int distToMove = (StreamyConfig.ICON.iconSize.size - (StreamyConfig.ICON.iconSize.size - PROFILE_PIC_NEW_SIZE) / 2) + PADDING * 3;
+        pos = StreamyConfig.ICON.expandDirection.translate(pos, distToMove);
+        return new Point(pos);
+    }
+
+    private static Point getNextListPos(Point pos) {
+        return StreamyConfig.ICON.expandDirection.translate(pos, LIST_SPACING);
+    }
+
     @SubscribeEvent
     public static void drawScreen(TickEvent.RenderTickEvent event) {
         if (!ImageUtil.shouldShowIcon() || event.phase != TickEvent.Phase.END || !isValidGuiForRendering(mc.currentScreen)) return;
@@ -112,14 +127,7 @@ public class RenderingHandler {
             if (expandList) {
                 //Draw the list of streamers
                 EnumDirection direction = StreamyConfig.ICON.expandDirection;
-                int iconCenterX = StreamyConfig.ICON.posX + (StreamyConfig.ICON.iconSize.size / 2);
-                int iconCenterY = StreamyConfig.ICON.posY + (StreamyConfig.ICON.iconSize.size / 2);
-                Point pos = new Point(iconCenterX - (PROFILE_PIC_NEW_SIZE / 2), iconCenterY - (PROFILE_PIC_NEW_SIZE / 2));
-
-                int distToMove = (StreamyConfig.ICON.iconSize.size - (StreamyConfig.ICON.iconSize.size - PROFILE_PIC_NEW_SIZE) / 2) + PADDING * 3;
-                pos = direction.translate(pos, distToMove); //This is now the position to draw the first streamer
-                Point localPos = new Point(pos);
-                int translation = PROFILE_PIC_NEW_SIZE + PROFILE_PIC_SPACING;
+                Point localPos = getListStartPos();
 
                 List<StreamInfo> streamers = StreamerUtil.getStreamers();
                 if (!streamers.isEmpty()) {
@@ -147,17 +155,17 @@ public class RenderingHandler {
                         ResourceLocation profilePic = ImageUtil.loadImage(info.profilePicUrl, info.broadcaster, ImageUtil.ImageCacheType.CACHED);
                         mc.renderEngine.bindTexture(profilePic);
                         Gui.drawScaledCustomSizeModalRect(localPos.x, localPos.y, 0, 0, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_ORIGINAL_SIZE, PROFILE_PIC_ORIGINAL_SIZE);
-                        localPos = direction.translate(localPos, translation);
+                        localPos = getNextListPos(localPos);
                     }
 
                     //important: need to draw the tooltip AFTER all icons have been drawn
-                    localPos = new Point(pos);
-                    for (int i = 0; i < streamers.size(); i++) {
+                    localPos = getListStartPos();
+                    for (StreamInfo info : streamers) {
                         if (isMouseOver(localPos.x, localPos.y, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
-                            drawStreamInfo(localPos.x, localPos.y, mousePos, streamers.get(i), GuiScreen.isShiftKeyDown(), maxTextWidth);
+                            drawStreamInfo(localPos.x, localPos.y, mousePos, info, GuiScreen.isShiftKeyDown(), maxTextWidth);
                             break;
                         }
-                        localPos = direction.translate(localPos, translation);
+                        localPos = getNextListPos(localPos);
                     }
                 }
             }
@@ -242,16 +250,13 @@ public class RenderingHandler {
                             //Toggle streamer list
                             expandList = !expandList;
                     }
-                    if (expandList && Streamy.isLive) {
-                        int i = 0;
-                        int y = StreamyConfig.ICON.posY + StreamyConfig.ICON.iconSize.size + PADDING * 3;
-                        List<StreamInfo> streamers = StreamerUtil.getStreamers();
-                        for (StreamInfo info : streamers) {
-                            int localX = StreamyConfig.ICON.posX + PADDING + 2;
-                            int localY = y + (PROFILE_PIC_NEW_SIZE + 3) * i++;
-                            if (isMouseOver(localX, localY, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
+                    if (expandList) {
+                        Point pos = getListStartPos();
+                        for (StreamInfo info : StreamerUtil.getStreamers()) {
+                            if (isMouseOver(pos.x, pos.y, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
                                 Streams.getStream(info).openStreamURL(info.broadcaster);
                             }
+                            pos = getNextListPos(pos);
                         }
                     }
 
