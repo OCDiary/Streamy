@@ -132,12 +132,13 @@ public class RenderingHandler {
                     }
 
                     //important: need to draw the tooltip AFTER all icons have been drawn
+                    localPos = new Point(pos);
                     for (int i = 0; i < streamers.size(); i++) {
-                        localPos = direction.translate(pos, translation * i);
                         if (isMouseOver(localPos.x, localPos.y, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
                             drawStreamInfo(localPos.x, localPos.y, mousePos, streamers.get(i), GuiScreen.isShiftKeyDown(), maxTextWidth);
                             break;
                         }
+                        localPos = direction.translate(localPos, translation);
                     }
                 }
             }
