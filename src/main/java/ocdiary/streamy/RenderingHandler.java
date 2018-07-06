@@ -119,7 +119,7 @@ public class RenderingHandler {
 
                 List<StreamInfo> streamers = StreamerUtil.getStreamers();
                 if (!streamers.isEmpty()) {
-                    drawTooltipBoxBackground(localPos.x, localPos.y, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE * streamers.size() + (streamers.size() - 1) * PROFILE_PIC_SPACING, RENDER_Z_LEVEL);
+                    drawTooltipBoxBackground(localPos.x, localPos.y, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE * streamers.size() + (streamers.size() - 1) * PROFILE_PIC_SPACING, 0);
                     for (StreamInfo info : streamers) {
                         ResourceLocation profilePic = ImageUtil.loadImage(info.profilePicUrl, info.broadcaster, ImageUtil.ImageCacheType.CACHED);
                         mc.renderEngine.bindTexture(profilePic);

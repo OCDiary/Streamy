@@ -8,15 +8,17 @@ import ocdiary.streamy.util.ImageUtil;
 import ocdiary.streamy.util.StreamInfo;
 import ocdiary.streamy.util.StreamerUtil;
 
-import java.util.Locale;
+import java.util.*;
 
 public class StreamChecker implements Runnable {
+
+    private Map<String, StreamInfo> checkCache = new HashMap<>();
 
     @Override
     public void run() {
         boolean live = false;
         String player = StreamerUtil.getPlayerStreamerName().toLowerCase(Locale.ROOT);
-        Streamy.LIVE_STREAMERS.clear();
+        //Streamy.LIVE_STREAMERS.clear();
         ImageUtil.clearPreviewCache();
 
         for (String broadcaster : StreamyConfig.CHANNELS.channels) {
@@ -51,6 +53,10 @@ public class StreamChecker implements Runnable {
             }
         }
         Streamy.isLive = live;
+
+        //Update streamers
+        checkCache.forEach(Streamy.LIVE_STREAMERS::put);
+        checkCache.clear();
     }
 
     private void addStreamer(String name, StreamInfo streamInfo) {
@@ -61,6 +67,6 @@ public class StreamChecker implements Runnable {
                 Streamy.isIconDismissed = false;
             }
         }
-        Streamy.LIVE_STREAMERS.put(name, streamInfo);
+        checkCache.put(name, streamInfo);
     }
 }
