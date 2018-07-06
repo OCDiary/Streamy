@@ -58,9 +58,12 @@ public class ImageUtil {
     }
 
     public static void clearPreviewCache() {
-        synchronized (previews) {
-            previews.clear();
-        }
+        previews.clear();
+    }
+
+    public static void clearCachesOf(Set<String> streamers) {
+        streamers.forEach(previews::remove);
+        streamers.forEach(profiles::remove);
     }
 
     private static void clearOldFiles() {
@@ -156,14 +159,10 @@ public class ImageUtil {
     private static void storeLocation(String url, ResourceLocation location, ImageCacheType type) {
         switch (type) {
             case LIVE:
-                synchronized (previews) {
-                    previews.put(url, location);
-                }
+                previews.put(url, location);
                 break;
             case CACHED:
-                synchronized (profiles) {
-                    profiles.put(url, location);
-                }
+                profiles.put(url, location);
                 break;
         }
     }

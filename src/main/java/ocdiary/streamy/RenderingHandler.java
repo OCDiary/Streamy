@@ -116,7 +116,7 @@ public class RenderingHandler {
                 int iconCenterY = StreamyConfig.ICON.posY + (StreamyConfig.ICON.iconSize.size / 2);
                 Point pos = new Point(iconCenterX - (PROFILE_PIC_NEW_SIZE / 2), iconCenterY - (PROFILE_PIC_NEW_SIZE / 2));
 
-                int distToMove = (StreamyConfig.ICON.iconSize.size - (StreamyConfig.ICON.iconSize.size - PROFILE_PIC_NEW_SIZE)) + PADDING + 5;
+                int distToMove = (StreamyConfig.ICON.iconSize.size - (StreamyConfig.ICON.iconSize.size - PROFILE_PIC_NEW_SIZE) / 2) + PADDING * 3;
                 pos = direction.translate(pos, distToMove); //This is now the position to draw the first streamer
                 Point localPos = new Point(pos);
                 int translation = PROFILE_PIC_NEW_SIZE + PROFILE_PIC_SPACING;

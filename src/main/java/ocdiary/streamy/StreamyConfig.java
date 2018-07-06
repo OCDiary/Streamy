@@ -1,11 +1,15 @@
 package ocdiary.streamy;
 
+import com.google.common.collect.Sets;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import ocdiary.streamy.util.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Config(modid = Streamy.MODID)
 @Config.LangKey(Streamy.MODID + ".config.title")
@@ -117,6 +121,15 @@ public class StreamyConfig {
             if (event.getModID().equalsIgnoreCase(Streamy.MODID)) {
                 ConfigManager.sync(Streamy.MODID, Config.Type.INSTANCE);
                 if (GENERAL.enabled) {
+                    //Remove streamers that aren't in the config anymore
+                    Set<String> toRemove = new HashSet<>();
+                    Set<String> channels = Sets.newHashSet(CHANNELS.channels);
+                    Streamy.LIVE_STREAMERS.keySet().forEach(s -> {
+                        if(!channels.contains(s))
+                            toRemove.add(s);
+                    });
+                    toRemove.forEach(Streamy.LIVE_STREAMERS::remove);
+                    ImageUtil.clearCachesOf(toRemove);
                     //Don't restart stream checker if the direction is just being changed
                     if (event.getConfigID() == null || !event.getConfigID().equals("expandDirection"))
                         StreamHandler.startStreamChecker();
