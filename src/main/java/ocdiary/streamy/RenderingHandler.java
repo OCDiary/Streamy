@@ -3,10 +3,9 @@ package ocdiary.streamy;
 import com.google.common.collect.Lists;
 import io.netty.util.internal.StringUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -97,9 +96,14 @@ public class RenderingHandler {
         }
     }
 
+    private static boolean isValidGuiForRendering(GuiScreen gui)
+    {
+        return gui == null || gui instanceof GuiMainMenu || gui instanceof GuiIngameMenu || gui instanceof GuiChat || gui instanceof InventoryEffectRenderer;
+    }
+
     @SubscribeEvent
     public static void drawScreen(TickEvent.RenderTickEvent event) {
-        if (!ImageUtil.shouldShowIcon() || event.phase != TickEvent.Phase.END) return;
+        if (!ImageUtil.shouldShowIcon() || event.phase != TickEvent.Phase.END || !isValidGuiForRendering(mc.currentScreen)) return;
         Point mousePos = getCurrentMousePosition();
         EnumIconSize icon = StreamyConfig.ICON.iconSize;
         int maxTextWidth = new ScaledResolution(mc).getScaledWidth() - mousePos.x - 16;
