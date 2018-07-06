@@ -244,7 +244,6 @@ public class RenderingHandler {
                                 configIndex = 0;
                             config.set(values[configIndex]);
                             Streamy.configChanged("expandDirection",mc.world != null, config.requiresMcRestart());
-                            Streamy.LOGGER.info("Old: {}, New: {}", currentValue, config.get().toString());
                         }
                         else
                             //Toggle streamer list
