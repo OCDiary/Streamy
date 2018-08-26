@@ -22,7 +22,7 @@ compileJava {
 
 minecraft {
     version = "${project.minecraft_version}-${project.forge_version}"
-    runDir = "../run"
+    runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
