@@ -34,7 +34,7 @@ public class RenderingUtil {
     }
 
     public static boolean isMouseOverIcon(Point mousePos) {
-        return isMouseOver(StreamyConfig.ICON.posX, StreamyConfig.ICON.posY, StreamyConfig.ICON.iconSize.size, StreamyConfig.ICON.iconSize.size, mousePos);
+        return isMouseOver(StreamyConfig.ICON.posX, StreamyConfig.ICON.posY, StreamyConfig.ICON.size, StreamyConfig.ICON.size, mousePos);
     }
 
     public static boolean isValidGuiForRendering() {
@@ -43,18 +43,15 @@ public class RenderingUtil {
     }
 
     public static void drawTooltipBoxBackground(int x, int y, int width, int height, int zLevel) {
-        int backgroundColor = 0xF0100010;
-        int borderColorStart = 0x505000FF;
-        int borderColorEnd = (borderColorStart & 0xFEFEFE) >> 1 | borderColorStart & 0xFF000000;
-        GuiUtils.drawGradientRect(zLevel, x - 3, y - 4, x + width + 3, y - 3, backgroundColor, backgroundColor);
-        GuiUtils.drawGradientRect(zLevel, x - 3, y + height + 3, x + width + 3, y + height + 4, backgroundColor, backgroundColor);
-        GuiUtils.drawGradientRect(zLevel, x - 3, y - 3, x + width + 3, y + height + 3, backgroundColor, backgroundColor);
-        GuiUtils.drawGradientRect(zLevel, x - 4, y - 3, x - 3, y + height + 3, backgroundColor, backgroundColor);
-        GuiUtils.drawGradientRect(zLevel, x + width + 3, y - 3, x + width + 4, y + height + 3, backgroundColor, backgroundColor);
-        GuiUtils.drawGradientRect(zLevel, x - 3, y - 3 + 1, x - 3 + 1, y + height + 3 - 1, borderColorStart, borderColorEnd);
-        GuiUtils.drawGradientRect(zLevel, x + width + 2, y - 3 + 1, x + width + 3, y + height + 3 - 1, borderColorStart, borderColorEnd);
-        GuiUtils.drawGradientRect(zLevel, x - 3, y - 3, x + width + 3, y - 3 + 1, borderColorStart, borderColorStart);
-        GuiUtils.drawGradientRect(zLevel, x - 3, y + height + 2, x + width + 3, y + height + 3, borderColorEnd, borderColorEnd);
+        int backgroundColor = 0xFFFFFFFF;
+        int borderColor = 0xFF1c7bb1;
+        //Border
+        GuiUtils.drawGradientRect(zLevel, x - 3, y - 4, x + width + 3, y - 2, borderColor, borderColor);
+        GuiUtils.drawGradientRect(zLevel, x - 3, y + height + 2, x + width + 3, y + height + 4, borderColor, borderColor);
+        GuiUtils.drawGradientRect(zLevel, x - 4, y - 3, x - 2, y + height + 3, borderColor, borderColor);
+        GuiUtils.drawGradientRect(zLevel, x + width + 2, y - 3, x + width + 4, y + height + 3, borderColor, borderColor);
+        //Background
+        GuiUtils.drawGradientRect(zLevel, x - 2, y - 2, x + width + 2, y + height + 2, backgroundColor, backgroundColor);
 
         MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostBackground(ItemStack.EMPTY, Lists.newArrayList(), x, y, mc.fontRenderer, width, height));
     }

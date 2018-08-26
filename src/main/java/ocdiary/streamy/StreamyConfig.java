@@ -92,7 +92,7 @@ public class StreamyConfig {
         public EnumIconVisibility iconState = EnumIconVisibility.ALWAYS;
 
         @Config.Comment("Change the twitch icon size")
-        public EnumIconSize iconSize = EnumIconSize.MEDIUM;
+        public int size = 25;
 
         @Config.Comment("Icon X position (from the left)")
         @Config.RangeInt(min = 0)

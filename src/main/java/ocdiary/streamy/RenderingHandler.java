@@ -14,7 +14,6 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.client.config.IConfigElement;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -32,7 +31,9 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = Streamy.MODID, value = Side.CLIENT)
 public class RenderingHandler {
 
-    private static final ResourceLocation TWITCH_ICON = new ResourceLocation(Streamy.MODID, "textures/gui/twitch.png");
+    private static final ResourceLocation ICON = new ResourceLocation(Streamy.MODID, "textures/gui/icon.png");
+    private static final ResourceLocation ICON_LIVE = new ResourceLocation(Streamy.MODID, "textures/gui/icon_live.png");
+    private static final int ICON_FILE_SIZE = 300;
     private static final Minecraft mc = Minecraft.getMinecraft();
 
     /**
@@ -70,12 +71,10 @@ public class RenderingHandler {
     private static void drawIcon() {
         GlStateManager.color(1f, 1f, 1f, 1f);
         GlStateManager.enableBlend();
-        mc.getTextureManager().bindTexture(TWITCH_ICON);
-        EnumIconSize iconSize = StreamyConfig.ICON.iconSize;
+        mc.getTextureManager().bindTexture(Streamy.isLive ? ICON_LIVE : ICON);
         Point iconPos = getIconPos();
-        GuiUtils.drawTexturedModalRect(iconPos.x, iconPos.y, iconSize.outlineU, iconSize.outlineV, iconSize.size, iconSize.size, 0);
-        if (Streamy.isLive)
-            GuiUtils.drawTexturedModalRect(iconPos.x, iconPos.y, iconSize.overlayU, iconSize.overlayV, iconSize.size, iconSize.size, 0);
+        int size = StreamyConfig.ICON.size;
+        Gui.drawScaledCustomSizeModalRect(iconPos.x, iconPos.y, 0, 0, ICON_FILE_SIZE, ICON_FILE_SIZE, size, size, ICON_FILE_SIZE, ICON_FILE_SIZE);
     }
 
     private static void drawStreamInfo(Point mousePos, StreamInfo info, boolean showPreview) {
@@ -122,11 +121,12 @@ public class RenderingHandler {
 
     private static Point getListStartPos() {
         Point iconPos = getIconPos();
-        int iconCenterX = iconPos.x + (StreamyConfig.ICON.iconSize.size / 2);
-        int iconCenterY = iconPos.y + (StreamyConfig.ICON.iconSize.size / 2);
+        int size = StreamyConfig.ICON.size;
+        int iconCenterX = iconPos.x + (size / 2);
+        int iconCenterY = iconPos.y + (size / 2);
         Point pos = new Point(iconCenterX - (PROFILE_PIC_NEW_SIZE / 2), iconCenterY - (PROFILE_PIC_NEW_SIZE / 2));
 
-        int distToMove = (StreamyConfig.ICON.iconSize.size - (StreamyConfig.ICON.iconSize.size - PROFILE_PIC_NEW_SIZE) / 2) + PADDING * 3;
+        int distToMove = (size - (size - PROFILE_PIC_NEW_SIZE) / 2) + PADDING * 3;
         pos = StreamyConfig.ICON.expandDirection.translate(pos, distToMove);
         return new Point(pos);
     }
