@@ -2,6 +2,9 @@ package mdct.streamy.handlers;
 
 import com.google.common.collect.Lists;
 import io.netty.util.internal.StringUtil;
+import mdct.streamy.Streamy;
+import mdct.streamy.StreamyConfig;
+import mdct.streamy.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -20,9 +23,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import mdct.streamy.Streamy;
-import mdct.streamy.StreamyConfig;
-import mdct.streamy.util.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -116,7 +116,7 @@ public class RenderingHandler {
                     tooltips.add(I18n.format(Streamy.MODID + ".stream.viewers", TextFormatting.DARK_RED.toString() + info.viewers + TextFormatting.RESET));
                 tooltips.add("");
                 tooltips.add(I18n.format(Streamy.MODID + ".stream.preview", TextFormatting.GOLD + "SHIFT" + TextFormatting.RESET));
-                tooltips.add(TextFormatting.GRAY + I18n.format(Streamy.MODID + ".stream.watch", TextFormatting.WHITE + info.broadcaster + TextFormatting.GRAY) + TextFormatting.RESET);
+                tooltips.add(TextFormatting.GRAY + I18n.format(Streamy.MODID + ".stream.watch", TextFormatting.WHITE + info.broadcaster + TextFormatting.GRAY, info.source.localName()) + TextFormatting.RESET);
             }
             RenderingUtil.drawHoveringText(tooltips, mousePos);
         }
