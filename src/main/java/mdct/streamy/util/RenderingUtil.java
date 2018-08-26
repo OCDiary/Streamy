@@ -1,4 +1,4 @@
-package ocdiary.streamy.util;
+package mdct.streamy.util;
 
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.config.GuiUtils;
-import ocdiary.streamy.StreamyConfig;
+import mdct.streamy.StreamyConfig;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;

@@ -1,10 +1,10 @@
-package ocdiary.streamy.util;
+package p3psie.streamy.util;
 
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.StringUtils;
-import ocdiary.streamy.Streamy;
-import ocdiary.streamy.StreamyConfig;
+import p3psie.streamy.Streamy;
+import p3psie.streamy.StreamyConfig;
 
 import java.util.List;
 import java.util.Locale;

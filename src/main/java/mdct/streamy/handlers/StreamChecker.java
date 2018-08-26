@@ -1,12 +1,12 @@
-package ocdiary.streamy.handlers;
+package p3psie.streamy.handlers;
 
-import ocdiary.streamy.Streamy;
-import ocdiary.streamy.StreamyConfig;
-import ocdiary.streamy.streams.StreamSource;
-import ocdiary.streamy.util.EnumStreamerMode;
-import ocdiary.streamy.util.ImageUtil;
-import ocdiary.streamy.util.StreamInfo;
-import ocdiary.streamy.util.StreamerUtil;
+import p3psie.streamy.Streamy;
+import p3psie.streamy.StreamyConfig;
+import p3psie.streamy.streams.StreamSource;
+import p3psie.streamy.util.EnumStreamerMode;
+import p3psie.streamy.util.ImageUtil;
+import p3psie.streamy.util.StreamInfo;
+import p3psie.streamy.util.StreamerUtil;
 
 import java.util.HashMap;
 import java.util.Locale;

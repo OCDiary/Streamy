@@ -1,14 +1,14 @@
-package ocdiary.streamy;
+package p3psie.streamy;
 
 import com.google.common.collect.Maps;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import ocdiary.streamy.handlers.KeyHandler;
-import ocdiary.streamy.handlers.StreamHandler;
-import ocdiary.streamy.util.ImageUtil;
-import ocdiary.streamy.util.StreamInfo;
+import p3psie.streamy.handlers.KeyHandler;
+import p3psie.streamy.handlers.StreamHandler;
+import p3psie.streamy.util.ImageUtil;
+import p3psie.streamy.util.StreamInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

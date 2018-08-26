@@ -1,4 +1,4 @@
-package ocdiary.streamy.util;
+package p3psie.streamy.util;
 
 import java.util.Locale;
 

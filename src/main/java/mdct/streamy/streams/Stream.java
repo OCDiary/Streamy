@@ -1,6 +1,6 @@
-package ocdiary.streamy.streams;
+package p3psie.streamy.streams;
 
-import ocdiary.streamy.util.StreamInfo;
+import p3psie.streamy.util.StreamInfo;
 
 public interface Stream {
 

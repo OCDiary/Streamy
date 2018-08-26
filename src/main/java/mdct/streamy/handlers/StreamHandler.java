@@ -1,7 +1,7 @@
-package ocdiary.streamy.handlers;
+package p3psie.streamy.handlers;
 
-import ocdiary.streamy.Streamy;
-import ocdiary.streamy.StreamyConfig;
+import p3psie.streamy.Streamy;
+import p3psie.streamy.StreamyConfig;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

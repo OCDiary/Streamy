@@ -1,4 +1,4 @@
-package ocdiary.streamy;
+package p3psie.streamy;
 
 import com.google.common.collect.Sets;
 import net.minecraftforge.common.MinecraftForge;
@@ -10,8 +10,8 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import ocdiary.streamy.handlers.StreamHandler;
-import ocdiary.streamy.util.*;
+import p3psie.streamy.handlers.StreamHandler;
+import p3psie.streamy.util.*;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;

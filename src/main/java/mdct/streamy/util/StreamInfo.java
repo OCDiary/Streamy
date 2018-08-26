@@ -1,6 +1,6 @@
-package ocdiary.streamy.util;
+package mdct.streamy.util;
 
-import ocdiary.streamy.streams.StreamSource;
+import mdct.streamy.streams.StreamSource;
 
 /**
  * @author UpcraftLP

@@ -1,7 +1,7 @@
-package ocdiary.streamy.streams.impl;
+package p3psie.streamy.streams.impl;
 
-import ocdiary.streamy.streams.Stream;
-import ocdiary.streamy.util.StreamInfo;
+import p3psie.streamy.streams.Stream;
+import p3psie.streamy.util.StreamInfo;
 
 //TODO: Youtube integration -> https://developers.google.com/youtube/v3/live/getting-started
 public class YoutubeStream implements Stream {
