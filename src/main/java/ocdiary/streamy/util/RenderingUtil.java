@@ -59,8 +59,7 @@ public class RenderingUtil {
         MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostBackground(ItemStack.EMPTY, Lists.newArrayList(), x, y, mc.fontRenderer, width, height));
     }
 
-    public static void drawHoveringText(List<String> textLines, Point pos)
-    {
+    public static void drawHoveringText(List<String> textLines, Point pos) {
         ScaledResolution sr = new ScaledResolution(mc);
         GuiUtils.drawHoveringText(textLines, pos.x, pos.y, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
     }
