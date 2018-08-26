@@ -5,6 +5,7 @@ import io.netty.util.internal.StringUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
@@ -77,7 +78,7 @@ public class RenderingHandler {
             GuiUtils.drawTexturedModalRect(iconPos.x, iconPos.y, iconSize.overlayU, iconSize.overlayV, iconSize.size, iconSize.size, 0);
     }
 
-    private static void drawStreamInfo(int x, int y, Point mousePos, StreamInfo info, boolean showPreview) {
+    private static void drawStreamInfo(Point mousePos, StreamInfo info, boolean showPreview) {
         if (showPreview && info.streaming) {
             String url = info.previewUrl;
             EnumPreviewSize quality = StreamyConfig.PREVIEW.quality;
@@ -87,6 +88,11 @@ public class RenderingHandler {
 
                 ResourceLocation preview = ImageUtil.loadImage(url, info.broadcaster, ImageUtil.ImageCacheType.LIVE);
                 mc.getTextureManager().bindTexture(preview);
+
+                //Render in the center of the screen
+                ScaledResolution sr = new ScaledResolution(mc);
+                int x = (sr.getScaledWidth() / 2) - (StreamyConfig.PREVIEW.previewWidth / 2);
+                int y = (sr.getScaledHeight() / 2) - (StreamyConfig.PREVIEW.previewHeight / 2);
 
                 Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, quality.width, quality.height, StreamyConfig.PREVIEW.previewWidth, StreamyConfig.PREVIEW.previewHeight, quality.width, quality.height);
                 GlStateManager.popMatrix();
@@ -186,7 +192,7 @@ public class RenderingHandler {
                         localPos = getListStartPos();
                         for (StreamInfo info : streamers) {
                             if (RenderingUtil.isMouseOver(localPos.x, localPos.y, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
-                                drawStreamInfo(localPos.x, localPos.y, mousePos, info, GuiScreen.isShiftKeyDown());
+                                drawStreamInfo(mousePos, info, GuiScreen.isShiftKeyDown());
                                 break;
                             }
                             localPos = getNextListPos(localPos);
