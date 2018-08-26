@@ -1,4 +1,4 @@
-package p3psie.streamy.handlers;
+package mdct.streamy.handlers;
 
 import com.google.common.collect.Lists;
 import io.netty.util.internal.StringUtil;
@@ -20,9 +20,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import p3psie.streamy.Streamy;
-import p3psie.streamy.StreamyConfig;
-import p3psie.streamy.util.*;
+import mdct.streamy.Streamy;
+import mdct.streamy.StreamyConfig;
+import mdct.streamy.util.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 

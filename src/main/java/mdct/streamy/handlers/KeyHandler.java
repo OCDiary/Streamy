@@ -1,11 +1,11 @@
-package p3psie.streamy.handlers;
+package mdct.streamy.handlers;
 
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import p3psie.streamy.Streamy;
+import mdct.streamy.Streamy;
 import org.lwjgl.input.Keyboard;
 
 @Mod.EventBusSubscriber(modid = Streamy.MODID, value = Side.CLIENT)

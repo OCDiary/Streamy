@@ -1,12 +1,12 @@
-package p3psie.streamy.handlers;
+package mdct.streamy.handlers;
 
-import p3psie.streamy.Streamy;
-import p3psie.streamy.StreamyConfig;
-import p3psie.streamy.streams.StreamSource;
-import p3psie.streamy.util.EnumStreamerMode;
-import p3psie.streamy.util.ImageUtil;
-import p3psie.streamy.util.StreamInfo;
-import p3psie.streamy.util.StreamerUtil;
+import mdct.streamy.Streamy;
+import mdct.streamy.StreamyConfig;
+import mdct.streamy.streams.StreamSource;
+import mdct.streamy.util.EnumStreamerMode;
+import mdct.streamy.util.ImageUtil;
+import mdct.streamy.util.StreamInfo;
+import mdct.streamy.util.StreamerUtil;
 
 import java.util.HashMap;
 import java.util.Locale;

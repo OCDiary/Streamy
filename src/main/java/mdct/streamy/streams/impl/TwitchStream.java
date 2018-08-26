@@ -1,13 +1,13 @@
-package p3psie.streamy.streams.impl;
+package mdct.streamy.streams.impl;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import p3psie.streamy.Streamy;
-import p3psie.streamy.StreamyConfig;
-import p3psie.streamy.streams.Stream;
-import p3psie.streamy.streams.StreamSource;
-import p3psie.streamy.util.StreamInfo;
+import mdct.streamy.Streamy;
+import mdct.streamy.StreamyConfig;
+import mdct.streamy.streams.Stream;
+import mdct.streamy.streams.StreamSource;
+import mdct.streamy.util.StreamInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 

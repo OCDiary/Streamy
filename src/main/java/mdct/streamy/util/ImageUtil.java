@@ -1,4 +1,4 @@
-package p3psie.streamy.util;
+package mdct.streamy.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -6,8 +6,8 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.ChatAllowedCharacters;
 import net.minecraft.util.ResourceLocation;
-import p3psie.streamy.Streamy;
-import p3psie.streamy.StreamyConfig;
+import mdct.streamy.Streamy;
+import mdct.streamy.StreamyConfig;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AgeFileFilter;
 

@@ -1,7 +1,7 @@
-package p3psie.streamy.streams;
+package mdct.streamy.streams;
 
 import net.minecraft.client.resources.I18n;
-import p3psie.streamy.streams.impl.TwitchStream;
+import mdct.streamy.streams.impl.TwitchStream;
 
 public enum StreamSource {
     TWITCH("twitch", new TwitchStream());

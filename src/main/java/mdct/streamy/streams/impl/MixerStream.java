@@ -1,7 +1,7 @@
-package p3psie.streamy.streams.impl;
+package mdct.streamy.streams.impl;
 
-import p3psie.streamy.streams.Stream;
-import p3psie.streamy.util.StreamInfo;
+import mdct.streamy.streams.Stream;
+import mdct.streamy.util.StreamInfo;
 
 //TODO: Mixer integration -> https://dev.mixer.com/rest.html
 public class MixerStream implements Stream {

@@ -1,10 +1,10 @@
-package p3psie.streamy.util;
+package mdct.streamy.util;
 
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.StringUtils;
-import p3psie.streamy.Streamy;
-import p3psie.streamy.StreamyConfig;
+import mdct.streamy.Streamy;
+import mdct.streamy.StreamyConfig;
 
 import java.util.List;
 import java.util.Locale;

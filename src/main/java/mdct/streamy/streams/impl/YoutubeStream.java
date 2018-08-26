@@ -1,7 +1,7 @@
-package p3psie.streamy.streams.impl;
+package mdct.streamy.streams.impl;
 
-import p3psie.streamy.streams.Stream;
-import p3psie.streamy.util.StreamInfo;
+import mdct.streamy.streams.Stream;
+import mdct.streamy.util.StreamInfo;
 
 //TODO: Youtube integration -> https://developers.google.com/youtube/v3/live/getting-started
 public class YoutubeStream implements Stream {

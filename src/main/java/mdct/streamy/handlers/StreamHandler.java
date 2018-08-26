@@ -1,7 +1,7 @@
-package p3psie.streamy.handlers;
+package mdct.streamy.handlers;
 
-import p3psie.streamy.Streamy;
-import p3psie.streamy.StreamyConfig;
+import mdct.streamy.Streamy;
+import mdct.streamy.StreamyConfig;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

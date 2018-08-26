@@ -1,6 +1,6 @@
-package p3psie.streamy.streams;
+package mdct.streamy.streams;
 
-import p3psie.streamy.util.StreamInfo;
+import mdct.streamy.util.StreamInfo;
 
 public interface Stream {
 

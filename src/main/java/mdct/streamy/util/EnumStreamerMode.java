@@ -1,4 +1,4 @@
-package p3psie.streamy.util;
+package mdct.streamy.util;
 
 public enum EnumStreamerMode {
     OFF,
