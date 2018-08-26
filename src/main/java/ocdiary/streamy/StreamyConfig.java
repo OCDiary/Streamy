@@ -167,21 +167,21 @@ public class StreamyConfig {
      */
     public static IConfigElement getConfig(String configPath) {
         IConfigElement config = getConfig(ConfigElement.from(StreamyConfig.class), configPath.split("\\."), 0);
-        if(config == null) throw new RuntimeException(String.format("No config found for path %s!", configPath));
+        if (config == null) throw new RuntimeException(String.format("No config found for path %s!", configPath));
         return config;
     }
 
     //Recursive method to find the config
     private static IConfigElement getConfig(IConfigElement element, String[] path, int level) {
         String name = path[level];
-        if(element.getName().equalsIgnoreCase(name)) {
+        if (element.getName().equalsIgnoreCase(name)) {
             if (element.isProperty())
                 return element;
             else if (level < path.length) {
                 int nextLevel = level + 1;
                 for (IConfigElement e : element.getChildElements()) {
                     IConfigElement result = getConfig(e, path, nextLevel);
-                    if(result != null) return result;
+                    if (result != null) return result;
                 }
             }
         }

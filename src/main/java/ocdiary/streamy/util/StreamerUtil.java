@@ -40,10 +40,9 @@ public class StreamerUtil {
         }
     }
 
-    public static String[] splitChannelConfig(String channel)
-    {
+    public static String[] splitChannelConfig(String channel) {
         int index = channel.indexOf(':');
-        if(index < 0) return null;
+        if (index < 0) return null;
         String[] split = new String[2];
         split[0] = channel.substring(0, index);
         split[1] = channel.substring(index + 1);
@@ -60,13 +59,12 @@ public class StreamerUtil {
             //Sort by the order in the configs
             Map<String, StreamInfo> streamInfos = streamers.collect(Collectors.toMap(stream -> stream.broadcaster.toLowerCase(Locale.ROOT), stream -> stream));
             List<StreamInfo> sortedList = Lists.newArrayList();
-            for(String configChannel : StreamyConfig.CHANNELS.channels)
-            {
+            for (String configChannel : StreamyConfig.CHANNELS.channels) {
                 String[] split = splitChannelConfig(configChannel);
-                if(split == null) continue;
+                if (split == null) continue;
                 String name = split[1].toLowerCase(Locale.ROOT);
                 StreamInfo streamInfo = streamInfos.get(name);
-                if(streamInfo != null)
+                if (streamInfo != null)
                     sortedList.add(streamInfo);
             }
             return sortedList;

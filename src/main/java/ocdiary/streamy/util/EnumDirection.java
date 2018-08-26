@@ -21,11 +21,16 @@ public enum EnumDirection {
 
     public Point translate(Point point, int amount) {
         switch (this) {
-            case UP:    return translate(point, 0, -amount);
-            case RIGHT: return translate(point, amount, 0);
-            case DOWN:  return translate(point, 0, amount);
-            case LEFT:  return translate(point, -amount, 0);
-            default:    throw new RuntimeException(String.format("Unhandled EnumDirection %s!", name()));
+            case UP:
+                return translate(point, 0, -amount);
+            case RIGHT:
+                return translate(point, amount, 0);
+            case DOWN:
+                return translate(point, 0, amount);
+            case LEFT:
+                return translate(point, -amount, 0);
+            default:
+                throw new RuntimeException(String.format("Unhandled EnumDirection %s!", name()));
         }
     }
 

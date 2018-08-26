@@ -35,18 +35,28 @@ public class RenderingHandler {
     private static final ResourceLocation TWITCH_ICON = new ResourceLocation(Streamy.MODID, "textures/gui/twitch.png");
     private static final Minecraft mc = Minecraft.getMinecraft();
 
-    /** Padding around the profile pictures */
+    /**
+     * Padding around the profile pictures
+     */
     private static final int PADDING = 2;
-    /** Size of the profile pictures downloaded */
+    /**
+     * Size of the profile pictures downloaded
+     */
     private static final int PROFILE_PIC_ORIGINAL_SIZE = 300;
-    /** Rendered size of the profile pictures */
+    /**
+     * Rendered size of the profile pictures
+     */
     private static final int PROFILE_PIC_NEW_SIZE = 12;
-    /** Spacing between rendered profile pictures */
+    /**
+     * Spacing between rendered profile pictures
+     */
     private static final int PROFILE_PIC_SPACING = 3;
     private static final int LIST_SPACING = PROFILE_PIC_NEW_SIZE + PROFILE_PIC_SPACING;
     private static final int RENDER_Z_LEVEL = 300; //300 is minimum as vanilla inventory items are rendered at that level and we want to render above these.
 
-    /** Whether the streamer list is currently expanded */
+    /**
+     * Whether the streamer list is currently expanded
+     */
     private static boolean expandList = false;
 
     private static boolean isDraggingIcon = false;
@@ -93,9 +103,12 @@ public class RenderingHandler {
                         ""));
             } else {
                 tooltips.add(I18n.format(Streamy.MODID + ".stream.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()));
-                if (!StreamyConfig.CHANNELS.disableTitle) tooltips.add(I18n.format(Streamy.MODID + ".stream.title", TextFormatting.BLUE.toString() + info.title + TextFormatting.RESET.toString()));
-                if (!StreamyConfig.CHANNELS.disableGame) tooltips.add(I18n.format(Streamy.MODID + ".stream.game", TextFormatting.DARK_GREEN.toString() + info.game + TextFormatting.RESET.toString()));
-                if (!StreamyConfig.CHANNELS.disableViewers) tooltips.add(I18n.format(Streamy.MODID + ".stream.viewers", TextFormatting.DARK_RED.toString() + info.viewers + TextFormatting.RESET.toString()));
+                if (!StreamyConfig.CHANNELS.disableTitle)
+                    tooltips.add(I18n.format(Streamy.MODID + ".stream.title", TextFormatting.BLUE.toString() + info.title + TextFormatting.RESET.toString()));
+                if (!StreamyConfig.CHANNELS.disableGame)
+                    tooltips.add(I18n.format(Streamy.MODID + ".stream.game", TextFormatting.DARK_GREEN.toString() + info.game + TextFormatting.RESET.toString()));
+                if (!StreamyConfig.CHANNELS.disableViewers)
+                    tooltips.add(I18n.format(Streamy.MODID + ".stream.viewers", TextFormatting.DARK_RED.toString() + info.viewers + TextFormatting.RESET.toString()));
                 tooltips.add("");
                 tooltips.add(I18n.format(Streamy.MODID + ".stream.preview", TextFormatting.GOLD.toString() + "SHIFT" + TextFormatting.RESET.toString()));
             }
@@ -130,9 +143,10 @@ public class RenderingHandler {
 
     @SubscribeEvent
     public static void drawScreen(TickEvent.RenderTickEvent event) {
-        if (!ImageUtil.shouldShowIcon() || event.phase != TickEvent.Phase.END || !RenderingUtil.isValidGuiForRendering()) return;
+        if (!ImageUtil.shouldShowIcon() || event.phase != TickEvent.Phase.END || !RenderingUtil.isValidGuiForRendering())
+            return;
         Point mousePos = RenderingUtil.getCurrentMousePosition();
-        if(isDraggingIcon)
+        if (isDraggingIcon)
             draggingPos = new Point(mousePos.x - draggingOffset.x, mousePos.y - draggingOffset.y);
         int maxTextWidth = new ScaledResolution(mc).getScaledWidth() - mousePos.x - 16;
         if (Streamy.isLive || StreamyConfig.ICON.iconState == EnumIconVisibility.ALWAYS) {
@@ -172,7 +186,7 @@ public class RenderingHandler {
                     }
 
                     //important: need to draw the tooltip AFTER all icons have been drawn
-                    if(!isDraggingIcon) {
+                    if (!isDraggingIcon) {
                         localPos = getListStartPos();
                         for (StreamInfo info : streamers) {
                             if (RenderingUtil.isMouseOver(localPos.x, localPos.y, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
@@ -212,8 +226,7 @@ public class RenderingHandler {
                         if (GuiScreen.isAltKeyDown())
                             //Show mod configs
                             mc.displayGuiScreen(FMLClientHandler.instance().getGuiFactoryFor(FMLCommonHandler.instance().findContainerFor(Streamy.MODID)).createConfigGui(mc.currentScreen));
-                        else if (GuiScreen.isCtrlKeyDown())
-                        {
+                        else if (GuiScreen.isCtrlKeyDown()) {
                             //Cycle to next expansion direction
                             IConfigElement config = StreamyConfig.getConfig("streamy.icon.expandDirection");
                             int configIndex = 0;
@@ -225,19 +238,16 @@ public class RenderingHandler {
                                     break;
                                 }
                             }
-                            if(configIndex >= values.length)
+                            if (configIndex >= values.length)
                                 configIndex = 0;
                             config.set(values[configIndex]);
-                            StreamyConfig.configChanged("expandDirection",mc.world != null, config.requiresMcRestart());
-                        }
-                        else if(GuiScreen.isShiftKeyDown())
-                        {
+                            StreamyConfig.configChanged("expandDirection", mc.world != null, config.requiresMcRestart());
+                        } else if (GuiScreen.isShiftKeyDown()) {
                             //Start dragging icon around screen
                             draggingPos = getIconPos();
                             draggingOffset = new Point(mousePos.x - draggingPos.x, mousePos.y - draggingPos.y);
                             isDraggingIcon = true;
-                        }
-                        else
+                        } else
                             //Toggle streamer list
                             expandList = !expandList;
                     }
@@ -260,21 +270,18 @@ public class RenderingHandler {
                     }
                     break;
             }
-        }
-        else if(Mouse.getEventButton() == 0 && isDraggingIcon) {
+        } else if (Mouse.getEventButton() == 0 && isDraggingIcon) {
             isDraggingIcon = false;
             updateConfigIconPos();
         }
     }
 
     @SubscribeEvent
-    public static void keyboardInput(GuiScreenEvent.KeyboardInputEvent.Pre event)
-    {
+    public static void keyboardInput(GuiScreenEvent.KeyboardInputEvent.Pre event) {
         //Stop dragging if no shift key is being pressed anymore
-        if(isDraggingIcon &&
+        if (isDraggingIcon &&
                 (Keyboard.getEventKey() == Keyboard.KEY_LSHIFT || Keyboard.getEventKey() == Keyboard.KEY_RSHIFT) &&
-                (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
-        {
+                (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))) {
             isDraggingIcon = false;
             updateConfigIconPos();
         }

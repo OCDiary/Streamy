@@ -20,9 +20,7 @@ import java.util.Map;
         dependencies = Streamy.DEPENDENCIES,
         clientSideOnly = true
 )
-public class Streamy
-{
-
+public class Streamy {
     public static final String MODID = "streamy";
     public static final String NAME = "Streamy";
     public static final String VERSION = "@VERSION@"; //This is replaced in the build.gradle
@@ -38,16 +36,14 @@ public class Streamy
     public static boolean isLive, isSelfStreaming, isIconDismissed;
 
     @Mod.EventHandler
-    public void init(FMLInitializationEvent event)
-    {
+    public void init(FMLInitializationEvent event) {
         ImageUtil.init();
         ClientRegistry.registerKeyBinding(KeyHandler.keyDismiss);
     }
 
     @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event)
-    {
-        if(StreamyConfig.GENERAL.enabled)
+    public void postInit(FMLPostInitializationEvent event) {
+        if (StreamyConfig.GENERAL.enabled)
             StreamHandler.startStreamChecker();
     }
 }

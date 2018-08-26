@@ -16,12 +16,10 @@ import java.awt.*;
 /**
  * Created by bright_spark on 26/08/2018.
  */
-public class RenderingUtil
-{
+public class RenderingUtil {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
-    public static Point getCurrentMousePosition()
-    {
+    public static Point getCurrentMousePosition() {
         ScaledResolution sr = new ScaledResolution(mc);
         int srHeight = sr.getScaledHeight();
         int mouseX = Mouse.getX() * sr.getScaledWidth() / mc.displayWidth;
@@ -29,25 +27,21 @@ public class RenderingUtil
         return new Point(mouseX, mouseY);
     }
 
-    public static boolean isMouseOver(int x, int y, int width, int height, Point mousePos)
-    {
+    public static boolean isMouseOver(int x, int y, int width, int height, Point mousePos) {
         int mx = mousePos.x, my = mousePos.y;
         return mx >= x && mx <= (x + width) && my >= y && my <= (y + height);
     }
 
-    public static boolean isMouseOverIcon(Point mousePos)
-    {
+    public static boolean isMouseOverIcon(Point mousePos) {
         return isMouseOver(StreamyConfig.ICON.posX, StreamyConfig.ICON.posY, StreamyConfig.ICON.iconSize.size, StreamyConfig.ICON.iconSize.size, mousePos);
     }
 
-    public static boolean isValidGuiForRendering()
-    {
+    public static boolean isValidGuiForRendering() {
         GuiScreen gui = mc.currentScreen;
         return gui == null || gui instanceof GuiMainMenu || gui instanceof GuiIngameMenu || gui instanceof GuiChat || gui instanceof InventoryEffectRenderer;
     }
 
-    public static void drawTooltipBoxBackground(int x, int y, int width, int height, int zLevel)
-    {
+    public static void drawTooltipBoxBackground(int x, int y, int width, int height, int zLevel) {
         int backgroundColor = 0xF0100010;
         int borderColorStart = 0x505000FF;
         int borderColorEnd = (borderColorStart & 0xFEFEFE) >> 1 | borderColorStart & 0xFF000000;
