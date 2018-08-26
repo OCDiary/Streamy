@@ -1,5 +1,7 @@
 package ocdiary.streamy.streams;
 
+import net.minecraft.client.resources.I18n;
+
 public enum StreamSource {
     TWITCH("twitch", new TwitchStream());
     //MIXER("mixer"),
@@ -22,5 +24,9 @@ public enum StreamSource {
 
     public Stream getStream() {
         return stream;
+    }
+
+    public String localName() {
+        return I18n.format("streamy.source." + name);
     }
 }

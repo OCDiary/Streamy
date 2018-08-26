@@ -98,23 +98,24 @@ public class RenderingHandler {
             }
         } else {
             List<String> tooltips = new ArrayList<>();
-            Lists.newArrayList(I18n.format(Streamy.MODID + ".stream.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()));
+            Lists.newArrayList(I18n.format(Streamy.MODID + ".stream.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET, info.source.localName()));
             if (!info.streaming) {
                 tooltips.addAll(Lists.newArrayList(
-                        I18n.format(Streamy.MODID + ".stream.offline", TextFormatting.RED + info.broadcaster + TextFormatting.RESET.toString()),
+                        I18n.format(Streamy.MODID + ".stream.offline", TextFormatting.RED + info.broadcaster + TextFormatting.RESET),
                         ""));
+                tooltips.add(TextFormatting.GRAY + I18n.format(Streamy.MODID + ".stream.channel", TextFormatting.WHITE + info.broadcaster + TextFormatting.GRAY, info.source.localName()) + TextFormatting.RESET);
             } else {
-                tooltips.add(I18n.format(Streamy.MODID + ".stream.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()));
+                tooltips.add(I18n.format(Streamy.MODID + ".stream.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET, info.source.localName()));
                 if (!StreamyConfig.CHANNELS.disableTitle)
-                    tooltips.add(I18n.format(Streamy.MODID + ".stream.title", TextFormatting.BLUE.toString() + info.title + TextFormatting.RESET.toString()));
+                    tooltips.add(I18n.format(Streamy.MODID + ".stream.title", TextFormatting.BLUE + info.title + TextFormatting.RESET));
                 if (!StreamyConfig.CHANNELS.disableGame)
-                    tooltips.add(I18n.format(Streamy.MODID + ".stream.game", TextFormatting.DARK_GREEN.toString() + info.game + TextFormatting.RESET.toString()));
+                    tooltips.add(I18n.format(Streamy.MODID + ".stream.game", TextFormatting.DARK_GREEN + info.game + TextFormatting.RESET));
                 if (!StreamyConfig.CHANNELS.disableViewers)
-                    tooltips.add(I18n.format(Streamy.MODID + ".stream.viewers", TextFormatting.DARK_RED.toString() + info.viewers + TextFormatting.RESET.toString()));
+                    tooltips.add(I18n.format(Streamy.MODID + ".stream.viewers", TextFormatting.DARK_RED.toString() + info.viewers + TextFormatting.RESET));
                 tooltips.add("");
-                tooltips.add(I18n.format(Streamy.MODID + ".stream.preview", TextFormatting.GOLD.toString() + "SHIFT" + TextFormatting.RESET.toString()));
+                tooltips.add(I18n.format(Streamy.MODID + ".stream.preview", TextFormatting.GOLD + "SHIFT" + TextFormatting.RESET));
+                tooltips.add(TextFormatting.GRAY + I18n.format(Streamy.MODID + ".stream.watch", TextFormatting.WHITE + info.broadcaster + TextFormatting.GRAY) + TextFormatting.RESET);
             }
-            tooltips.add(TextFormatting.GRAY + I18n.format(Streamy.MODID + ".stream.watch", TextFormatting.WHITE.toString() + info.broadcaster + TextFormatting.GRAY.toString()) + TextFormatting.RESET);
             RenderingUtil.drawHoveringText(tooltips, mousePos);
         }
     }
@@ -206,8 +207,8 @@ public class RenderingHandler {
             String key = expandList ? "collapse" : "expand";
             List<String> tooltips = Lists.newArrayList(
                     new TextComponentTranslation(Streamy.MODID + ".icon." + key).setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText(),
-                    new TextComponentTranslation(Streamy.MODID + ".icon.info.right", TextFormatting.YELLOW.toString() + "ALT + Right-Click").getFormattedText(),
-                    new TextComponentTranslation(Streamy.MODID + ".icon.info", TextFormatting.BLUE.toString() + "ALT + Click").getFormattedText()
+                    new TextComponentTranslation(Streamy.MODID + ".icon.info.right", TextFormatting.YELLOW + "ALT + Right-Click").getFormattedText(),
+                    new TextComponentTranslation(Streamy.MODID + ".icon.info", TextFormatting.BLUE + "ALT + Click").getFormattedText()
             );
             RenderingUtil.drawHoveringText(tooltips, mousePos);
         }
