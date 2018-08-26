@@ -209,8 +209,10 @@ public class RenderingHandler {
             String key = expandList ? "collapse" : "expand";
             List<String> tooltips = Lists.newArrayList(
                     new TextComponentTranslation(Streamy.MODID + ".icon." + key).setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText(),
-                    new TextComponentTranslation(Streamy.MODID + ".icon.info.right", TextFormatting.YELLOW + "ALT + Right-Click").getFormattedText(),
-                    new TextComponentTranslation(Streamy.MODID + ".icon.info", TextFormatting.BLUE + "ALT + Click").getFormattedText()
+                    new TextComponentTranslation(Streamy.MODID + ".icon.toggle").getFormattedText(),
+                    new TextComponentTranslation(Streamy.MODID + ".icon.config").getFormattedText(),
+                    new TextComponentTranslation(Streamy.MODID + ".icon.rotate").getFormattedText(),
+                    new TextComponentTranslation(Streamy.MODID + ".icon.drag").getFormattedText()
             );
             RenderingUtil.drawHoveringText(tooltips, mousePos);
         }
