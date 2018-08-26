@@ -172,19 +172,21 @@ public class RenderingHandler {
                     }
 
                     //important: need to draw the tooltip AFTER all icons have been drawn
-                    localPos = getListStartPos();
-                    for (StreamInfo info : streamers) {
-                        if (RenderingUtil.isMouseOver(localPos.x, localPos.y, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
-                            drawStreamInfo(localPos.x, localPos.y, mousePos, info, GuiScreen.isShiftKeyDown(), maxTextWidth);
-                            break;
+                    if(!isDraggingIcon) {
+                        localPos = getListStartPos();
+                        for (StreamInfo info : streamers) {
+                            if (RenderingUtil.isMouseOver(localPos.x, localPos.y, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
+                                drawStreamInfo(localPos.x, localPos.y, mousePos, info, GuiScreen.isShiftKeyDown(), maxTextWidth);
+                                break;
+                            }
+                            localPos = getNextListPos(localPos);
                         }
-                        localPos = getNextListPos(localPos);
                     }
                 }
             }
         }
         //Draw tooltip for icon
-        if (RenderingUtil.isMouseOverIcon(mousePos)) {
+        if (!isDraggingIcon && RenderingUtil.isMouseOverIcon(mousePos)) {
             String key = expandList ? "collapse" : "expand";
             List<String> tooltips = Lists.newArrayList(
                     new TextComponentTranslation(Streamy.MODID + ".icon." + key).setStyle(new Style().setColor(TextFormatting.AQUA)).getFormattedText(),
