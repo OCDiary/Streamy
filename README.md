@@ -1,1 +1,1 @@
-Twitchy
+Streamy
