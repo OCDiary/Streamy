@@ -1,13 +1,18 @@
 package ocdiary.streamy;
 
 import com.google.common.collect.Sets;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.fml.client.config.IConfigElement;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import ocdiary.streamy.util.*;
 
+import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -97,6 +102,16 @@ public class StreamyConfig {
         @Config.RangeInt(min = 0)
         public int posY = 1;
 
+        //TODO: Implement cached Point position once Forge is updated
+        /*@Config.Ignore
+        private Point pos = null;
+
+        public Point getPos() {
+            if(pos == null)
+                pos = new Point(posX, posY);
+            return pos;
+        }*/
+
         @Config.Comment("The direction which the streamer list will expand in")
         public EnumDirection expandDirection = EnumDirection.DOWN;
     }
@@ -120,9 +135,10 @@ public class StreamyConfig {
         public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
             if (event.getModID().equalsIgnoreCase(Streamy.MODID)) {
                 ConfigManager.sync(Streamy.MODID, Config.Type.INSTANCE);
+                String configId = event.getConfigID();
                 if (GENERAL.enabled) {
                     //Don't need to change anything if only the direction was changed
-                    if (event.getConfigID() == null || !event.getConfigID().equals("expandDirection")) {
+                    if (configId == null || !(configId.equals("expandDirection") || configId.equals("pos"))) {
                         //Remove streamers that aren't in the config anymore
                         Set<String> toRemove = new HashSet<>();
                         Set<String> channels = Sets.newHashSet(CHANNELS.channels);
@@ -143,5 +159,43 @@ public class StreamyConfig {
                 }
             }
         }
+    }
+
+    /**
+     * Gets the specified config element so that it can be changed
+     * Throws an exception if none found
+     */
+    public static IConfigElement getConfig(String configPath) {
+        IConfigElement config = getConfig(ConfigElement.from(StreamyConfig.class), configPath.split("\\."), 0);
+        if(config == null) throw new RuntimeException(String.format("No config found for path %s!", configPath));
+        return config;
+    }
+
+    //Recursive method to find the config
+    private static IConfigElement getConfig(IConfigElement element, String[] path, int level) {
+        String name = path[level];
+        if(element.getName().equalsIgnoreCase(name)) {
+            if (element.isProperty())
+                return element;
+            else if (level < path.length) {
+                int nextLevel = level + 1;
+                for (IConfigElement e : element.getChildElements()) {
+                    IConfigElement result = getConfig(e, path, nextLevel);
+                    if(result != null) return result;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Post the config changed events
+     * This will cause the configs to be saved to file and the StreamyConfig class to be updated
+     */
+    public static void configChanged(@Nullable String configID, boolean isWorldRunning, boolean requiresMcRestart) {
+        ConfigChangedEvent event = new ConfigChangedEvent.OnConfigChangedEvent(Streamy.MODID, configID, isWorldRunning, requiresMcRestart);
+        MinecraftForge.EVENT_BUS.post(event);
+        if (!event.getResult().equals(Event.Result.DENY))
+            MinecraftForge.EVENT_BUS.post(new ConfigChangedEvent.PostConfigChangedEvent(Streamy.MODID, configID, isWorldRunning, requiresMcRestart));
     }
 }

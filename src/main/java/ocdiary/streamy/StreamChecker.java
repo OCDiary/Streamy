@@ -1,14 +1,14 @@
 package ocdiary.streamy;
 
-import ocdiary.streamy.streams.Stream;
 import ocdiary.streamy.streams.StreamSource;
-import ocdiary.streamy.streams.Streams;
 import ocdiary.streamy.util.EnumStreamerMode;
 import ocdiary.streamy.util.ImageUtil;
 import ocdiary.streamy.util.StreamInfo;
 import ocdiary.streamy.util.StreamerUtil;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class StreamChecker implements Runnable {
 
@@ -33,9 +33,8 @@ public class StreamChecker implements Runnable {
                     if (source == null)
                         Streamy.LOGGER.error("Broadcaster %s has an invalid source '%s'!", broadcaster, split[0]);
                     else {
-                        Stream stream = Streams.getStream(source);
                         //Extract the channel
-                        StreamInfo info = stream.getStreamInfo(split[1]);
+                        StreamInfo info = source.getStream().getStreamInfo(split[1]);
                         if (split[1].equals(player)) {
                             Streamy.isSelfStreaming = info != null && info.streaming;
                             if (StreamyConfig.GENERAL.streamerMode != EnumStreamerMode.PARTIAL && info != null && info.streaming)
