@@ -5,7 +5,6 @@ import io.netty.util.internal.StringUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
@@ -78,8 +77,7 @@ public class RenderingHandler {
             GuiUtils.drawTexturedModalRect(iconPos.x, iconPos.y, iconSize.overlayU, iconSize.overlayV, iconSize.size, iconSize.size, 0);
     }
 
-    private static void drawStreamInfo(int x, int y, Point mousePos, StreamInfo info, boolean showPreview, int maxTextWidth) {
-        int mouseX = mousePos.x, mouseY = mousePos.y;
+    private static void drawStreamInfo(int x, int y, Point mousePos, StreamInfo info, boolean showPreview) {
         if (showPreview && info.streaming) {
             String url = info.previewUrl;
             EnumPreviewSize quality = StreamyConfig.PREVIEW.quality;
@@ -93,7 +91,6 @@ public class RenderingHandler {
                 Gui.drawScaledCustomSizeModalRect(x, y, 0, 0, quality.width, quality.height, StreamyConfig.PREVIEW.previewWidth, StreamyConfig.PREVIEW.previewHeight, quality.width, quality.height);
                 GlStateManager.popMatrix();
             }
-            GuiUtils.drawHoveringText(Lists.newArrayList(), mouseX, mouseY + 15 + quality.height, mc.displayWidth, mc.displayHeight, Math.min(maxTextWidth, quality.width) + PADDING, mc.fontRenderer);
         } else {
             List<String> tooltips = new ArrayList<>();
             Lists.newArrayList(I18n.format(Streamy.MODID + ".stream.broadcaster", TextFormatting.AQUA + info.broadcaster + TextFormatting.RESET.toString()));
@@ -113,7 +110,7 @@ public class RenderingHandler {
                 tooltips.add(I18n.format(Streamy.MODID + ".stream.preview", TextFormatting.GOLD.toString() + "SHIFT" + TextFormatting.RESET.toString()));
             }
             tooltips.add(TextFormatting.GRAY + I18n.format(Streamy.MODID + ".stream.watch", TextFormatting.WHITE.toString() + info.broadcaster + TextFormatting.GRAY.toString()) + TextFormatting.RESET);
-            GuiUtils.drawHoveringText(tooltips, mouseX, mouseY + 20, mc.displayWidth, mc.displayHeight, maxTextWidth, mc.fontRenderer);
+            RenderingUtil.drawHoveringText(tooltips, mousePos);
         }
     }
 
@@ -148,7 +145,6 @@ public class RenderingHandler {
         Point mousePos = RenderingUtil.getCurrentMousePosition();
         if (isDraggingIcon)
             draggingPos = new Point(mousePos.x - draggingOffset.x, mousePos.y - draggingOffset.y);
-        int maxTextWidth = new ScaledResolution(mc).getScaledWidth() - mousePos.x - 16;
         if (Streamy.isLive || StreamyConfig.ICON.iconState == EnumIconVisibility.ALWAYS) {
             drawIcon(); //draw the twitch icon
             if (expandList) {
@@ -190,7 +186,7 @@ public class RenderingHandler {
                         localPos = getListStartPos();
                         for (StreamInfo info : streamers) {
                             if (RenderingUtil.isMouseOver(localPos.x, localPos.y, PROFILE_PIC_NEW_SIZE, PROFILE_PIC_NEW_SIZE, mousePos)) {
-                                drawStreamInfo(localPos.x, localPos.y, mousePos, info, GuiScreen.isShiftKeyDown(), maxTextWidth);
+                                drawStreamInfo(localPos.x, localPos.y, mousePos, info, GuiScreen.isShiftKeyDown());
                                 break;
                             }
                             localPos = getNextListPos(localPos);
@@ -207,7 +203,7 @@ public class RenderingHandler {
                     new TextComponentTranslation(Streamy.MODID + ".icon.info.right", TextFormatting.YELLOW.toString() + "ALT + Right-Click").getFormattedText(),
                     new TextComponentTranslation(Streamy.MODID + ".icon.info", TextFormatting.BLUE.toString() + "ALT + Click").getFormattedText()
             );
-            GuiUtils.drawHoveringText(tooltips, mousePos.x, mousePos.y + 5, mc.displayWidth, mc.displayHeight, maxTextWidth, mc.fontRenderer);
+            RenderingUtil.drawHoveringText(tooltips, mousePos);
         }
     }
 

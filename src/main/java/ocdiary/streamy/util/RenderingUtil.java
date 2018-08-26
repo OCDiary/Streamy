@@ -12,6 +12,7 @@ import ocdiary.streamy.StreamyConfig;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
+import java.util.List;
 
 /**
  * Created by bright_spark on 26/08/2018.
@@ -56,5 +57,11 @@ public class RenderingUtil {
         GuiUtils.drawGradientRect(zLevel, x - 3, y + height + 2, x + width + 3, y + height + 3, borderColorEnd, borderColorEnd);
 
         MinecraftForge.EVENT_BUS.post(new RenderTooltipEvent.PostBackground(ItemStack.EMPTY, Lists.newArrayList(), x, y, mc.fontRenderer, width, height));
+    }
+
+    public static void drawHoveringText(List<String> textLines, Point pos)
+    {
+        ScaledResolution sr = new ScaledResolution(mc);
+        GuiUtils.drawHoveringText(textLines, pos.x, pos.y, sr.getScaledWidth(), sr.getScaledHeight(), -1, mc.fontRenderer);
     }
 }
