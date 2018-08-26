@@ -10,6 +10,7 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import ocdiary.streamy.handlers.StreamHandler;
 import ocdiary.streamy.util.*;
 
 import javax.annotation.Nullable;

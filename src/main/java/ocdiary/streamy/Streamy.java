@@ -5,6 +5,8 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import ocdiary.streamy.handlers.KeyHandler;
+import ocdiary.streamy.handlers.StreamHandler;
 import ocdiary.streamy.util.ImageUtil;
 import ocdiary.streamy.util.StreamInfo;
 import org.apache.logging.log4j.LogManager;

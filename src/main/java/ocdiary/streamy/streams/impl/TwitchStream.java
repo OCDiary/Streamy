@@ -1,10 +1,12 @@
-package ocdiary.streamy.streams;
+package ocdiary.streamy.streams.impl;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import ocdiary.streamy.Streamy;
 import ocdiary.streamy.StreamyConfig;
+import ocdiary.streamy.streams.Stream;
+import ocdiary.streamy.streams.StreamSource;
 import ocdiary.streamy.util.StreamInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;

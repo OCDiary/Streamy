@@ -1,6 +1,7 @@
 package ocdiary.streamy.streams;
 
 import net.minecraft.client.resources.I18n;
+import ocdiary.streamy.streams.impl.TwitchStream;
 
 public enum StreamSource {
     TWITCH("twitch", new TwitchStream());

@@ -1,4 +1,7 @@
-package ocdiary.streamy;
+package ocdiary.streamy.handlers;
+
+import ocdiary.streamy.Streamy;
+import ocdiary.streamy.StreamyConfig;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

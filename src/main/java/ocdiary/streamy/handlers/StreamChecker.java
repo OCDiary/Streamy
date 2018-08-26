@@ -1,5 +1,7 @@
-package ocdiary.streamy;
+package ocdiary.streamy.handlers;
 
+import ocdiary.streamy.Streamy;
+import ocdiary.streamy.StreamyConfig;
 import ocdiary.streamy.streams.StreamSource;
 import ocdiary.streamy.util.EnumStreamerMode;
 import ocdiary.streamy.util.ImageUtil;
