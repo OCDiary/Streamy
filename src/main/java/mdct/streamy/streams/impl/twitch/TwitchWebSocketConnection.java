@@ -53,6 +53,7 @@ public class TwitchWebSocketConnection extends AbstractWebsocketConnection {
         TwitchMessage twitchMessage = GSON.fromJson(message, TwitchMessage.class);
         switch (twitchMessage.type.toLowerCase(Locale.ROOT)) {
             case "reconnect":
+                Streamy.LOGGER.info("Received reconnect message - scheduling reconnection");
                 scheduleReconnect(30, TimeUnit.SECONDS);
                 break;
             case "response":
@@ -66,16 +67,20 @@ public class TwitchWebSocketConnection extends AbstractWebsocketConnection {
                 String[] topicArray = twitchMessage.data.topic.split(".");
 
                 //Make sure the channelId in the message is valid
-                if(!channelId.equals(topicArray[1]))
+                if(!channelId.equals(topicArray[1])) {
                     Streamy.LOGGER.error("Received message for an incorrect channel: %s", message);
+                    break;
+                }
 
                 switch (topicArray[0]) {
                     case TOPIC_BITS:
                         BitsMessage bitsMessage = GSON.fromJson(twitchMessage.data.message, BitsMessage.class);
+                        Streamy.LOGGER.info("Received %s bits from %s", bitsMessage.bits_used, bitsMessage.user_name);
                         handler.onBitsMessage(bitsMessage);
                         break;
                     case TOPIC_SUBSCRIPTIONS:
                         SubscriptionMessage subscriptionMessage = GSON.fromJson(twitchMessage.data.message, SubscriptionMessage.class);
+                        Streamy.LOGGER.info("Received %s month %s %s from %s", subscriptionMessage.months, subscriptionMessage.sub_plan, subscriptionMessage.context, subscriptionMessage.display_name);
                         handler.onSubscriptionMessage(subscriptionMessage);
                         break;
                     default:
