@@ -1,0 +1,26 @@
+#PARSE_ESCAPES
+
+streamy.icon.expand=Klicken zum Erweitern des Menüs!
+streamy.icon.collapse=Klicken zum Verkleinern des Menüs!
+streamy.icon.toggle=§eALT + Rechtsklick§r zum Umschalten des Icons!
+streamy.icon.config=§9ALT + Klicken§r um den Konfigurationsmenü zu erreichen!
+streamy.icon.rotate=§dSTRG + Klicken§r um die Richtung der Streamerliste zu ändern!
+streamy.icon.drag=§2UMSCHALTTASTE + Klicken + Halten§r um den Icon zu bewegen!
+
+streamy.stream.broadcaster=%s macht aktuell eine Echtzeitübertragung auf %s!
+streamy.stream.title=Stream-Titel: %s
+streamy.stream.game=Aktuelles Spiel: %s
+streamy.stream.viewers=Aktuelle Zuschauerzahl: %s
+streamy.stream.offline=%s ist momentan offline!
+streamy.stream.preview=Drücke %s um die Vorschau zu sehen!
+streamy.stream.channel=Klicken um zu den Kanal %s zugehen auf %s!
+streamy.stream.watch=Klicken um %s auf %s zu sehen!
+
+streamy.config.title=Streamy-Konfigurationen
+
+streamy.source.twitch=Twitch
+streamy.source.mixer=Mixer
+streamy.source.youtube=YouTube
+
+key.streamy.category=Streamy
+key.streamy.dismiss=Icon verwerfen
